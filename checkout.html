@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout – On The Go Juice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/checkout.css" />
+</head>
+<body>
+
+  <header class="co-header">
+    <a href="/" class="co-logo">
+      <img src="images/logo.png" alt="On The Go Juice" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+      <span class="co-logo-text" style="display:none">On The Go Juice</span>
+    </a>
+    <a href="index.html" class="co-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Continue Shopping
+    </a>
+  </header>
+
+  <main class="co-page">
+
+    <!-- ── LEFT: FORM ── -->
+    <div class="co-form-col">
+      <h1 class="co-title">Checkout</h1>
+
+      <!-- SECTION 1: Contact -->
+      <div class="co-section open" id="section-contact">
+        <div class="co-section-head">
+          <div class="co-section-label">
+            <span class="co-section-num">1</span>
+            Contact Information
+          </div>
+          <svg class="co-section-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="co-section-body">
+          <div class="co-section-content">
+            <div class="field-grid">
+              <div class="field-wrap">
+                <input type="text" id="first-name" placeholder=" " autocomplete="given-name" />
+                <label for="first-name">First Name</label>
+              </div>
+              <div class="field-wrap">
+                <input type="text" id="last-name" placeholder=" " autocomplete="family-name" />
+                <label for="last-name">Last Name</label>
+              </div>
+            </div>
+            <div class="field-wrap">
+              <input type="email" id="email" placeholder=" " autocomplete="email" />
+              <label for="email">Email Address</label>
+            </div>
+            <div class="field-wrap">
+              <input type="tel" id="phone" placeholder=" " autocomplete="tel" />
+              <label for="phone">Phone Number</label>
+            </div>
+            <button class="co-next-btn" data-next="section-delivery">Continue to Delivery</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Delivery Method -->
+      <div class="co-section" id="section-delivery">
+        <div class="co-section-head">
+          <div class="co-section-label">
+            <span class="co-section-num">2</span>
+            Delivery Method
+          </div>
+          <svg class="co-section-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="co-section-body">
+          <div class="co-section-content">
+            <div class="delivery-options">
+              <label class="delivery-option">
+                <input type="radio" name="delivery" value="delivery" checked id="opt-delivery" />
+                <div>
+                  <div class="delivery-option-label">Local Delivery — Delivered by David</div>
+                  <div class="delivery-option-sub">Personal delivery within the Birmingham area. We'll confirm your slot by email.</div>
+                </div>
+              </label>
+              <label class="delivery-option">
+                <input type="radio" name="delivery" value="pickup" id="opt-pickup" />
+                <div>
+                  <div class="delivery-option-label">Local Pickup — Free</div>
+                  <div class="delivery-option-sub">Collect from our Birmingham pickup point at your convenience.</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Postcode checker (shown for delivery) -->
+            <div class="postcode-wrap" id="postcode-wrap">
+              <p style="font-size:0.85rem;font-weight:600;margin-bottom:10px;">Enter your postcode to confirm we deliver to your area:</p>
+              <div class="postcode-row">
+                <input type="text" id="postcode-input" placeholder="e.g. B1 1BB" maxlength="8" />
+                <button class="postcode-check-btn" id="postcode-check-btn" type="button">Check</button>
+              </div>
+              <div class="postcode-result" id="postcode-result"></div>
+            </div>
+
+            <!-- Pickup address (shown for pickup) -->
+            <div class="pickup-address" id="pickup-address">
+              <strong>Pickup Address</strong><br/>
+              On The Go Juice Pickup Point<br/>
+              Birmingham City Centre<br/>
+              Birmingham, B1 1BB<br/>
+              <br/>
+              We will confirm the exact pickup location and available times by email after your order.
+            </div>
+
+            <button class="co-next-btn" id="delivery-next-btn" data-next="section-address" style="margin-top:20px">Continue to Address</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Address -->
+      <div class="co-section" id="section-address">
+        <div class="co-section-head">
+          <div class="co-section-label">
+            <span class="co-section-num">3</span>
+            Delivery Address
+          </div>
+          <svg class="co-section-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="co-section-body">
+          <div class="co-section-content">
+            <div class="field-wrap">
+              <input type="text" id="address1" placeholder=" " autocomplete="address-line1" />
+              <label for="address1">Address Line 1</label>
+            </div>
+            <div class="field-wrap">
+              <input type="text" id="address2" placeholder=" " autocomplete="address-line2" />
+              <label for="address2">Address Line 2 (optional)</label>
+            </div>
+            <div class="field-grid">
+              <div class="field-wrap">
+                <input type="text" id="city" placeholder=" " autocomplete="address-level2" />
+                <label for="city">City</label>
+              </div>
+              <div class="field-wrap">
+                <input type="text" id="postcode-addr" placeholder=" " autocomplete="postal-code" />
+                <label for="postcode-addr">Postcode</label>
+              </div>
+            </div>
+            <button class="co-next-btn" data-next="none">Review &amp; Place Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: ORDER SUMMARY ── -->
+    <div class="co-summary">
+      <div class="co-summary-card">
+        <div class="co-summary-head">Order Summary</div>
+        <div class="co-summary-items" id="co-summary-items">
+          <div class="co-summary-empty">Your cart is empty. <a href="index.html#products">Shop now</a></div>
+        </div>
+        <div class="co-summary-totals">
+          <div class="co-summary-row"><span>Subtotal</span><span id="co-subtotal">£0.00</span></div>
+          <div class="co-summary-row"><span>Delivery</span><span id="co-delivery-cost">Calculated above</span></div>
+          <div class="co-summary-row total"><span>Total</span><span id="co-total">£0.00</span></div>
+        </div>
+        <div style="padding: 0 20px 20px">
+          <button class="co-place-btn" id="co-place-btn">
+            <span class="btn-text">Place Order</span>
+            <span class="btn-spinner"></span>
+            <span class="btn-check">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+          </button>
+          <p class="co-note">By placing your order, you agree to our <a href="terms-conditions.html" style="color:var(--green)">Terms &amp; Conditions</a>.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/checkout.js"></script>
+</body>
+</html>

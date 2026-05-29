@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>On The Go Juice – Cold-Pressed, Fresh & Natural</title>
+  <meta name="description" content="Fresh, cold-pressed juices for busy lifestyles. Natural ingredients, affordable prices. Order online for pickup or delivery." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/popup-minicart.css" />
+</head>
+<body>
+
+  <!-- ───────────────────────────── WELCOME POPUP ───────────────────────────── -->
+  <div class="popup-overlay" id="welcome-popup" role="dialog" aria-modal="true" aria-label="Welcome offer">
+    <div class="popup-inner">
+      <button class="popup-close" id="popup-close" aria-label="Close">&times;</button>
+      <div class="popup-badge">20% OFF</div>
+      <h2 class="popup-title">Welcome to On The Go Juice</h2>
+      <p class="popup-sub">Subscribe and get <strong>20% off your first order</strong> plus exclusive offers and wellness tips.</p>
+      <form class="popup-form" id="popup-form">
+        <input type="email" placeholder="your@email.com" required aria-label="Email address" />
+        <button type="submit" class="btn btn-primary">Claim My Discount</button>
+      </form>
+      <button class="popup-skip" id="popup-skip">No thanks, I'll pay full price</button>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────── NAV ───────────────────────────── -->
+  <header class="site-header" id="site-header">
+    <nav class="nav-inner">
+      <a class="nav-logo" href="/">
+        <img src="images/logo.png" alt="On The Go Juice" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+        <span class="logo-text-fallback">On The Go Juice</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#products">Shop</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#footer">Contact</a></li>
+        <li><button class="nav-rewards-btn" id="rewards-widget">Rewards</button></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="cart-hover-wrap" id="cart-hover-wrap">
+          <button class="cart-trigger" id="cart-trigger" aria-label="Open cart">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="cart-count" id="cart-count">0</span>
+          </button>
+          <!-- Mini-cart dropdown -->
+          <div class="mini-cart" id="mini-cart">
+            <div class="mini-cart-empty" id="mini-cart-empty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <p>Your cart is empty</p>
+            </div>
+            <ul class="mini-cart-items" id="mini-cart-items"></ul>
+            <div class="mini-cart-footer" id="mini-cart-footer" style="display:none">
+              <div class="mini-cart-total-row">
+                <span>Subtotal</span>
+                <span id="mini-cart-total">£0.00</span>
+              </div>
+              <a href="/checkout" class="btn-checkout-mini">
+                Go to Checkout
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#products" class="mobile-link">Shop</a>
+      <a href="#about" class="mobile-link">About</a>
+      <a href="#footer" class="mobile-link">Contact</a>
+      <button class="mobile-link mobile-rewards-btn" id="rewards-widget-mobile">Rewards</button>
+    </div>
+  </header>
+
+  <!-- ───────────────────────────── HERO ───────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-video-wrap">
+      <video autoplay loop muted playsinline poster="images/hero/poster.jpg" class="hero-video" id="hero-video">
+        <source src="images/hero/hero.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Cold-Pressed &bull; Natural &bull; Fresh</p>
+      <h1 class="hero-headline">Juice, as nature<br/>intended.</h1>
+      <p class="hero-sub">Handcrafted from real fruits &amp; vegetables.<br/>Fuelling busy lives since day one.</p>
+      <a href="#products" class="btn btn-hero">Shop Now</a>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── MARQUEE ───────────────────────────── -->
+  <div class="marquee-bar">
+    <div class="marquee-track">
+      <span>Cold-Pressed</span><span class="dot">&bull;</span>
+      <span>No Artificial Additives</span><span class="dot">&bull;</span>
+      <span>Freshly Made</span><span class="dot">&bull;</span>
+      <span>Real Ingredients</span><span class="dot">&bull;</span>
+      <span>330ml Bottles £1.99</span><span class="dot">&bull;</span>
+      <span>Ginger Shots £1.50</span><span class="dot">&bull;</span>
+      <span>Cold-Pressed</span><span class="dot">&bull;</span>
+      <span>No Artificial Additives</span><span class="dot">&bull;</span>
+      <span>Freshly Made</span><span class="dot">&bull;</span>
+      <span>Real Ingredients</span><span class="dot">&bull;</span>
+      <span>330ml Bottles £1.99</span><span class="dot">&bull;</span>
+      <span>Ginger Shots £1.50</span><span class="dot">&bull;</span>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────── PRODUCTS ───────────────────────────── -->
+  <section class="products-section" id="products">
+    <div class="section-intro" data-aos="fade-up">
+      <p class="section-tag">The Range</p>
+      <h2 class="section-title">Find Your Flavour</h2>
+      <p class="section-sub">Every bottle crafted from scratch with whole, natural ingredients.</p>
+    </div>
+    <div class="filter-tabs" id="filter-tabs" data-aos="fade-up" data-aos-delay="80">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="juice">Juices</button>
+      <button class="filter-btn" data-filter="milk">Milk Blends</button>
+      <button class="filter-btn" data-filter="shot">Shots</button>
+    </div>
+    <div class="products-grid" id="products-grid"></div>
+  </section>
+
+  <!-- ───────────────────────────── ABOUT ───────────────────────────── -->
+  <section class="about-section" id="about">
+    <div class="about-inner">
+      <div class="about-text" data-aos="fade-right" data-aos-duration="700">
+        <p class="section-tag">Our Story</p>
+        <h2 class="about-title">Made for people<br/>always on the move.</h2>
+        <p class="about-body">On The Go Juice was born from a simple belief — that eating well shouldn't slow you down. Every bottle is cold-pressed to lock in nutrients, crafted with whole fruits and vegetables, and designed to fit in your pocket, your bag, and your day.</p>
+        <div class="about-stats">
+          <div class="stat" data-aos="fade-up" data-aos-delay="100"><span class="stat-num">20+</span><span class="stat-label">Flavours</span></div>
+          <div class="stat" data-aos="fade-up" data-aos-delay="200"><span class="stat-num">100%</span><span class="stat-label">Natural</span></div>
+          <div class="stat" data-aos="fade-up" data-aos-delay="300"><span class="stat-num">0</span><span class="stat-label">Artificial Additives</span></div>
+        </div>
+      </div>
+      <div class="about-badges" data-aos="fade-left" data-aos-duration="700">
+        <div class="badge-card" data-aos="fade-up" data-aos-delay="50">
+          <div class="badge-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M8 12h8M12 8v8"/></svg></div>
+          <h3>Real Ingredients</h3>
+          <p>Whole fruits &amp; vegetables, nothing else.</p>
+        </div>
+        <div class="badge-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="badge-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <h3>Cold-Pressed</h3>
+          <p>Maximum nutrients, minimal processing.</p>
+        </div>
+        <div class="badge-card" data-aos="fade-up" data-aos-delay="250">
+          <div class="badge-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <h3>On-The-Go Ready</h3>
+          <p>Perfectly portable 330ml bottles.</p>
+        </div>
+        <div class="badge-card" data-aos="fade-up" data-aos-delay="350">
+          <div class="badge-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <h3>No Nasties</h3>
+          <p>No preservatives, no artificial flavours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── NEWSLETTER ───────────────────────────── -->
+  <section class="newsletter-section" data-aos="fade-up">
+    <div class="newsletter-inner">
+      <h2>Get juice drops in your inbox.</h2>
+      <p>New flavours, exclusive offers, and wellness tips — straight to you.</p>
+      <form class="newsletter-form" id="newsletter-form">
+        <input type="email" placeholder="your@email.com" required aria-label="Email address" />
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+      </form>
+      <p class="newsletter-note">No spam. Unsubscribe any time.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── FOOTER ───────────────────────────── -->
+  <footer class="site-footer" id="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/logo.png" alt="On The Go Juice" class="footer-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+        <span class="footer-logo-fallback">On The Go Juice</span>
+        <p class="footer-tagline">Fresh. Natural. On The Go.</p>
+        <p class="footer-contact"><a href="mailto:david@onthego-juice.co.uk">david@onthego-juice.co.uk</a></p>
+      </div>
+      <div class="footer-links">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#products">All Juices</a></li>
+          <li><a href="#products">Milk Blends</a></li>
+          <li><a href="#products">Ginger Shots</a></li>
+          <li><a href="#products">Wellness Shots</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="mailto:david@onthego-juice.co.uk">Contact</a></li>
+          <li><a href="mailto:david@onthego-juice.co.uk">Wholesale</a></li>
+          <li><a href="#">Stockists</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Help</h4>
+        <ul>
+          <li><a href="delivery-info.html">Delivery Info</a></li>
+          <li><a href="returns.html">Returns</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-conditions.html">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 On The Go Juice. All rights reserved.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" aria-label="TikTok"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.79 1.53V6.77a4.85 4.85 0 0 1-1.02-.08z"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ───────────────────────────── CART DRAWER ───────────────────────────── -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="cart-close" id="cart-close" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty" id="cart-empty">
+        <div class="cart-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <p>Your cart is empty.</p>
+        <a href="#products" class="btn btn-primary" id="cart-shop-link">Start Shopping</a>
+      </div>
+      <ul class="cart-items" id="cart-items"></ul>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cart-total">£0.00</span>
+      </div>
+      <p class="cart-shipping-note">Shipping calculated at checkout</p>
+      <a href="/checkout" class="btn btn-checkout">Checkout</a>
+    </div>
+  </aside>
+
+  <!-- ───────────────────────────── REWARDS MODAL ───────────────────────────── -->
+  <div class="rewards-modal" id="rewards-modal">
+    <div class="rewards-modal-inner">
+      <button class="rewards-modal-close" id="rewards-modal-close">&times;</button>
+      <div class="rewards-modal-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+      <h3>Join the Go Rewards Club</h3>
+      <p>Earn points on every purchase. Redeem for free juices and exclusive discounts.</p>
+      <ul class="rewards-perks">
+        <li>1 point per £1 spent</li>
+        <li>Free juice every 20 points</li>
+        <li>Birthday bonus points</li>
+        <li>Early access to new flavours</li>
+      </ul>
+      <button class="btn btn-primary rewards-join">Join Free</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

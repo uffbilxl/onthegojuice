@@ -1,0 +1,27 @@
+# Next.js build output
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Environment variables — NEVER commit secrets
+.env.local
+.env*.local
+
+# public/images is a copy of images/ — generated at build time, not committed
+# Run: cp -r images/ public/images/ before `next build`
+public/images/
+
+# macOS
+.DS_Store
+Icon
+
+# Python
+__pycache__/
+*.pyc
+make_placeholders.py
+
+# Misc
+*.log
+npm-debug.log*

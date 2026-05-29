@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate Placeholder Images</title></head>
+<body>
+<p>Open this page in a browser to download placeholder product images for development. Delete this file before going live.</p>
+<script>
+const products = [
+  { file: 'carrot-milk', label: 'Carrot Milk', bg: '#e8a87c' },
+  { file: 'carrot-milk-no-sugar', label: 'Carrot Milk No Sugar', bg: '#e8a87c' },
+  { file: 'carrot-beetroot-milk', label: 'Carrot Beetroot Milk', bg: '#c17a6f' },
+  { file: 'carrot-beetroot-milk-no-sugar', label: 'Carrot Beetroot Milk No Sugar', bg: '#c17a6f' },
+  { file: 'beetroot-milk', label: 'Beetroot Milk', bg: '#9b4f7a' },
+  { file: 'carrot-milk-lactose-free', label: 'Carrot Milk Lactose Free', bg: '#d4956a' },
+  { file: 'carrot-beetroot-milk-lactose-free', label: 'Carrot Beetroot LF', bg: '#b87060' },
+  { file: 'mango-milk', label: 'Mango Milk', bg: '#f5c842' },
+  { file: 'breadfruit-milk', label: 'Breadfruit Milk', bg: '#e8d9b5' },
+  { file: 'carrot-ginger', label: 'Carrot Ginger', bg: '#e07d30' },
+  { file: 'carrot-lemon', label: 'Carrot Lemon', bg: '#f0a830' },
+  { file: 'carrot-lime', label: 'Carrot Lime', bg: '#d4a020' },
+  { file: 'carrot-grapefruit', label: 'Carrot Grapefruit', bg: '#e06060' },
+  { file: 'mango-ginger', label: 'Mango Ginger', bg: '#f5c040' },
+  { file: 'beetroot-apple', label: 'Beetroot Apple', bg: '#6b1a4a' },
+  { file: 'sorrel', label: 'Sorrel', bg: '#8b0000' },
+  { file: 'go-shot-apple-ginger', label: 'Go Shot Apple Ginger', bg: '#c8c040' },
+  { file: 'go-shot-pineapple-ginger', label: 'Go Shot Pineapple', bg: '#c8cc40' },
+  { file: 'ginger-turmeric-shot', label: 'Ginger Turmeric', bg: '#d4961e' },
+  { file: 'reset-green', label: 'Reset Green', bg: '#3a8b2a' },
+  { file: 'placeholder', label: 'Product', bg: '#1d6c00' },
+];
+
+products.forEach(p => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 400; canvas.height = 533;
+  const ctx = canvas.getContext('2d');
+
+  // Draw gradient background
+  const grad = ctx.createLinearGradient(0, 0, 0, 533);
+  grad.addColorStop(0, lighten(p.bg, 30));
+  grad.addColorStop(1, p.bg);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 400, 533);
+
+  // Draw bottle outline
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.roundRect(120, 20, 160, 493, 20);
+  ctx.stroke();
+
+  // Label area
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.beginPath();
+  ctx.roundRect(120, 220, 160, 160, 10);
+  ctx.fill();
+
+  // Logo text
+  ctx.fillStyle = '#ff6b00';
+  ctx.font = 'bold 22px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('On The Go', 200, 252);
+  ctx.font = 'bold 32px Arial';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('JUICE', 200, 285);
+
+  // Product name
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 14px Arial';
+  const words = p.label.split(' ');
+  let line = '', lines = [], maxW = 140;
+  words.forEach(w => {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line); line = w;
+    } else { line = test; }
+  });
+  if (line) lines.push(line);
+  lines.forEach((l, i) => ctx.fillText(l, 200, 318 + i * 18));
+
+  const link = document.createElement('a');
+  link.download = p.file + '.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.92);
+  link.textContent = 'Download ' + p.file;
+  link.style = 'display:block;margin:4px 0;font-size:12px;';
+  document.body.appendChild(link);
+});
+
+function lighten(hex, pct) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, ((num >> 16) & 0xff) + pct);
+  const g = Math.min(255, ((num >> 8) & 0xff) + pct);
+  const b = Math.min(255, (num & 0xff) + pct);
+  return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+}
+</script>
+</body>
+</html>

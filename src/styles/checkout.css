@@ -1,0 +1,455 @@
+/* ─── CHECKOUT PAGE ─────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #1d6c00;
+  --green-dark: #154f00;
+  --orange: #ff6b00;
+  --black: #111111;
+  --white: #ffffff;
+  --off-white: #f9f6f1;
+  --grey: #6b7280;
+  --grey-light: #f3f4f6;
+  --font-main: 'Poppins', sans-serif;
+  --font-accent: 'Montserrat', sans-serif;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-main);
+  color: var(--black);
+  background: var(--off-white);
+  -webkit-font-smoothing: antialiased;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: pageEnter 0.5s 0.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes pageEnter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* NAV */
+.co-header {
+  background: var(--black);
+  padding: 0 6vw;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.co-logo img { height: 52px; width: auto; }
+.co-logo-text {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--white);
+}
+.co-back {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.co-back:hover { color: var(--white); }
+
+/* LAYOUT */
+.co-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 6vw 80px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  align-items: start;
+}
+
+.co-title {
+  font-family: var(--font-accent);
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 32px;
+}
+
+/* SECTION ACCORDION */
+.co-section {
+  background: var(--white);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s;
+}
+.co-section:focus-within { box-shadow: 0 4px 24px rgba(29,108,0,0.12); }
+
+.co-section-head {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+}
+.co-section.done .co-section-head { cursor: pointer; }
+
+.co-section-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.co-section-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--grey-light);
+  color: var(--grey);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, color 0.3s;
+  flex-shrink: 0;
+}
+.co-section.done .co-section-num {
+  background: var(--green);
+  color: var(--white);
+}
+
+.co-section-check {
+  display: none;
+  color: var(--green);
+}
+.co-section.done .co-section-check { display: block; }
+
+.co-section-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.co-section.open .co-section-body { max-height: 600px; }
+
+.co-section-content { padding: 0 24px 28px; }
+
+/* FLOATING LABEL INPUTS */
+.field-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.field-wrap input, .field-wrap select {
+  width: 100%;
+  padding: 22px 16px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  outline: none;
+  background: var(--white);
+  transition: border-color 0.25s, box-shadow 0.25s;
+  color: var(--black);
+  appearance: none;
+}
+
+.field-wrap label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--grey);
+  pointer-events: none;
+  transition: top 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+}
+
+.field-wrap input:focus,
+.field-wrap input:not(:placeholder-shown),
+.field-wrap select:focus,
+.field-wrap.has-value input,
+.field-wrap.has-value select {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29,108,0,0.15);
+}
+
+.field-wrap input:focus ~ label,
+.field-wrap input:not(:placeholder-shown) ~ label,
+.field-wrap.has-value label,
+.field-wrap select:focus ~ label {
+  top: 10px;
+  font-size: 0.7rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field-error {
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin-top: 6px;
+  display: none;
+}
+.field-error.visible { display: block; }
+
+/* DELIVERY OPTIONS */
+.delivery-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+.delivery-option {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.delivery-option:has(input:checked) {
+  border-color: var(--green);
+  background: rgba(29,108,0,0.03);
+}
+.delivery-option input[type="radio"] {
+  accent-color: var(--green);
+  margin-top: 3px;
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+}
+.delivery-option-label { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+.delivery-option-sub { font-size: 0.78rem; color: var(--grey); }
+
+/* POSTCODE CHECKER */
+.postcode-wrap { margin-top: 16px; }
+.postcode-row { display: flex; gap: 10px; }
+.postcode-row input {
+  flex: 1;
+  padding: 13px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  text-transform: uppercase;
+}
+.postcode-row input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,108,0,0.15); }
+.postcode-check-btn {
+  padding: 13px 20px;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.postcode-check-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+.postcode-result {
+  margin-top: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: none;
+}
+.postcode-result.valid { background: #dcfce7; color: #15803d; display: block; }
+.postcode-result.invalid { background: #fee2e2; color: #b91c1c; display: block; }
+.postcode-result.checking { background: #f3f4f6; color: var(--grey); display: block; }
+
+.pickup-address {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--off-white);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--grey);
+  border-left: 3px solid var(--green);
+  display: none;
+}
+.pickup-address.visible { display: block; }
+
+/* SECTION NEXT BTN */
+.co-next-btn {
+  margin-top: 8px;
+  padding: 13px 32px;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.co-next-btn:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+/* ORDER SUMMARY */
+.co-summary {
+  position: sticky;
+  top: 96px;
+}
+
+.co-summary-card {
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.co-summary-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--grey-light);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.co-summary-items { padding: 12px 0; max-height: 300px; overflow-y: auto; }
+
+.co-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+}
+.co-summary-item-img {
+  width: 48px; height: 56px;
+  object-fit: contain;
+  background: var(--off-white);
+  border-radius: 8px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+.co-summary-item-info { flex: 1; min-width: 0; }
+.co-summary-item-name { font-size: 0.8rem; font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
+.co-summary-item-qty { font-size: 0.72rem; color: var(--grey); }
+.co-summary-item-price { font-size: 0.85rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+.co-summary-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--grey);
+  font-size: 0.88rem;
+}
+
+.co-summary-totals { padding: 16px 20px; border-top: 1px solid var(--grey-light); }
+.co-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+  color: var(--grey);
+}
+.co-summary-row.total {
+  font-family: var(--font-accent);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--black);
+  padding-top: 10px;
+  border-top: 1px solid var(--grey-light);
+  margin-top: 4px;
+}
+
+/* PLACE ORDER BUTTON */
+.co-place-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, transform 0.15s;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.co-place-btn:hover:not(:disabled) { background: var(--green-dark); transform: translateY(-1px); }
+.co-place-btn:disabled { cursor: not-allowed; opacity: 0.75; }
+
+.co-place-btn .btn-text { transition: opacity 0.2s; }
+.co-place-btn .btn-spinner {
+  display: none;
+  width: 20px; height: 20px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.co-place-btn .btn-check { display: none; }
+.co-place-btn.loading .btn-text { display: none; }
+.co-place-btn.loading .btn-spinner { display: block; }
+.co-place-btn.success { background: #16a34a; }
+.co-place-btn.success .btn-text { display: none; }
+.co-place-btn.success .btn-spinner { display: none; }
+.co-place-btn.success .btn-check { display: flex; align-items: center; justify-content: center; animation: checkPop 0.4s cubic-bezier(0.25,1,0.5,1); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes checkPop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.co-note { font-size: 0.72rem; color: var(--grey); text-align: center; margin-top: 10px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .co-page {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 5vw 60px;
+  }
+  .co-summary { position: static; }
+  .co-summary-items { max-height: none; }
+  /* Show summary above form on mobile */
+  .co-summary { order: -1; }
+  .co-form-col { order: 0; }
+  .co-section.open .co-section-body { max-height: 900px; }
+}
+
+@media (max-width: 560px) {
+  .co-page { padding: 20px 4vw 60px; gap: 16px; }
+  .co-title { font-size: 1.55rem; margin-bottom: 20px; }
+  .field-grid { grid-template-columns: 1fr; }
+  .co-section-head { padding: 16px 18px; }
+  .co-section-content { padding: 0 18px 22px; }
+  .co-section-label { font-size: 0.88rem; }
+  .co-summary-card { border-radius: 12px; }
+  .co-summary-head { padding: 16px 18px; }
+  .co-summary-items { padding: 8px 0; }
+  .co-summary-item { padding: 10px 16px; }
+  .co-summary-totals { padding: 12px 16px; }
+  .co-place-btn { font-size: 0.95rem; border-radius: 10px; }
+  .co-note { font-size: 0.7rem; }
+  .delivery-option { padding: 12px 14px; }
+  .postcode-check-btn { padding: 13px 14px; font-size: 0.8rem; }
+  .co-next-btn { padding: 12px 24px; font-size: 0.85rem; width: 100%; text-align: center; }
+}
+
+@media (max-width: 400px) {
+  .co-page { padding: 16px 4vw 60px; }
+  .postcode-row { flex-direction: column; }
+  .postcode-row input, .postcode-check-btn { width: 100%; }
+}
