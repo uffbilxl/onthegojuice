@@ -69,15 +69,19 @@ export default async function handler(req, res) {
 
     // Send order confirmation email
     if (meta.customer_email) {
-      sendOrderConfirmation(meta.customer_email, {
-        name: meta.customer_name || '',
-        orderId: pi.id,
-        items,
-        deliveryMethod: meta.delivery_method || 'pickup',
-        shippingAddress: shippingAddress,
-        totalPence: pi.amount,
-        discountPence: parseInt(meta.discount_pence || '0', 10),
-      }).catch(e => console.error('[webhook] Failed to send order confirmation:', e.message));
+      try {
+        await sendOrderConfirmation(meta.customer_email, {
+          name: meta.customer_name || '',
+          orderId: pi.id,
+          items,
+          deliveryMethod: meta.delivery_method || 'pickup',
+          shippingAddress: shippingAddress,
+          totalPence: pi.amount,
+          discountPence: parseInt(meta.discount_pence || '0', 10),
+        });
+      } catch (e) {
+        console.error('[webhook] Failed to send order confirmation:', e.message);
+      }
     }
 
     // Mark discount code as used
