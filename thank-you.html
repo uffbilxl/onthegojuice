@@ -113,13 +113,32 @@
   </div>
 
   <script>
-    // Show order ref and email from sessionStorage
-    const ref = sessionStorage.getItem('otgj_order_ref');
+    // Stripe appends ?payment_intent=pi_xxx&redirect_status=succeeded to the return_url
+    const params = new URLSearchParams(window.location.search);
+    const paymentIntent = params.get('payment_intent');
+    const redirectStatus = params.get('redirect_status');
+
+    if (redirectStatus === 'failed') {
+      document.querySelector('.ty-title').textContent = 'Payment Failed';
+      document.querySelector('.ty-sub').textContent = 'Your payment was not processed. Please return to checkout and try again.';
+      document.querySelector('.ty-icon').style.background = '#fee2e2';
+      document.querySelector('.ty-icon svg').style.color = '#dc2626';
+    }
+
+    if (paymentIntent) {
+      // Show last 8 chars of payment intent ID as order reference
+      document.getElementById('order-ref').textContent = '#OTGJ-' + paymentIntent.slice(-8).toUpperCase();
+    }
+
     const email = sessionStorage.getItem('otgj_order_email');
-    if (ref) document.getElementById('order-ref').textContent = ref;
     if (email) document.getElementById('ty-email').textContent = email;
-    // Clear cart
-    localStorage.removeItem('otgj_cart');
+
+    // Clear cart on success
+    if (!redirectStatus || redirectStatus === 'succeeded') {
+      localStorage.removeItem('otgj_cart');
+      sessionStorage.removeItem('otgj_order_ref');
+      sessionStorage.removeItem('otgj_order_email');
+    }
   </script>
 </body>
 </html>
