@@ -1133,8 +1133,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   flex-direction: column;
   gap: 8px;
   margin-bottom: 24px;
+  padding: 0;
+  list-style: none;
 }
-.rewards-perks li { font-size: 0.85rem; }
+.rewards-perks li {
+  font-size: 0.85rem;
+  background: #f9f6f1;
+  border-radius: 10px;
+  padding: 12px 14px;
+  list-style: none;
+}
+.rewards-perks li strong { display: block; color: var(--black); margin-bottom: 3px; font-size: 0.9rem; }
+.rewards-perks li span { color: var(--grey); line-height: 1.5; font-size: 0.82rem; }
 
 .rewards-join { width: 100%; }
 

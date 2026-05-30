@@ -519,6 +519,18 @@ function initRewards() {
 
   close.addEventListener('click', () => modal.classList.remove('open'));
 
+  const joinBtn = modal.querySelector('.rewards-join');
+  if (joinBtn) {
+    joinBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+      const popup = document.getElementById('welcome-popup');
+      if (popup) {
+        localStorage.removeItem('otgj_popup_shown');
+        popup.classList.add('visible');
+      }
+    });
+  }
+
   document.addEventListener('click', e => {
     if (
       modal.classList.contains('open') &&
