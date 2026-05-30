@@ -1148,12 +1148,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Product cards */
   .card-body { padding: 12px 10px 10px; }
   .card-size { font-size: 0.65rem; }
-  .card-name { font-size: 0.78rem; min-height: 2.4rem; }
+  .card-name { font-size: 0.78rem; min-height: 0; }
   .card-price { font-size: 0.95rem; margin-bottom: 10px; }
-  .card-actions { gap: 6px; }
-  .qty-btn { width: 32px; height: 38px; font-size: 1rem; }
-  .qty-num { width: 26px; font-size: 0.82rem; }
-  .btn-cart { font-size: 0.75rem; padding: 9px 10px; }
+  .card-actions { flex-direction: column; gap: 6px; }
+  .qty-wrap { width: 100%; justify-content: center; }
+  .qty-btn { width: 44px; height: 44px; font-size: 1rem; }
+  .qty-num { flex: 1; text-align: center; font-size: 0.88rem; }
+  .btn-cart { width: 100%; justify-content: center; font-size: 0.82rem; padding: 11px 10px; }
 
   /* About section */
   .about-section { padding: 56px 4vw; }
@@ -1189,15 +1190,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .section-title { font-size: clamp(1.8rem, 6vw, 2.4rem); }
 }
 
+@media (max-width: 480px) {
+  /* Single column product grid on small phones */
+  .products-grid { grid-template-columns: 1fr; gap: 14px; }
+  .card-image-wrap { aspect-ratio: 4/3; }
+}
+
 @media (max-width: 400px) {
-  .products-grid { gap: 10px; }
   .card-body { padding: 10px 8px 8px; }
   .card-name { font-size: 0.74rem; }
-
-  /* Stack qty + add button on very small screens */
-  .card-actions { flex-direction: column; gap: 6px; }
-  .qty-wrap { width: 100%; justify-content: center; }
-  .btn-cart { width: 100%; justify-content: center; }
 
   /* Stats wrap */
   .about-badges { grid-template-columns: 1fr; }
