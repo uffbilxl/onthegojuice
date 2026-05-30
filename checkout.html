@@ -182,8 +182,27 @@
         <div class="co-summary-items" id="co-summary-items">
           <div class="co-summary-empty">Your cart is empty. <a href="/#products">Shop now</a></div>
         </div>
+        <!-- Promo code -->
+        <div class="co-promo">
+          <button type="button" class="co-promo-toggle" id="co-promo-toggle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Have a promo code?
+          </button>
+          <div class="co-promo-body" id="co-promo-body" style="display:none">
+            <div class="co-promo-row">
+              <input type="text" id="promo-input" placeholder="Enter code" maxlength="20" autocomplete="off" />
+              <button type="button" id="promo-apply-btn">Apply</button>
+            </div>
+            <div id="promo-result" class="co-promo-result"></div>
+          </div>
+        </div>
+
         <div class="co-summary-totals">
           <div class="co-summary-row"><span>Subtotal</span><span id="co-subtotal">£0.00</span></div>
+          <div class="co-summary-row" id="co-discount-row" style="display:none">
+            <span>Discount (<span id="co-discount-label"></span>)</span>
+            <span id="co-discount-amount" style="color:#1d6c00;font-weight:600">–£0.00</span>
+          </div>
           <div class="co-summary-row"><span>Delivery</span><span id="co-delivery-cost">—</span></div>
           <div class="co-summary-row total"><span>Total</span><span id="co-total">£0.00</span></div>
         </div>

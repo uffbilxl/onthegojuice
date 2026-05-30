@@ -42,6 +42,9 @@ const STRIPE_APPEARANCE = {
 /* ─── CART ─────────────────────────────────────────────────────── */
 const cart = JSON.parse(localStorage.getItem('otgj_cart') || '[]');
 
+/* ─── DISCOUNT STATE ────────────────────────────────────────────── */
+let appliedDiscount = null; // { code, discountPence }
+
 function cartSubtotal() {
   return cart.reduce((s, i) => s + i.price * i.qty, 0);
 }
@@ -80,14 +83,30 @@ function updateDeliveryTotal() {
   const sub = cartSubtotal();
   const isDelivery = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
   const deliveryCost = isDelivery && sub < 10 ? 1.50 : 0;
+  const discountAmount = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+  const total = Math.max(0.50, sub + deliveryCost - discountAmount);
 
-  const deliveryCostEl = document.getElementById('co-delivery-cost');
   const subtotalEl = document.getElementById('co-subtotal');
+  const deliveryCostEl = document.getElementById('co-delivery-cost');
+  const discountRow = document.getElementById('co-discount-row');
+  const discountLabel = document.getElementById('co-discount-label');
+  const discountAmountEl = document.getElementById('co-discount-amount');
   const totalEl = document.getElementById('co-total');
 
   if (subtotalEl) subtotalEl.textContent = `£${sub.toFixed(2)}`;
   if (deliveryCostEl) deliveryCostEl.textContent = deliveryCost === 0 ? 'Free' : `£${deliveryCost.toFixed(2)}`;
-  if (totalEl) totalEl.textContent = `£${(sub + deliveryCost).toFixed(2)}`;
+
+  if (discountRow) {
+    if (appliedDiscount) {
+      discountRow.style.display = '';
+      if (discountLabel) discountLabel.textContent = appliedDiscount.code;
+      if (discountAmountEl) discountAmountEl.textContent = `–£${discountAmount.toFixed(2)}`;
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+
+  if (totalEl) totalEl.textContent = `£${total.toFixed(2)}`;
 }
 
 /* ─── ACCORDION ─────────────────────────────────────────────────── */
@@ -269,6 +288,73 @@ function initDeliveryToggle() {
   if (pickupAddr) pickupAddr.style.display = 'none';
 }
 
+/* ─── PROMO CODE ────────────────────────────────────────────────── */
+function initPromoCode() {
+  const toggleBtn = document.getElementById('co-promo-toggle');
+  const promoBody = document.getElementById('co-promo-body');
+  const applyBtn  = document.getElementById('promo-apply-btn');
+  const input     = document.getElementById('promo-input');
+  const resultEl  = document.getElementById('promo-result');
+  if (!toggleBtn || !promoBody || !applyBtn || !input) return;
+
+  toggleBtn.addEventListener('click', () => {
+    const open = promoBody.style.display === 'none';
+    promoBody.style.display = open ? 'block' : 'none';
+    if (open) input.focus();
+  });
+
+  async function applyCode() {
+    const code = input.value.trim().toUpperCase();
+    if (!code) {
+      resultEl.className = 'co-promo-result invalid';
+      resultEl.textContent = 'Please enter a code.';
+      return;
+    }
+
+    applyBtn.disabled = true;
+    applyBtn.textContent = 'Checking…';
+    resultEl.className = 'co-promo-result';
+    resultEl.textContent = '';
+
+    try {
+      const subtotalPence = Math.round(cartSubtotal() * 100);
+      const res = await fetch('/api/validate-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, subtotalPence }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        resultEl.className = 'co-promo-result invalid';
+        resultEl.textContent = data.error || 'Invalid code.';
+        appliedDiscount = null;
+      } else {
+        appliedDiscount = { code: data.code, discountPence: data.discountPence };
+        resultEl.className = 'co-promo-result valid';
+        resultEl.textContent = data.message;
+        input.value = data.code;
+        updateDeliveryTotal();
+        // Update pay button text if Stripe already loaded
+        const total = document.getElementById('co-total')?.textContent || '';
+        const payBtnText = document.querySelector('.pay-btn-text');
+        if (payBtnText && total && !document.getElementById('pay-btn')?.disabled) {
+          payBtnText.textContent = `Pay ${total}`;
+        }
+      }
+    } catch {
+      resultEl.className = 'co-promo-result invalid';
+      resultEl.textContent = 'Could not validate code. Please try again.';
+    } finally {
+      applyBtn.disabled = false;
+      applyBtn.textContent = 'Apply';
+    }
+  }
+
+  applyBtn.addEventListener('click', applyCode);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyCode(); } });
+}
+
 /* ─── STRIPE ELEMENTS ───────────────────────────────────────────── */
 let stripeInstance = null;
 let stripeElements = null;
@@ -318,6 +404,7 @@ async function initStripePayment() {
         deliveryMethod: isDelivery ? 'local_delivery' : 'pickup',
         customer,
         address,
+        discountCode: appliedDiscount?.code || null,
       }),
     });
 
@@ -397,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAccordion();
   initPostcodeChecker();
   initDeliveryToggle();
+  initPromoCode();
   initPayButton();
 
   document.querySelectorAll('input[name="delivery"]').forEach(r => {
