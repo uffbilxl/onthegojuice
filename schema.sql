@@ -15,13 +15,16 @@ CREATE TABLE IF NOT EXISTS public.orders (
   total_amount        NUMERIC(10, 2) NOT NULL DEFAULT 0,
   payment_status      TEXT NOT NULL DEFAULT 'pending',
   fulfillment_status  TEXT NOT NULL DEFAULT 'processing',
-  stripe_session_id   TEXT,
+  stripe_session_id   TEXT,   -- Stripe Checkout session ID (legacy flow)
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Index for fast webhook lookups
 CREATE INDEX IF NOT EXISTS idx_orders_stripe_session
   ON public.orders (stripe_session_id);
+
+-- ── Run this if the table already exists (adds payment-intent column) ──
+-- ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS stripe_session_id TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_orders_created_at
   ON public.orders (created_at DESC);

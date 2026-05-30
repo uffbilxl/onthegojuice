@@ -9,9 +9,12 @@ node_modules/
 .env.local
 .env*.local
 
-# public/images is a copy of images/ — generated at build time, not committed
-# Run: cp -r images/ public/images/ before `next build`
+# public/ copies of static files — generated at build time (prebuild), not committed
+# Run: npm run prebuild before `npm run dev` for local development
 public/images/
+public/css/
+public/js/
+public/*.html
 
 # macOS
 .DS_Store
