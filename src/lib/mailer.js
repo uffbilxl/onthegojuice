@@ -1,50 +1,22 @@
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
 
 const GREEN  = '#1d6c00';
 const ORANGE = '#ff6b00';
 const FROM_NAME = 'On The Go Juice';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onthegojuiceadmin@gmail.com';
-const FROM = `"${FROM_NAME}" <${FROM_EMAIL}>`;
+const FROM = `"${FROM_NAME}" <onthegojuiceadmin@gmail.com>`;
 
-// ── Transport ────────────────────────────────────────────────────────
-// Uses Resend if RESEND_API_KEY is set, otherwise falls back to Gmail SMTP
-let resendClient = null;
-let gmailTransporter = null;
-
-function getResend() {
-  if (!resendClient && process.env.RESEND_API_KEY) {
-    resendClient = new Resend(process.env.RESEND_API_KEY);
-  }
-  return resendClient;
-}
-
-function getGmail() {
-  if (!gmailTransporter) {
-    gmailTransporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: { user: 'onthegojuiceadmin@gmail.com', pass: process.env.GMAIL_APP_PASSWORD },
-    });
-  }
-  return gmailTransporter;
-}
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: { user: 'onthegojuiceadmin@gmail.com', pass: process.env.GMAIL_APP_PASSWORD },
+});
 
 async function sendMail({ to, subject, html, text }) {
-  const resend = getResend();
-  if (resend) {
-    await resend.emails.send({ from: FROM, to, subject, html, text });
-  } else {
-    await getGmail().sendMail({
-      from: FROM,
-      to,
-      subject,
-      html,
-      text,
-      headers: { 'X-Priority': '3', 'X-Mailer': FROM_NAME },
-    });
-  }
+  await transporter.sendMail({
+    from: FROM, to, subject, html, text,
+    headers: { 'X-Priority': '3', 'X-Mailer': FROM_NAME },
+  });
 }
 
 // ── HTML wrapper ─────────────────────────────────────────────────────
@@ -70,7 +42,7 @@ function wrap(body) {
           <p style="margin:5px 0 0;font-size:12px">
             <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE};text-decoration:none">onthegojuiceadmin@gmail.com</a>
           </p>
-          <p style="margin:5px 0 0;font-size:11px;color:#d1d5db">You received this because you signed up or placed an order with On The Go Juice.</p>
+          <p style="margin:5px 0 0;font-size:11px;color:#d1d5db">Can't find our emails? Please check your spam folder and mark us as safe.</p>
         </td>
       </tr>
     </table>
