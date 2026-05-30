@@ -605,6 +605,31 @@ function createPlaceholder(width, height, text, bg = '#1d6c00') {
   return canvas.toDataURL();
 }
 
+/* ─── SPLASH SCREEN ─────────────────────────────────────────────── */
+(function initSplash() {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+  document.body.style.overflow = 'hidden';
+
+  const MIN_MS = 1800;
+  const t0 = Date.now();
+
+  function hide() {
+    const delay = Math.max(0, MIN_MS - (Date.now() - t0));
+    setTimeout(() => {
+      splash.classList.add('fade-out');
+      document.body.style.overflow = '';
+      setTimeout(() => splash.remove(), 600);
+    }, delay);
+  }
+
+  if (document.readyState === 'complete') {
+    hide();
+  } else {
+    window.addEventListener('load', hide, { once: true });
+  }
+})();
+
 /* ─── INIT ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof AOS !== 'undefined') {
