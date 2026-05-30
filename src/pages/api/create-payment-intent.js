@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -16,7 +17,7 @@ const FREE_DELIVERY_THRESHOLD = 1000; // £10.00
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { items, deliveryMethod, customer, address } = req.body;
+  const { items, deliveryMethod, customer, address, discountCode } = req.body;
 
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Cart is empty' });
@@ -33,11 +34,32 @@ export default async function handler(req, res) {
 
   const isDelivery = deliveryMethod === 'local_delivery';
   const deliveryFee = isDelivery && subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const totalAmount = subtotal + deliveryFee;
+
+  // Server-side discount validation
+  let discountPence = 0;
+  let validatedCode = null;
+  if (discountCode) {
+    const { data: dc } = await supabaseAdmin
+      .from('discount_codes')
+      .select('*')
+      .eq('code', discountCode.toUpperCase().trim())
+      .eq('used', false)
+      .maybeSingle();
+    if (dc && subtotal >= dc.min_order_pence) {
+      if (dc.discount_percent) {
+        discountPence = Math.round(subtotal * dc.discount_percent / 100);
+      } else if (dc.discount_fixed_pence) {
+        discountPence = Math.min(dc.discount_fixed_pence, subtotal);
+      }
+      validatedCode = dc.code;
+    }
+  }
+
+  const totalAmount = Math.max(50, subtotal + deliveryFee - discountPence);
 
   // Compact items for metadata (Stripe: 500 char limit per value)
   const itemsMeta = JSON.stringify(
-    items.map(i => ({ id: i.id, n: (i.name || '').slice(0, 25), q: i.qty }))
+    items.map(i => ({ id: i.id, n: (i.name || '').slice(0, 25), q: i.qty, p: PRODUCT_PRICES[i.id] }))
   ).slice(0, 490);
 
   const params = {
@@ -50,6 +72,8 @@ export default async function handler(req, res) {
       customer_phone: (customer?.phone || '').slice(0, 100),
       postcode: (address?.postcode || '').slice(0, 20),
       items: itemsMeta,
+      discount_code: validatedCode || '',
+      discount_pence: String(discountPence),
     },
   };
 
@@ -70,7 +94,12 @@ export default async function handler(req, res) {
 
   try {
     const intent = await stripe.paymentIntents.create(params);
-    return res.status(200).json({ clientSecret: intent.client_secret });
+    return res.status(200).json({
+      clientSecret: intent.client_secret,
+      discountPence,
+      validatedCode,
+      totalPence: totalAmount,
+    });
   } catch (err) {
     console.error('[create-payment-intent]', err);
     return res.status(500).json({ error: 'Payment initialization failed. Please try again.' });
