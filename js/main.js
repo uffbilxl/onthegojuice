@@ -611,7 +611,7 @@ function createPlaceholder(width, height, text, bg = '#1d6c00') {
   if (!splash) return;
   document.body.style.overflow = 'hidden';
 
-  const MIN_MS = 1800;
+  const MIN_MS = 1500;
   const t0 = Date.now();
 
   function hide() {
