@@ -137,6 +137,8 @@ img { max-width: 100%; display: block; }
   transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .co-section.open .co-section-body { max-height: 600px; }
+/* Payment section contains a dynamic Stripe iframe — needs much more room */
+#section-payment.open .co-section-body { max-height: 2000px; }
 
 .co-section-content { padding: 0 24px 28px; }
 
@@ -483,6 +485,7 @@ img { max-width: 100%; display: block; }
   .co-summary { order: -1; }
   .co-form-col { order: 0; }
   .co-section.open .co-section-body { max-height: 900px; }
+  #section-payment.open .co-section-body { max-height: 2000px; }
 }
 
 @media (max-width: 560px) {
