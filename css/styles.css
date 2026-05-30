@@ -555,6 +555,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 12px;
   transition: opacity var(--transition), transform var(--transition);
   display: block;
+  mix-blend-mode: multiply;
 }
 
 .product-card:hover .card-image-wrap img {
