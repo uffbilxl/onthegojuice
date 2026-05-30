@@ -144,7 +144,32 @@
                 <label for="postcode-addr">Postcode</label>
               </div>
             </div>
-            <button class="co-next-btn" data-next="none">Review &amp; Place Order</button>
+            <button class="co-next-btn" data-next="section-payment">Continue to Payment</button>
+          </div>
+        </div>
+      </div>
+      <!-- SECTION 4: Payment -->
+      <div class="co-section" id="section-payment">
+        <div class="co-section-head">
+          <div class="co-section-label">
+            <span class="co-section-num">4</span>
+            Payment
+          </div>
+          <svg class="co-section-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="co-section-body">
+          <div class="co-section-content">
+            <div id="payment-loading" class="payment-loading">
+              <div class="payment-spinner"></div>
+              <p>Loading payment options…</p>
+            </div>
+            <div id="payment-element"></div>
+            <div id="payment-error" class="payment-error" role="alert" style="display:none"></div>
+            <button class="co-next-btn pay-submit-btn" id="pay-btn" disabled style="margin-top:20px">
+              <span class="pay-btn-text">Pay Now</span>
+              <span class="pay-btn-spinner" style="display:none"></span>
+            </button>
+            <p class="co-note" style="margin-top:10px">Secured by Stripe &middot; We never store your card details &middot; <a href="terms-conditions.html" style="color:var(--green)">Terms</a></p>
           </div>
         </div>
       </div>
@@ -162,21 +187,12 @@
           <div class="co-summary-row"><span>Delivery</span><span id="co-delivery-cost">Calculated above</span></div>
           <div class="co-summary-row total"><span>Total</span><span id="co-total">£0.00</span></div>
         </div>
-        <div style="padding: 0 20px 20px">
-          <button class="co-place-btn" id="co-place-btn">
-            <span class="btn-text">Place Order</span>
-            <span class="btn-spinner"></span>
-            <span class="btn-check">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-          </button>
-          <p class="co-note">By placing your order, you agree to our <a href="terms-conditions.html" style="color:var(--green)">Terms &amp; Conditions</a>.</p>
-        </div>
       </div>
     </div>
 
   </main>
 
+  <script src="https://js.stripe.com/v3/"></script>
   <script src="js/checkout.js"></script>
 </body>
 </html>
