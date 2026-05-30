@@ -17,11 +17,11 @@
 
     /* Lookup form */
     .os-form { background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); margin-bottom: 28px; }
-    .os-form .field-wrap { margin-bottom: 16px; }
-    .os-form label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--grey); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .os-form input { width: 100%; padding: 13px 16px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none; transition: border-color 0.2s; box-sizing: border-box; }
-    .os-form input:focus { border-color: var(--green); }
-    .os-form .os-hint { font-size: 0.75rem; color: var(--grey); margin-top: 5px; }
+    .os-field { margin-bottom: 20px; }
+    .os-field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--grey); margin-bottom: 7px; letter-spacing: 0.01em; }
+    .os-field input { width: 100%; padding: 13px 16px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: 'Poppins', sans-serif; outline: none; transition: border-color 0.2s; box-sizing: border-box; background: #fff; color: #111; }
+    .os-field input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,108,0,0.1); }
+    .os-hint { font-size: 0.75rem; color: #9ca3af; margin-top: 5px; }
     .os-lookup-btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: var(--font-accent); font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 4px; transition: background 0.2s; }
     .os-lookup-btn:hover { background: var(--green-dark); }
     .os-lookup-btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -117,12 +117,12 @@
 
       <!-- Lookup form -->
       <div class="os-form" id="os-form">
-        <div class="field-wrap">
+        <div class="os-field">
           <label for="os-ref-input">Order Reference</label>
           <input type="text" id="os-ref-input" placeholder="OTGJ-A1B2C3D4" autocomplete="off" />
           <p class="os-hint">Found in your order confirmation email, e.g. OTGJ-A1B2C3D4</p>
         </div>
-        <div class="field-wrap">
+        <div class="os-field">
           <label for="os-email-input">Email Address</label>
           <input type="email" id="os-email-input" placeholder="you@example.com" autocomplete="email" />
           <p class="os-hint">The email you used when placing the order</p>
