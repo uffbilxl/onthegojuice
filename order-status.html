@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Check Your Order – On The Go Juice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/checkout.css" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: var(--off-white); }
+    .os-wrap { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 48px 6vw 80px; }
+    .os-inner { width: 100%; max-width: 560px; }
+    .os-title { font-family: var(--font-accent); font-size: 1.8rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .os-sub { font-size: 0.9rem; color: var(--grey); margin-bottom: 32px; line-height: 1.6; }
+
+    /* Lookup form */
+    .os-form { background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); margin-bottom: 28px; }
+    .os-form .field-wrap { margin-bottom: 16px; }
+    .os-form label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--grey); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .os-form input { width: 100%; padding: 13px 16px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none; transition: border-color 0.2s; box-sizing: border-box; }
+    .os-form input:focus { border-color: var(--green); }
+    .os-form .os-hint { font-size: 0.75rem; color: var(--grey); margin-top: 5px; }
+    .os-lookup-btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: var(--font-accent); font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 4px; transition: background 0.2s; }
+    .os-lookup-btn:hover { background: var(--green-dark); }
+    .os-lookup-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .os-form-error { color: #dc2626; font-size: 0.84rem; margin-top: 12px; font-weight: 500; }
+
+    /* Result card */
+    .os-result { background: #fff; border-radius: 20px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); animation: slideUp 0.35s cubic-bezier(0.25,1,0.5,1) forwards; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .os-result-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .os-ref { font-size: 0.8rem; color: var(--grey); margin-bottom: 4px; }
+    .os-ref strong { font-family: 'Courier New', monospace; font-size: 1rem; color: var(--green); letter-spacing: 0.08em; }
+
+    /* Status badge */
+    .os-status-badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+    .os-status-processing       { background: #fef9c3; color: #854d0e; }
+    .os-status-out_for_delivery { background: #dbeafe; color: #1d4ed8; }
+    .os-status-completed        { background: #dcfce7; color: #15803d; }
+    .os-status-cancelled        { background: #fee2e2; color: #b91c1c; }
+
+    /* Status dot */
+    .os-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .os-status-processing       .os-status-dot { background: #d97706; animation: pulse 1.5s infinite; }
+    .os-status-out_for_delivery .os-status-dot { background: #2563eb; animation: pulse 1.5s infinite; }
+    .os-status-completed        .os-status-dot { background: #15803d; }
+    .os-status-cancelled        .os-status-dot { background: #b91c1c; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* Admin note */
+    .os-note { background: #f0fdf4; border-left: 3px solid var(--green); border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 24px; font-size: 0.88rem; color: #166534; line-height: 1.6; }
+    .os-note-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); margin-bottom: 4px; }
+
+    /* Timeline */
+    .os-timeline { margin-bottom: 24px; }
+    .os-timeline-step { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 18px; position: relative; }
+    .os-timeline-step:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: #e5e7eb; }
+    .os-timeline-step.active::before { background: var(--green); }
+    .os-step-icon { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #e5e7eb; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .os-timeline-step.done   .os-step-icon { background: var(--green); border-color: var(--green); }
+    .os-timeline-step.active .os-step-icon { background: var(--green); border-color: var(--green); }
+    .os-step-icon svg { color: #fff; }
+    .os-step-label { font-size: 0.88rem; font-weight: 600; color: #9ca3af; padding-top: 2px; }
+    .os-timeline-step.done   .os-step-label,
+    .os-timeline-step.active .os-step-label { color: var(--black); }
+    .os-step-sub { font-size: 0.78rem; color: #9ca3af; margin-top: 2px; }
+    .os-timeline-step.active .os-step-sub { color: var(--grey); }
+
+    /* Items */
+    .os-items-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--grey); margin-bottom: 10px; }
+    .os-items { margin-bottom: 20px; }
+    .os-item { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.88rem; }
+    .os-item:last-child { border-bottom: none; }
+    .os-total { display: flex; justify-content: space-between; padding-top: 12px; border-top: 2px solid #e5e7eb; font-weight: 700; font-family: var(--font-accent); }
+
+    /* Cancel button */
+    .os-cancel-btn { width: 100%; padding: 13px; background: none; border: 1.5px solid #fca5a5; color: #dc2626; border-radius: 12px; font-family: var(--font-main); font-size: 0.88rem; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s, color 0.2s; }
+    .os-cancel-btn:hover { background: #fee2e2; }
+    .os-cancel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Cancel confirm */
+    .os-cancel-confirm { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 12px; padding: 20px; margin-top: 16px; }
+    .os-cancel-confirm p { font-size: 0.88rem; color: #9a3412; margin-bottom: 14px; line-height: 1.5; }
+    .os-cancel-confirm-btns { display: flex; gap: 10px; }
+    .os-cancel-yes { flex: 1; padding: 11px; background: #dc2626; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); transition: background 0.2s; }
+    .os-cancel-yes:hover { background: #b91c1c; }
+    .os-cancel-no  { flex: 1; padding: 11px; background: #fff; color: var(--grey); border: 1.5px solid #e5e7eb; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: var(--font-main); }
+
+    .os-success-msg { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 16px 20px; font-size: 0.88rem; color: #15803d; font-weight: 600; margin-top: 16px; }
+
+    @media (max-width: 480px) {
+      .os-form, .os-result { padding: 24px 20px; }
+      .os-title { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="co-header">
+    <a href="/" class="co-logo">
+      <img src="images/logo.png" alt="On The Go Juice" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+      <span class="co-logo-text" style="display:none">On The Go Juice</span>
+    </a>
+    <a href="/" class="co-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Shop
+    </a>
+  </header>
+
+  <div class="os-wrap">
+    <div class="os-inner">
+      <h1 class="os-title">Check Your Order</h1>
+      <p class="os-sub">Enter your order reference and email address to see your order status, estimated delivery, and more.</p>
+
+      <!-- Lookup form -->
+      <div class="os-form" id="os-form">
+        <div class="field-wrap">
+          <label for="os-ref-input">Order Reference</label>
+          <input type="text" id="os-ref-input" placeholder="OTGJ-A1B2C3D4" autocomplete="off" />
+          <p class="os-hint">Found in your order confirmation email, e.g. OTGJ-A1B2C3D4</p>
+        </div>
+        <div class="field-wrap">
+          <label for="os-email-input">Email Address</label>
+          <input type="email" id="os-email-input" placeholder="you@example.com" autocomplete="email" />
+          <p class="os-hint">The email you used when placing the order</p>
+        </div>
+        <button class="os-lookup-btn" id="os-lookup-btn">Check Order Status</button>
+        <p class="os-form-error" id="os-form-error" style="display:none"></p>
+      </div>
+
+      <!-- Result (hidden until lookup) -->
+      <div class="os-result" id="os-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <script>
+    const STATUS_LABELS = {
+      processing:       'Order Received',
+      out_for_delivery: 'Out for Delivery / Ready for Pickup',
+      completed:        'Delivered',
+      cancelled:        'Cancelled',
+    };
+
+    const TIMELINE_STEPS = [
+      { key: 'processing',       label: 'Order received',         sub: 'We\'ve got your order and are preparing it.' },
+      { key: 'out_for_delivery', label: 'Out for delivery',        sub: 'Your order is on its way or ready for pickup.' },
+      { key: 'completed',        label: 'Delivered',               sub: 'Your order has been delivered or collected.' },
+    ];
+
+    const STATUS_ORDER = ['processing', 'out_for_delivery', 'completed'];
+
+    const lookupBtn = document.getElementById('os-lookup-btn');
+    const refInput  = document.getElementById('os-ref-input');
+    const emailInput = document.getElementById('os-email-input');
+    const formError = document.getElementById('os-form-error');
+    const resultEl  = document.getElementById('os-result');
+
+    let currentOrder = null;
+
+    function showError(msg) {
+      formError.style.display = 'block';
+      formError.textContent = msg;
+    }
+
+    lookupBtn.addEventListener('click', lookup);
+    [refInput, emailInput].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); }));
+
+    async function lookup() {
+      const ref   = refInput.value.trim();
+      const email = emailInput.value.trim();
+      if (!ref || !email) { showError('Please fill in both fields.'); return; }
+
+      formError.style.display = 'none';
+      lookupBtn.disabled = true;
+      lookupBtn.textContent = 'Checking…';
+
+      try {
+        const res  = await fetch('/api/order-lookup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderRef: ref, email }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) { showError(data.error || 'Order not found.'); return; }
+
+        currentOrder = { ...data, email };
+        renderResult(data);
+      } catch {
+        showError('Something went wrong. Please try again.');
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtn.textContent = 'Check Order Status';
+      }
+    }
+
+    function renderResult(order) {
+      const isCancelled = order.fulfillmentStatus === 'cancelled';
+      const statusIdx = STATUS_ORDER.indexOf(order.fulfillmentStatus);
+
+      // Timeline HTML (hide for cancelled)
+      const timelineHtml = !isCancelled ? `
+        <div class="os-timeline">
+          ${TIMELINE_STEPS.map((step, i) => {
+            const done   = statusIdx > i;
+            const active = statusIdx === i;
+            const cls    = done ? 'done' : active ? 'active' : '';
+            const tick   = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+            const dot    = `<div style="width:8px;height:8px;border-radius:50%;background:#fff"></div>`;
+            return `<div class="os-timeline-step ${cls}">
+              <div class="os-step-icon">${(done || active) ? tick : ''}</div>
+              <div>
+                <div class="os-step-label">${step.label}</div>
+                <div class="os-step-sub">${step.sub}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : '';
+
+      // Admin note
+      const noteHtml = order.adminNote ? `
+        <div class="os-note">
+          <div class="os-note-label">Message from us</div>
+          ${escHtml(order.adminNote)}
+        </div>
+      ` : '';
+
+      // Items
+      const itemsHtml = order.items.map(i => `
+        <div class="os-item">
+          <span>${escHtml(i.name || i.n || 'Item')} &times; ${i.qty || i.q || 1}</span>
+          <span>${i.p ? '£' + ((i.p * (i.qty || i.q || 1)) / 100).toFixed(2) : ''}</span>
+        </div>
+      `).join('');
+
+      const deliveryLabel = order.deliveryMethod === 'local_delivery'
+        ? (order.shippingAddress ? `Delivering to: ${escHtml(order.shippingAddress)}` : 'Local delivery')
+        : 'Local pickup';
+
+      const cancelHtml = order.canCancel ? `
+        <button class="os-cancel-btn" id="os-cancel-trigger">Cancel this order</button>
+        <div id="os-cancel-confirm" style="display:none" class="os-cancel-confirm">
+          <p>Are you sure you want to cancel? This cannot be undone and we will stop preparing your order.</p>
+          <div class="os-cancel-confirm-btns">
+            <button class="os-cancel-yes" id="os-cancel-yes">Yes, cancel it</button>
+            <button class="os-cancel-no"  id="os-cancel-no">Keep my order</button>
+          </div>
+        </div>
+        <p id="os-cancel-success" class="os-success-msg" style="display:none">Your order has been cancelled.</p>
+      ` : '';
+
+      resultEl.innerHTML = `
+        <div class="os-result-top">
+          <div>
+            <div class="os-ref">Order reference: <strong>${escHtml(order.orderRef)}</strong></div>
+            <div style="font-size:0.78rem;color:var(--grey);margin-top:2px">${new Date(order.createdAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</div>
+          </div>
+          <div class="os-status-badge os-status-${order.fulfillmentStatus}">
+            <span class="os-status-dot"></span>
+            ${STATUS_LABELS[order.fulfillmentStatus] || order.fulfillmentStatus}
+          </div>
+        </div>
+
+        ${noteHtml}
+        ${timelineHtml}
+
+        <div class="os-items">
+          <div class="os-items-label">Items ordered</div>
+          ${itemsHtml}
+        </div>
+        <div class="os-total">
+          <span>Total paid</span>
+          <span>£${Number(order.totalAmount).toFixed(2)}</span>
+        </div>
+        <div style="margin-top:12px;font-size:0.8rem;color:var(--grey)">${deliveryLabel}</div>
+
+        ${cancelHtml}
+      `;
+
+      resultEl.style.display = 'block';
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Cancel flow
+      document.getElementById('os-cancel-trigger')?.addEventListener('click', () => {
+        document.getElementById('os-cancel-confirm').style.display = 'block';
+        document.getElementById('os-cancel-trigger').style.display = 'none';
+      });
+      document.getElementById('os-cancel-no')?.addEventListener('click', () => {
+        document.getElementById('os-cancel-confirm').style.display = 'none';
+        document.getElementById('os-cancel-trigger').style.display = 'block';
+      });
+      document.getElementById('os-cancel-yes')?.addEventListener('click', async () => {
+        const btn = document.getElementById('os-cancel-yes');
+        btn.disabled = true;
+        btn.textContent = 'Cancelling…';
+        try {
+          const res = await fetch('/api/cancel-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderRef: currentOrder.orderRef, email: currentOrder.email }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            document.getElementById('os-cancel-confirm').style.display = 'none';
+            document.getElementById('os-cancel-success').style.display = 'block';
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Yes, cancel it';
+            alert(data.error || 'Could not cancel. Please contact us directly.');
+          }
+        } catch {
+          btn.disabled = false;
+          btn.textContent = 'Yes, cancel it';
+          alert('Something went wrong. Please contact us directly.');
+        }
+      });
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Pre-fill from URL params (e.g. from thank-you page)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ref'))   refInput.value   = params.get('ref');
+    if (params.get('email')) emailInput.value = params.get('email');
+    if (params.get('ref') && params.get('email')) lookup();
+  </script>
+</body>
+</html>
