@@ -15,6 +15,7 @@ const nextConfig = {
       { source: '/',                destination: '/index.html' },
       { source: '/checkout',        destination: '/checkout.html' },
       { source: '/thank-you',       destination: '/thank-you.html' },
+      { source: '/order-status',    destination: '/order-status.html' },
       { source: '/delivery-info',   destination: '/delivery-info.html' },
       { source: '/privacy-policy',  destination: '/privacy-policy.html' },
       { source: '/returns',         destination: '/returns.html' },
