@@ -1,19 +1,53 @@
 import nodemailer from 'nodemailer';
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: 'onthegojuiceadmin@gmail.com',
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+import { Resend } from 'resend';
 
 const GREEN  = '#1d6c00';
 const ORANGE = '#ff6b00';
-const FROM   = '"On The Go Juice" <onthegojuiceadmin@gmail.com>';
+const FROM_NAME = 'On The Go Juice';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onthegojuiceadmin@gmail.com';
+const FROM = `"${FROM_NAME}" <${FROM_EMAIL}>`;
 
+// ── Transport ────────────────────────────────────────────────────────
+// Uses Resend if RESEND_API_KEY is set, otherwise falls back to Gmail SMTP
+let resendClient = null;
+let gmailTransporter = null;
+
+function getResend() {
+  if (!resendClient && process.env.RESEND_API_KEY) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
+
+function getGmail() {
+  if (!gmailTransporter) {
+    gmailTransporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user: 'onthegojuiceadmin@gmail.com', pass: process.env.GMAIL_APP_PASSWORD },
+    });
+  }
+  return gmailTransporter;
+}
+
+async function sendMail({ to, subject, html, text }) {
+  const resend = getResend();
+  if (resend) {
+    await resend.emails.send({ from: FROM, to, subject, html, text });
+  } else {
+    await getGmail().sendMail({
+      from: FROM,
+      to,
+      subject,
+      html,
+      text,
+      headers: { 'X-Priority': '3', 'X-Mailer': FROM_NAME },
+    });
+  }
+}
+
+// ── HTML wrapper ─────────────────────────────────────────────────────
 function wrap(body) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -23,22 +57,20 @@ function wrap(body) {
   <tr><td align="center" style="padding:40px 16px">
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
            style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
-      <!-- Header -->
       <tr>
         <td style="background:${GREEN};padding:28px 32px;text-align:center">
-          <p style="margin:0;color:#fff;font-size:20px;font-weight:900;letter-spacing:-0.02em">On The Go Juice</p>
+          <p style="margin:0;color:#fff;font-size:20px;font-weight:900;letter-spacing:-0.02em">${FROM_NAME}</p>
           <p style="margin:5px 0 0;color:rgba(255,255,255,0.65);font-size:11px;letter-spacing:0.18em;text-transform:uppercase">Fresh &bull; Natural &bull; On The Go</p>
         </td>
       </tr>
-      <!-- Body -->
       <tr><td style="padding:36px 36px 28px">${body}</td></tr>
-      <!-- Footer -->
       <tr>
         <td style="background:#f9f6f1;border-top:1px solid #e5e7eb;padding:20px 32px;text-align:center">
-          <p style="margin:0;font-size:12px;color:#9ca3af">On The Go Juice &bull; Birmingham, UK</p>
+          <p style="margin:0;font-size:12px;color:#9ca3af">${FROM_NAME} &bull; Birmingham, UK</p>
           <p style="margin:5px 0 0;font-size:12px">
             <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE};text-decoration:none">onthegojuiceadmin@gmail.com</a>
           </p>
+          <p style="margin:5px 0 0;font-size:11px;color:#d1d5db">You received this because you signed up or placed an order with On The Go Juice.</p>
         </td>
       </tr>
     </table>
@@ -47,10 +79,12 @@ function wrap(body) {
 </body></html>`;
 }
 
+// ── Emails ───────────────────────────────────────────────────────────
+
 export async function sendWelcomeDiscount(to, code) {
   const html = wrap(`
     <h2 style="margin:0 0 10px;font-size:26px;font-weight:900;color:#111;letter-spacing:-0.03em">
-      Your 20% off is here! 🍊
+      Here's your 20% off code
     </h2>
     <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65">
       Thanks for joining us! Use the code below at checkout to get
@@ -77,7 +111,43 @@ export async function sendWelcomeDiscount(to, code) {
     </a>
   `);
 
-  await transporter.sendMail({ from: FROM, to, subject: '🍊 Your 20% off welcome code', html });
+  const text = `Here's your 20% off code: ${code}\n\nUse it at checkout on orders over £10.\nShop now: https://onthegojuice.vercel.app/#products\n\nSingle use. On The Go Juice, Birmingham.`;
+
+  await sendMail({ to, subject: `Your discount code from ${FROM_NAME}`, html, text });
+}
+
+export async function sendFreeBottleReward(to, code) {
+  const html = wrap(`
+    <h2 style="margin:0 0 10px;font-size:26px;font-weight:900;color:#111;letter-spacing:-0.03em">
+      Free bottle unlocked!
+    </h2>
+    <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65">
+      You've bought 7 bottles — so your next one is <strong style="color:${GREEN}">completely free</strong>!
+      Use the code below at checkout.
+    </p>
+
+    <div style="background:#f9f6f1;border:2px dashed ${ORANGE};border-radius:12px;padding:22px;text-align:center;margin:0 0 28px">
+      <p style="margin:0 0 6px;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.18em">Your free bottle code</p>
+      <p style="margin:0;font-size:34px;font-weight:900;color:${ORANGE};letter-spacing:0.14em;font-family:'Courier New',monospace">${code}</p>
+    </div>
+
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;width:100%">
+      <tr><td style="font-size:13px;color:#6b7280;line-height:2">
+        ✓ &nbsp;£1.99 off your next order<br>
+        ✓ &nbsp;No minimum spend<br>
+        ✓ &nbsp;Single use
+      </td></tr>
+    </table>
+
+    <a href="https://onthegojuice.vercel.app/#products"
+       style="display:inline-block;background:${GREEN};color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;letter-spacing:0.01em">
+      Claim Your Free Bottle &rarr;
+    </a>
+  `);
+
+  const text = `Your free bottle code: ${code}\n\nYou've bought 7 bottles so your next one is free. No minimum spend.\nShop now: https://onthegojuice.vercel.app/#products\n\nOn The Go Juice, Birmingham.`;
+
+  await sendMail({ to, subject: `Your free bottle from ${FROM_NAME}`, html, text });
 }
 
 export async function sendOrderConfirmation(to, { name, orderId, items, deliveryMethod, shippingAddress, totalPence, discountPence }) {
@@ -170,7 +240,7 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
     </div>
 
     <p style="margin:0 0 20px;font-size:0.88rem;color:#6b7280;line-height:1.65">
-      Questions? Just reply to this email or get in touch at
+      Questions? Just reply to this email or contact us at
       <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE}">onthegojuiceadmin@gmail.com</a>.
     </p>
 
@@ -180,37 +250,8 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
     </a>
   `);
 
-  await transporter.sendMail({ from: FROM, to, subject: `Order confirmed ${orderRef} – On The Go Juice`, html });
-}
+  const itemsText = items.map(i => `  ${i.n} x${i.q} — £${((i.p || 0) * (i.q || 0) / 100).toFixed(2)}`).join('\n');
+  const text = `Order confirmed ${orderRef}\n\nThanks ${firstName}!\n\nOrder summary:\n${itemsText}\nTotal: £${(totalPence / 100).toFixed(2)}\n\n${isDelivery ? `Delivering to: ${shippingAddress}` : 'Pickup from Birmingham — we\'ll confirm location by email.'}\n\nQuestions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
 
-export async function sendFreeBottleReward(to, code) {
-  const html = wrap(`
-    <h2 style="margin:0 0 10px;font-size:26px;font-weight:900;color:#111;letter-spacing:-0.03em">
-      Free bottle unlocked! 🎉
-    </h2>
-    <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65">
-      You've bought 7 bottles — so your next one is <strong style="color:${GREEN}">completely free</strong>!
-      Use the code below at checkout.
-    </p>
-
-    <div style="background:#f9f6f1;border:2px dashed ${ORANGE};border-radius:12px;padding:22px;text-align:center;margin:0 0 28px">
-      <p style="margin:0 0 6px;font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.18em">Your free bottle code</p>
-      <p style="margin:0;font-size:34px;font-weight:900;color:${ORANGE};letter-spacing:0.14em;font-family:'Courier New',monospace">${code}</p>
-    </div>
-
-    <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;width:100%">
-      <tr><td style="font-size:13px;color:#6b7280;line-height:2">
-        ✓ &nbsp;£1.99 off your next order<br>
-        ✓ &nbsp;No minimum spend<br>
-        ✓ &nbsp;Single use
-      </td></tr>
-    </table>
-
-    <a href="https://onthegojuice.vercel.app/#products"
-       style="display:inline-block;background:${GREEN};color:#fff;padding:14px 32px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;letter-spacing:0.01em">
-      Claim Your Free Bottle &rarr;
-    </a>
-  `);
-
-  await transporter.sendMail({ from: FROM, to, subject: '🎉 You\'ve earned a free bottle!', html });
+  await sendMail({ to, subject: `Order confirmed ${orderRef} — ${FROM_NAME}`, html, text });
 }
