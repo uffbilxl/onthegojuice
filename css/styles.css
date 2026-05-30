@@ -110,7 +110,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transition: background var(--transition), box-shadow var(--transition);
 }
 
-.site-header.scrolled {
+.site-header.scrolled,
+.site-header.menu-open {
   background: rgba(17, 17, 17, 0.97);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -208,6 +209,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 2px;
   transition: var(--transition);
 }
+.nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 .mobile-menu {
   display: none;
@@ -1133,10 +1137,13 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   /* Hero */
   .hero { min-height: 100vh; min-height: 100svh; }
   .hero-content { padding: 0 5vw; }
-  .hero-headline { font-size: clamp(2.2rem, 10vw, 3rem); line-height: 1.05; }
+  .hero-headline { font-size: clamp(1.9rem, 8.5vw, 2.6rem); line-height: 1.05; }
   .hero-eyebrow { font-size: 0.72rem; margin-bottom: 12px; }
-  .hero-sub { font-size: 0.88rem; margin-bottom: 28px; }
-  .btn-hero { padding: 14px 36px; font-size: 0.9rem; }
+  .hero-sub { font-size: 0.88rem; margin-bottom: 28px; max-width: 100%; }
+  .btn-hero { padding: 14px 36px; font-size: 0.9rem; margin-top: 4px; }
+
+  /* Prevent iOS auto-zoom on input focus */
+  input, select, textarea { font-size: 16px !important; }
 
   /* Products section */
   .products-section { padding: 48px 4vw; }

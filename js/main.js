@@ -489,14 +489,21 @@ function initAnchorLinks() {
       window.scrollTo({ top: offset, behavior: 'smooth' });
       // Close mobile menu
       document.getElementById('mobile-menu').classList.remove('open');
+      document.getElementById('nav-burger').classList.remove('open');
+      document.getElementById('site-header').classList.remove('menu-open');
     });
   });
 }
 
 /* ─── MOBILE MENU ────────────────────────────────────────────────── */
 function initMobileMenu() {
-  document.getElementById('nav-burger').addEventListener('click', () => {
-    document.getElementById('mobile-menu').classList.toggle('open');
+  const burger = document.getElementById('nav-burger');
+  const menu   = document.getElementById('mobile-menu');
+  const header = document.getElementById('site-header');
+  burger.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('open');
+    burger.classList.toggle('open', isOpen);
+    header.classList.toggle('menu-open', isOpen);
   });
 }
 
