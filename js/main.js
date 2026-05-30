@@ -592,7 +592,7 @@ function initPopup() {
         return;
       }
 
-      showToast("Check your inbox — your 20% off code is on its way!");
+      showToast("Code sent! Check your inbox — or spam folder if you don't see it.");
       closePopup();
     } catch {
       showToast('Something went wrong. Please try again.');
