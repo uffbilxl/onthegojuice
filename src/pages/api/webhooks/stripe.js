@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-04-10' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Disable Next.js body parsing — Stripe needs the raw buffer to verify the signature
 export const config = { api: { bodyParser: false } };

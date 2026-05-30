@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-04-10' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Authoritative server-side prices in pence — never trust client-sent prices
 const PRODUCT_PRICES = {
@@ -43,7 +43,6 @@ export default async function handler(req, res) {
   const params = {
     amount: totalAmount,
     currency: 'gbp',
-    automatic_payment_methods: { enabled: true },
     metadata: {
       delivery_method: isDelivery ? 'local_delivery' : 'pickup',
       customer_name: (customer?.name || '').slice(0, 200),
