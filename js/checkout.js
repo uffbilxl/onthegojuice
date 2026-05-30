@@ -68,7 +68,12 @@ function renderSummary() {
     </div>
   `).join('');
 
-  updateDeliveryTotal();
+  // Show subtotal but leave delivery as "—" until customer selects a delivery option
+  const sub = cartSubtotal();
+  const subtotalEl = document.getElementById('co-subtotal');
+  const totalEl = document.getElementById('co-total');
+  if (subtotalEl) subtotalEl.textContent = `£${sub.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `£${sub.toFixed(2)}`;
 }
 
 function updateDeliveryTotal() {
