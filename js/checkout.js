@@ -115,10 +115,18 @@ function initAccordion() {
       const nextId = btn.dataset.next;
       if (!nextId) return;
 
-      // Validate postcode before leaving delivery section
+      // Validate delivery section before leaving
       if (currentSection.id === 'section-delivery') {
-        const isDelivery = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
-        if (isDelivery) {
+        const selected = document.querySelector('input[name="delivery"]:checked')?.value;
+        if (!selected) {
+          const resultEl = document.getElementById('postcode-result');
+          if (resultEl) {
+            resultEl.className = 'postcode-result invalid';
+            resultEl.textContent = 'Please select a delivery method before continuing.';
+          }
+          return;
+        }
+        if (selected === 'delivery') {
           const pc = document.getElementById('postcode-input')?.value?.trim() || '';
           const resultEl = document.getElementById('postcode-result');
           if (!pc) {
@@ -256,10 +264,9 @@ function initDeliveryToggle() {
     });
   });
 
-  // Set initial state
-  const initial = document.querySelector('input[name="delivery"]:checked')?.value;
-  if (postcodeWrap) postcodeWrap.style.display = initial === 'delivery' ? 'block' : 'none';
-  if (pickupAddr) pickupAddr.style.display = initial === 'pickup' ? 'block' : 'none';
+  // Hide both until user selects — no radio pre-checked
+  if (postcodeWrap) postcodeWrap.style.display = 'none';
+  if (pickupAddr) pickupAddr.style.display = 'none';
 }
 
 /* ─── STRIPE ELEMENTS ───────────────────────────────────────────── */
