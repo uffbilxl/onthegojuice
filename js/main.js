@@ -557,10 +557,35 @@ function initPopup() {
   document.getElementById('popup-close').addEventListener('click', closePopup);
   document.getElementById('popup-skip').addEventListener('click', closePopup);
 
-  document.getElementById('popup-form').addEventListener('submit', e => {
+  document.getElementById('popup-form').addEventListener('submit', async e => {
     e.preventDefault();
-    showToast("You're in! Check your inbox for your 20% off code.");
-    closePopup();
+    const input = e.target.querySelector('input[type="email"]');
+    const email = input?.value?.trim();
+    if (!email) return;
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Something went wrong. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
+        return;
+      }
+
+      showToast("Check your inbox — your 20% off code is on its way!");
+      closePopup();
+    } catch {
+      showToast('Something went wrong. Please try again.');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
+    }
   });
 
   popup.addEventListener('click', e => {

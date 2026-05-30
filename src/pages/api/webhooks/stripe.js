@@ -1,7 +1,14 @@
 import Stripe from 'stripe';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { sendFreeBottleReward, sendOrderConfirmation } from '@/lib/mailer';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+function generateFreeBottleCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  return `OTGJFREE${rand}`;
+}
 
 // Disable Next.js body parsing — Stripe needs the raw buffer to verify the signature
 export const config = { api: { bodyParser: false } };
@@ -59,6 +66,70 @@ export default async function handler(req, res) {
     });
 
     if (error) console.error('[webhook] Supabase insert error:', error.message);
+
+    // Send order confirmation email
+    if (meta.customer_email) {
+      sendOrderConfirmation(meta.customer_email, {
+        name: meta.customer_name || '',
+        orderId: pi.id,
+        items,
+        deliveryMethod: meta.delivery_method || 'pickup',
+        shippingAddress: shippingAddress,
+        totalPence: pi.amount,
+        discountPence: parseInt(meta.discount_pence || '0', 10),
+      }).catch(e => console.error('[webhook] Failed to send order confirmation:', e.message));
+    }
+
+    // Mark discount code as used
+    const discountCode = meta.discount_code;
+    if (discountCode) {
+      const { error: dcErr } = await supabaseAdmin
+        .from('discount_codes')
+        .update({ used: true, used_at: new Date().toISOString(), used_by_order: pi.id })
+        .eq('code', discountCode)
+        .eq('used', false);
+      if (dcErr) console.error('[webhook] Failed to mark discount code used:', dcErr.message);
+    }
+
+    // Bottle reward tracking (7 bottles → 1 free)
+    const customerEmail = meta.customer_email;
+    if (customerEmail) {
+      const bottlesOrdered = items.reduce((s, i) => s + (i.q || i.qty || 0), 0);
+      if (bottlesOrdered > 0) {
+        const { data: existing } = await supabaseAdmin
+          .from('customer_rewards')
+          .select('bottles_purchased, rewards_sent')
+          .eq('email', customerEmail)
+          .maybeSingle();
+
+        const prevBottles = existing?.bottles_purchased || 0;
+        const prevRewards = existing?.rewards_sent || 0;
+        const newBottles = prevBottles + bottlesOrdered;
+        const newRewardCount = Math.floor(newBottles / 7);
+
+        await supabaseAdmin.from('customer_rewards').upsert(
+          { email: customerEmail, bottles_purchased: newBottles, rewards_sent: newRewardCount, updated_at: new Date().toISOString() },
+          { onConflict: 'email' }
+        );
+
+        // Send a free bottle code for each newly earned reward
+        for (let r = prevRewards + 1; r <= newRewardCount; r++) {
+          const code = generateFreeBottleCode();
+          const { error: codeErr } = await supabaseAdmin.from('discount_codes').insert({
+            code,
+            email: customerEmail,
+            type: 'free_bottle',
+            discount_fixed_pence: 199,
+            min_order_pence: 0,
+          });
+          if (!codeErr) {
+            sendFreeBottleReward(customerEmail, code).catch(e =>
+              console.error('[webhook] Failed to send free bottle email:', e.message)
+            );
+          }
+        }
+      }
+    }
   }
 
   if (event.type === 'payment_intent.payment_failed') {
