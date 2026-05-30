@@ -3,15 +3,17 @@ import Head from 'next/head';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 const FULFILLMENT_LABELS = {
-  processing: 'Processing (2–3 working days)',
+  processing: 'Processing',
   out_for_delivery: 'Out for Delivery / Ready for Pickup',
   completed: 'Completed',
+  cancelled: 'Cancelled',
 };
 
 const STATUS_COLOURS = {
-  processing: { bg: '#fef9c3', text: '#854d0e' },
+  processing:       { bg: '#fef9c3', text: '#854d0e' },
   out_for_delivery: { bg: '#dbeafe', text: '#1d4ed8' },
-  completed: { bg: '#dcfce7', text: '#15803d' },
+  completed:        { bg: '#dcfce7', text: '#15803d' },
+  cancelled:        { bg: '#fee2e2', text: '#b91c1c' },
 };
 
 export default function AdminPage({ orders: initialOrders, authorized }) {
@@ -79,6 +81,19 @@ export default function AdminPage({ orders: initialOrders, authorized }) {
     }
   }
 
+  async function saveNote(orderId, note) {
+    const res = await fetch('/api/admin/update-fulfillment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, adminNote: note }),
+    });
+    if (res.ok) {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, admin_note: note } : o))
+      );
+    }
+  }
+
   const totalRevenue = orders
     .filter((o) => o.payment_status === 'paid')
     .reduce((s, o) => s + Number(o.total_amount), 0);
@@ -140,7 +155,8 @@ export default function AdminPage({ orders: initialOrders, authorized }) {
                     <th>Items</th>
                     <th>Total</th>
                     <th>Payment</th>
-                    <th>Fulfillment</th>
+                    <th>Status</th>
+                    <th>Note for customer</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,6 +233,9 @@ export default function AdminPage({ orders: initialOrders, authorized }) {
                             ))}
                           </select>
                         </td>
+                        <td>
+                          <NoteCell order={order} onSave={saveNote} />
+                        </td>
                       </tr>
                     );
                   })}
@@ -247,6 +266,35 @@ export async function getServerSideProps({ req }) {
   }
 
   return { props: { orders: orders ?? [], authorized: true } };
+}
+
+function NoteCell({ order, onSave }) {
+  const [text, setText] = useState(order.admin_note || '');
+  const [saved, setSaved] = useState(false);
+
+  async function handleSave() {
+    await onSave(order.id, text);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <div className="adm-note-cell">
+      <textarea
+        className="adm-note-input"
+        value={text}
+        onChange={(e) => { setText(e.target.value); setSaved(false); }}
+        placeholder="e.g. Delivering Thursday 3–5pm"
+        rows={2}
+      />
+      <button
+        className={`adm-note-save${saved ? ' adm-note-saved' : ''}`}
+        onClick={handleSave}
+      >
+        {saved ? '✓ Saved' : 'Save'}
+      </button>
+    </div>
+  );
 }
 
 function AdminStyles() {
@@ -325,6 +373,13 @@ function AdminStyles() {
       .adm-status-select:focus { border-color: var(--green); }
 
       .adm-empty { padding: 60px; text-align: center; color: var(--grey); background: #fff; border-radius: 16px; }
+
+      .adm-note-cell { display: flex; flex-direction: column; gap: 6px; min-width: 200px; }
+      .adm-note-input { width: 100%; padding: 8px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-family: var(--font-main); font-size: 0.78rem; resize: vertical; outline: none; transition: border-color 0.2s; }
+      .adm-note-input:focus { border-color: var(--green); }
+      .adm-note-save { align-self: flex-start; padding: 5px 14px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: var(--font-main); transition: background 0.2s; }
+      .adm-note-save:hover { background: var(--green-dark); }
+      .adm-note-saved { background: #15803d; }
 
       @media (max-width: 900px) {
         .adm-stats { grid-template-columns: repeat(2, 1fr); }
