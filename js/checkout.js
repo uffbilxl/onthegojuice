@@ -359,7 +359,7 @@ function initPayButton() {
     const { error } = await stripeInstance.confirmPayment({
       elements: stripeElements,
       confirmParams: {
-        return_url: `${window.location.origin}/thank-you.html`,
+        return_url: `${window.location.origin}/thank-you`,
         receipt_email: email,
       },
     });
