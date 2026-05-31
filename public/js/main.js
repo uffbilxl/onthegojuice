@@ -526,7 +526,9 @@ function initRewards() {
 
 /* ─── NEWSLETTER FORM ────────────────────────────────────────────── */
 function initNewsletter() {
-  document.getElementById('newsletter-form').addEventListener('submit', e => {
+  const form = document.getElementById('newsletter-form');
+  if (!form) return;
+  form.addEventListener('submit', e => {
     e.preventDefault();
     const input = e.target.querySelector('input[type="email"]');
     showToast('Thanks for subscribing!');
