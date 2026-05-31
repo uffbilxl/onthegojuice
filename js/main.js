@@ -199,6 +199,10 @@ const PRODUCTS = [
   },
 ];
 
+/* ─── FILTER STATE ──────────────────────────────────────────────── */
+let activeCategoryFilter = 'all';
+const activeDietaryFilters = new Set();
+
 /* ─── CART STATE ────────────────────────────────────────────────── */
 let cart = JSON.parse(localStorage.getItem('otgj_cart') || '[]');
 
@@ -215,11 +219,26 @@ function cartItemCount() {
 }
 
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
-function renderProducts(filter = 'all') {
+const TYPE_ORDER = { juice: 0, milk: 1, shot: 2 };
+
+function renderProducts(categoryFilter = 'all', dietaryFilters = new Set()) {
   const grid = document.getElementById('products-grid');
   grid.innerHTML = '';
 
-  const filtered = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
+  let filtered = categoryFilter === 'all'
+    ? [...PRODUCTS].sort((a, b) => TYPE_ORDER[a.type] - TYPE_ORDER[b.type])
+    : PRODUCTS.filter(p => p.type === categoryFilter);
+
+  if (dietaryFilters.size > 0) {
+    filtered = filtered.filter(p =>
+      [...dietaryFilters].every(tag => p.tags.includes(tag))
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
+    return;
+  }
 
   filtered.forEach((p, idx) => {
     const card = document.createElement('div');
@@ -242,7 +261,7 @@ function renderProducts(filter = 'all') {
         </div>
       </div>
       <div class="card-body">
-        <div class="card-size">${p.size} · ${p.type === 'shot' ? 'Wellness Shot' : p.type === 'milk' ? 'Milk Blend' : 'Cold-Pressed Juice'}</div>
+        <div class="card-size">${p.size}</div>
         <h3 class="card-name">${p.name}</h3>
         ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
         <p class="card-ingredients-mobile">${p.ingredients}</p>
@@ -261,7 +280,6 @@ function renderProducts(filter = 'all') {
     grid.appendChild(card);
   });
 
-  // Trigger fade animations
   requestAnimationFrame(() => {
     document.querySelectorAll('.product-card.fade-up').forEach(el => {
       el.classList.add('visible');
@@ -499,7 +517,25 @@ function initFilterTabs() {
     if (!btn) return;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderProducts(btn.dataset.filter);
+    activeCategoryFilter = btn.dataset.filter;
+    renderProducts(activeCategoryFilter, activeDietaryFilters);
+  });
+}
+
+/* ─── DIETARY FILTERS ────────────────────────────────────────────── */
+function initDietaryFilters() {
+  document.getElementById('dietary-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.dietary-btn');
+    if (!btn) return;
+    const tag = btn.dataset.tag;
+    if (activeDietaryFilters.has(tag)) {
+      activeDietaryFilters.delete(tag);
+      btn.classList.remove('active');
+    } else {
+      activeDietaryFilters.add(tag);
+      btn.classList.add('active');
+    }
+    renderProducts(activeCategoryFilter, activeDietaryFilters);
   });
 }
 
@@ -700,9 +736,10 @@ document.addEventListener('DOMContentLoaded', () => {
     AOS.init({ once: true, duration: 650, easing: 'ease-out-cubic', offset: 60 });
   }
 
-  renderProducts();
+  renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
   initFilterTabs();
+  initDietaryFilters();
   initAnchorLinks();
   initMobileMenu();
   initRewards();
