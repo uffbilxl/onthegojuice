@@ -11,7 +11,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: ['noSugar'],
-    image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png',
+    image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: ['noSugar'],
-    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png',
+    image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png',
   },
   {
     id: 3,
@@ -31,7 +31,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: [],
-    image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png',
+    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: ['noSugar', 'lactoseFree'],
-    image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png',
   },
   // Row 2
   {
@@ -52,7 +52,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: [],
-    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 6,
@@ -62,7 +62,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png',
+    image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 7,
@@ -72,7 +72,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: ['lactoseFree'],
-    image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 8,
@@ -82,7 +82,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png',
+    image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png',
   },
   // Row 3
   {
@@ -93,7 +93,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'shot',
     tags: [],
-    image: 'images/products/Go_Shot_Ginger_and_Apple_Ginger_Apple-Lemon.png',
+    image: 'images/products/Breadfruit_and_Milk_Juice_Drink_Breadfruit-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
     id: 10,
@@ -103,7 +103,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png',
+    image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png',
   },
   {
     id: 11,
@@ -113,7 +113,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: [],
-    image: 'images/products/Breadfruit_and_Milk_Juice_Drink_Breadfruit-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png',
   },
   {
     id: 12,
@@ -123,7 +123,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png',
+    image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png',
   },
   // Row 4
   {
@@ -134,7 +134,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png',
+    image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png',
   },
   {
     id: 14,
@@ -144,7 +144,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png',
+    image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png',
   },
   {
     id: 15,
@@ -154,7 +154,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: [],
-    image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png',
   },
   {
     id: 16,
@@ -164,7 +164,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'juice',
     tags: [],
-    image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png',
+    image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png',
   },
   // Row 5
   {
@@ -175,7 +175,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'shot',
     tags: [],
-    image: 'images/products/Go_Shot_Ginger_and_Pineapple_Ginger_Pineapple-Lemon.png',
+    image: 'images/products/Go_Shot_Ginger_and_Apple_Ginger_Apple-Lemon.png',
   },
   {
     id: 18,
@@ -185,7 +185,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'shot',
     tags: [],
-    image: 'images/products/Ginger_and_Turmeric_Wellness_Shot_Ginger-Turmeric-Lemon.png',
+    image: 'images/products/Go_Shot_Ginger_and_Pineapple_Ginger_Pineapple-Lemon.png',
   },
   {
     id: 19,
@@ -195,7 +195,7 @@ const PRODUCTS = [
     size: '330ml',
     type: 'milk',
     tags: [],
-    image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    image: 'images/products/Ginger_and_Turmeric_Wellness_Shot_Ginger-Turmeric-Lemon.png',
   },
 ];
 
