@@ -632,6 +632,37 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   min-height: 2.6rem;
 }
 
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.card-badge--noSugar {
+  background: #fff3e0;
+  color: #c55a00;
+  border: 1px solid #ffb74d;
+}
+
+.card-badge--lactoseFree {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #81c784;
+}
+
 .card-price {
   font-size: 1rem;
   font-weight: 700;
