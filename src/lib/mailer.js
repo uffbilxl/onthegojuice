@@ -227,3 +227,38 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
 
   await sendMail({ to, subject: `Order confirmed ${orderRef} — ${FROM_NAME}`, html, text });
 }
+
+export async function sendOrderCancelled(to, { name, orderId }) {
+  const firstName = (name || 'there').split(' ')[0];
+  const orderRef = `#OTGJ-${orderId.slice(-8).toUpperCase()}`;
+
+  const html = wrap(`
+    <h2 style="margin:0 0 10px;font-size:24px;font-weight:900;color:#111;letter-spacing:-0.03em">
+      Your order has been cancelled
+    </h2>
+    <p style="margin:0 0 20px;font-size:15px;color:#6b7280;line-height:1.65">
+      Hi ${firstName}, we're sorry to let you know that your order
+      <strong style="color:#111">${orderRef}</strong> has been cancelled.
+    </p>
+    <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65">
+      If you paid for this order, your refund will be returned to your original
+      payment method within <strong style="color:#111">3–5 working days</strong> depending on your bank.
+    </p>
+    <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.65">
+      We'd love to have you back — feel free to place a new order any time, or
+      get in touch if you have any questions.
+    </p>
+    <a href="mailto:onthegojuiceadmin@gmail.com"
+       style="display:inline-block;background:#111;color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none;margin-right:12px">
+      Contact Us
+    </a>
+    <a href="https://onthegojuice.vercel.app/#products"
+       style="display:inline-block;background:${GREEN};color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
+      Shop Again &rarr;
+    </a>
+  `);
+
+  const text = `Hi ${firstName},\n\nYour order ${orderRef} has been cancelled.\n\nIf you paid, your refund will arrive within 3–5 working days.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+
+  await sendMail({ to, subject: `Your order ${orderRef} has been cancelled`, html, text });
+}
