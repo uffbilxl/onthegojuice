@@ -395,6 +395,7 @@ function updateCartUI() {
   `).join('');
 
   document.getElementById('cart-total').textContent = `£${cartTotal().toFixed(2)}`;
+  updateBundleNudge();
 
   cartItemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -730,12 +731,146 @@ function createPlaceholder(width, height, text, bg = '#1d6c00') {
   }
 })();
 
+/* ─── ACTIVE PROMOTIONS ──────────────────────────────────────────── */
+let ACTIVE_PROMOS = [];
+
+async function loadActivePromos() {
+  try {
+    const res = await fetch('/api/promotions-public');
+    if (res.ok) ACTIVE_PROMOS = await res.json();
+  } catch {
+    ACTIVE_PROMOS = [];
+  }
+}
+
+function getBestBundle() {
+  if (!ACTIVE_PROMOS.length) return null;
+  const totalQty    = cartItemCount();
+  const subtotalPence = Math.round(cartTotal() * 100);
+  // Find highest-tier bundle whose threshold is met AND saves the customer money
+  const sorted = [...ACTIVE_PROMOS].sort((a, b) => b.min_qty - a.min_qty);
+  for (const promo of sorted) {
+    if (totalQty >= promo.min_qty && promo.total_price_pence < subtotalPence) {
+      return promo;
+    }
+  }
+  return null;
+}
+
+function getNextBundle() {
+  if (!ACTIVE_PROMOS.length) return null;
+  const totalQty = cartItemCount();
+  const sorted   = [...ACTIVE_PROMOS].sort((a, b) => a.min_qty - b.min_qty);
+  for (const promo of sorted) {
+    if (totalQty < promo.min_qty) return promo;
+  }
+  return null;
+}
+
+function updateBundleNudge() {
+  const nudgeEl    = document.getElementById('cart-bundle-nudge');
+  const savingEl   = document.getElementById('cart-bundle-saving');
+  const savingText = document.getElementById('cart-bundle-saving-text');
+  const totalEl    = document.getElementById('cart-total');
+  if (!nudgeEl) return;
+
+  const applied  = getBestBundle();
+  const next     = applied ? null : getNextBundle();
+  const subtotalPence = Math.round(cart.reduce((s, i) => s + i.price * i.qty, 0) * 100);
+
+  if (applied) {
+    // Bundle applied — show saving and update displayed total
+    const savingPence = subtotalPence - applied.total_price_pence;
+    nudgeEl.style.display   = 'none';
+    savingEl.style.display  = 'flex';
+    savingText.textContent  = `${applied.badge_text} applied — saving £${(savingPence / 100).toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `£${(applied.total_price_pence / 100).toFixed(2)}`;
+  } else if (next) {
+    // Nudge: how many more items to unlock next bundle
+    const needed = next.min_qty - cartItemCount();
+    nudgeEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Add <strong>${needed} more bottle${needed > 1 ? 's' : ''}</strong> to unlock the <strong>${next.badge_text}</strong>`;
+    nudgeEl.style.display  = 'flex';
+    savingEl.style.display = 'none';
+  } else {
+    nudgeEl.style.display  = 'none';
+    savingEl.style.display = 'none';
+  }
+}
+
+/* ─── HERO SLOGAN ROTATOR ────────────────────────────────────────── */
+function initSloganRotator() {
+  const slogans = document.querySelectorAll('.hero-slogan');
+  if (!slogans.length) return;
+  let idx = 0;
+  slogans[0].classList.add('active');
+  setInterval(() => {
+    slogans[idx].classList.remove('active');
+    idx = (idx + 1) % slogans.length;
+    slogans[idx].classList.add('active');
+  }, 2800);
+}
+
+/* ─── SUBSCRIBE & SAVE ───────────────────────────────────────────── */
+function initSubscriptions() {
+  function makeQtyControl(minusId, qtyId, plusId, min, max) {
+    const minus = document.getElementById(minusId);
+    const plus  = document.getElementById(plusId);
+    const qty   = document.getElementById(qtyId);
+    if (!minus || !plus || !qty) return;
+    minus.addEventListener('click', () => {
+      const v = parseInt(qty.textContent);
+      if (v > min) qty.textContent = v - 1;
+    });
+    plus.addEventListener('click', () => {
+      const v = parseInt(qty.textContent);
+      if (v < max) qty.textContent = v + 1;
+    });
+  }
+
+  makeQtyControl('sub-weekly-minus',  'sub-weekly-qty',  'sub-weekly-plus',  1, 10);
+  makeQtyControl('sub-monthly-minus', 'sub-monthly-qty', 'sub-monthly-plus', 1, 20);
+
+  async function subscribe(interval, qtyId, btn) {
+    const qty = parseInt(document.getElementById(qtyId)?.textContent) || 1;
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Redirecting…';
+    try {
+      const res = await fetch('/api/create-subscription-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interval, quantity: qty }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        showToast(data.error || 'Subscription setup failed. Please try again.');
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    } catch {
+      showToast('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
+
+  document.getElementById('btn-subscribe-weekly')?.addEventListener('click', function() {
+    subscribe('weekly', 'sub-weekly-qty', this);
+  });
+  document.getElementById('btn-subscribe-monthly')?.addEventListener('click', function() {
+    subscribe('monthly', 'sub-monthly-qty', this);
+  });
+}
+
 /* ─── INIT ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof AOS !== 'undefined') {
     AOS.init({ once: true, duration: 650, easing: 'ease-out-cubic', offset: 60 });
   }
 
+  loadActivePromos();
   renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
   initFilterTabs();
@@ -747,6 +882,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initFadeObserver();
   initMiniCart();
   initPopup();
+  initSloganRotator();
+  initSubscriptions();
 
   window.addEventListener('scroll', handleNavScroll, { passive: true });
   handleNavScroll();

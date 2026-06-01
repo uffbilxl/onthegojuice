@@ -386,6 +386,34 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: 20px;
 }
 
+.hero-slogans {
+  position: relative;
+  height: 1.6em;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.hero-slogan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-accent);
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--orange);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  white-space: nowrap;
+}
+
+.hero-slogan.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .hero-sub {
   font-size: 1.05rem;
   font-weight: 300;
@@ -1181,6 +1209,183 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: 16px;
 }
 
+/* Bundle nudge strip */
+.cart-bundle-nudge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 0.78rem;
+  color: #c2410c;
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+.cart-bundle-nudge svg { flex-shrink: 0; color: var(--orange); }
+
+/* Bundle saving confirmation */
+.cart-bundle-saving {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 8px;
+}
+.cart-bundle-saving svg { flex-shrink: 0; }
+
+/* ─── SUBSCRIBE & SAVE SECTION ───────────────────────────────────── */
+.subscribe-save-section {
+  padding: 90px 6vw;
+  background: var(--black);
+  color: var(--white);
+}
+.subscribe-save-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.subscribe-save-title {
+  font-family: var(--font-accent);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+.subscribe-save-body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  opacity: 0.75;
+  margin-bottom: 24px;
+  max-width: 420px;
+}
+.subscribe-save-benefits {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.subscribe-save-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+.subscribe-save-benefits li svg { color: #22c55e; flex-shrink: 0; }
+
+.subscribe-save-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.sub-plan-card {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: border-color var(--transition), background var(--transition);
+}
+.sub-plan-card:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.09); }
+.sub-plan-card--featured { border-color: var(--orange); background: rgba(255,107,0,0.08); }
+.sub-plan-card--featured:hover { border-color: var(--orange); background: rgba(255,107,0,0.14); }
+
+.sub-plan-badge {
+  display: inline-block;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--font-accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.sub-plan-freq {
+  font-family: var(--font-accent);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.sub-plan-desc {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  opacity: 0.65;
+  flex: 1;
+}
+.sub-plan-qty-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sub-plan-qty-wrap label {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  font-weight: 600;
+}
+.sub-qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  width: fit-content;
+}
+.sub-qty-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.sub-qty-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.sub-qty-controls span {
+  min-width: 34px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.btn-sub {
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn-sub:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.35); }
+.btn-sub--featured { background: var(--orange); border-color: var(--orange); }
+.btn-sub--featured:hover { background: #e55a00; border-color: #e55a00; }
+.btn-sub:disabled { opacity: 0.55; cursor: not-allowed; }
+
 /* ─── REWARDS NAV BUTTON ─────────────────────────────────────────── */
 .nav-rewards-btn {
   background: var(--orange);
@@ -1338,6 +1543,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .products-section { padding: 64px 5vw; }
   .about-section { padding: 72px 5vw; }
+  .subscribe-save-inner { grid-template-columns: 1fr; gap: 40px; }
+  .subscribe-save-section { padding: 64px 5vw; }
+}
+
+@media (max-width: 600px) {
+  .subscribe-save-cards { grid-template-columns: 1fr; }
+  .hero-slogan { font-size: 0.82rem; white-space: normal; }
+  .hero-slogans { height: auto; min-height: 2.4em; }
 }
 
 @media (max-width: 640px) {

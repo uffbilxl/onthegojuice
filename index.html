@@ -109,6 +109,12 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Cold-Pressed &bull; Natural &bull; Fresh</p>
       <h1 class="hero-headline">Juice, as nature<br/>intended.</h1>
+      <div class="hero-slogans" aria-live="polite">
+        <span class="hero-slogan">Pure Power. Real Results.</span>
+        <span class="hero-slogan">15 Different Flavours.</span>
+        <span class="hero-slogan">Endless Benefits.</span>
+        <span class="hero-slogan">Your Journey. Our Juice.</span>
+      </div>
       <p class="hero-sub">Handcrafted from real fruits &amp; vegetables.<br/>Fuelling busy lives since day one.</p>
       <a href="#products" class="btn btn-hero">Shop Now</a>
     </div>
@@ -152,6 +158,51 @@
     </div>
     <div class="products-grid" id="products-grid"></div>
     <p class="products-disclaimer">Larger size bottles (500ml) can be produced on request.</p>
+  </section>
+
+  <!-- ───────────────────────────── SUBSCRIBE & SAVE ───────────────────────────── -->
+  <section class="subscribe-save-section" id="subscribe-save">
+    <div class="subscribe-save-inner" data-aos="fade-up">
+      <div class="subscribe-save-text">
+        <p class="section-tag">Recurring Wellness</p>
+        <h2 class="subscribe-save-title">Subscribe &amp; Save</h2>
+        <p class="subscribe-save-body">Never run out of your favourite juices. Choose a weekly or monthly delivery and we&apos;ll bring the freshness straight to your door — no fuss, cancel anytime.</p>
+        <ul class="subscribe-save-benefits">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Fresh cold-pressed to order</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Cancel or pause anytime</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Priority delivery slots</li>
+        </ul>
+      </div>
+      <div class="subscribe-save-cards">
+        <div class="sub-plan-card">
+          <p class="sub-plan-freq">Weekly</p>
+          <p class="sub-plan-desc">A fresh delivery every week to keep your routine going strong.</p>
+          <div class="sub-plan-qty-wrap">
+            <label>Bottles per delivery</label>
+            <div class="sub-qty-controls">
+              <button class="sub-qty-btn" id="sub-weekly-minus">−</button>
+              <span id="sub-weekly-qty">3</span>
+              <button class="sub-qty-btn" id="sub-weekly-plus">+</button>
+            </div>
+          </div>
+          <button class="btn btn-sub" id="btn-subscribe-weekly">Subscribe Weekly</button>
+        </div>
+        <div class="sub-plan-card sub-plan-card--featured">
+          <div class="sub-plan-badge">Most Popular</div>
+          <p class="sub-plan-freq">Monthly</p>
+          <p class="sub-plan-desc">Stock up once a month — ideal for households and steady routines.</p>
+          <div class="sub-plan-qty-wrap">
+            <label>Bottles per delivery</label>
+            <div class="sub-qty-controls">
+              <button class="sub-qty-btn" id="sub-monthly-minus">−</button>
+              <span id="sub-monthly-qty">10</span>
+              <button class="sub-qty-btn" id="sub-monthly-plus">+</button>
+            </div>
+          </div>
+          <button class="btn btn-sub btn-sub--featured" id="btn-subscribe-monthly">Subscribe Monthly</button>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ───────────────────────────── ABOUT ───────────────────────────── -->
@@ -399,9 +450,14 @@
       <ul class="cart-items" id="cart-items"></ul>
     </div>
     <div class="cart-footer" id="cart-footer" style="display:none">
+      <div id="cart-bundle-nudge" class="cart-bundle-nudge" style="display:none"></div>
       <div class="cart-total-row">
         <span>Subtotal</span>
         <span id="cart-total">£0.00</span>
+      </div>
+      <div id="cart-bundle-saving" class="cart-bundle-saving" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="cart-bundle-saving-text"></span>
       </div>
       <p class="cart-shipping-note">Shipping calculated at checkout</p>
       <a href="/checkout" class="btn btn-checkout">Checkout</a>
