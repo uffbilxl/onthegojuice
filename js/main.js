@@ -395,7 +395,7 @@ function updateCartUI() {
   `).join('');
 
   document.getElementById('cart-total').textContent = `£${cartTotal().toFixed(2)}`;
-  updateBundleNudge();
+  updateBundleUI();
 
   cartItemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -743,57 +743,126 @@ async function loadActivePromos() {
   }
 }
 
-function getBestBundle() {
-  if (!ACTIVE_PROMOS.length) return null;
-  const totalQty    = cartItemCount();
-  const subtotalPence = Math.round(cartTotal() * 100);
-  // Find highest-tier bundle whose threshold is met AND saves the customer money
-  const sorted = [...ACTIVE_PROMOS].sort((a, b) => b.min_qty - a.min_qty);
-  for (const promo of sorted) {
-    if (totalQty >= promo.min_qty && promo.total_price_pence < subtotalPence) {
-      return promo;
+/**
+ * Cascading bundle calculator — mirrors src/lib/bundleCalculator.js exactly.
+ * Greedy: largest pack first, then next largest, then singles.
+ *
+ * @param {number} totalQty          - total bottles in cart
+ * @param {Array}  activeBundles     - from ACTIVE_PROMOS
+ * @param {number} avgSinglePence    - average per-bottle price in pence
+ * @returns {{ totalPence, standardPence, savingsPence, breakdown, nextBundle }}
+ */
+function calcBundles(totalQty, activeBundles, avgSinglePence) {
+  const standardPence = totalQty * avgSinglePence;
+
+  if (!activeBundles.length || totalQty === 0) {
+    return { totalPence: standardPence, standardPence, savingsPence: 0, breakdown: [], nextBundle: null };
+  }
+
+  const sorted = [...activeBundles].sort((a, b) => b.min_qty - a.min_qty);
+
+  let remaining  = totalQty;
+  let totalPence = 0;
+  const breakdown = [];
+
+  for (const bundle of sorted) {
+    const packs = Math.floor(remaining / bundle.min_qty);
+    if (packs > 0) {
+      const sub = packs * bundle.total_price_pence;
+      totalPence += sub;
+      remaining  -= packs * bundle.min_qty;
+      breakdown.push({
+        label:         bundle.badge_text || bundle.name,
+        packs,
+        priceEach:     bundle.total_price_pence,
+        subtotalPence: sub,
+      });
     }
   }
-  return null;
-}
 
-function getNextBundle() {
-  if (!ACTIVE_PROMOS.length) return null;
-  const totalQty = cartItemCount();
-  const sorted   = [...ACTIVE_PROMOS].sort((a, b) => a.min_qty - b.min_qty);
-  for (const promo of sorted) {
-    if (totalQty < promo.min_qty) return promo;
+  if (remaining > 0) {
+    const sub = remaining * avgSinglePence;
+    totalPence += sub;
+    breakdown.push({
+      label:         `Single bottle${remaining > 1 ? 's' : ''}`,
+      packs:         remaining,
+      priceEach:     avgSinglePence,
+      subtotalPence: sub,
+    });
   }
-  return null;
+
+  // Next bundle the user could still unlock
+  const nextBundle = sorted.find(b => totalQty < b.min_qty) || null;
+  const savingsPence = standardPence - totalPence;
+
+  return { totalPence, standardPence, savingsPence, breakdown, nextBundle };
 }
 
-function updateBundleNudge() {
-  const nudgeEl    = document.getElementById('cart-bundle-nudge');
-  const savingEl   = document.getElementById('cart-bundle-saving');
-  const savingText = document.getElementById('cart-bundle-saving-text');
-  const totalEl    = document.getElementById('cart-total');
+function getCartBundleResult() {
+  if (!ACTIVE_PROMOS.length) return null;
+  const totalQty       = cartItemCount();
+  const standardPence  = Math.round(cart.reduce((s, i) => s + i.price * i.qty, 0) * 100);
+  if (totalQty === 0) return null;
+  const avgSinglePence = Math.round(standardPence / totalQty);
+  return calcBundles(totalQty, ACTIVE_PROMOS, avgSinglePence);
+}
+
+function updateBundleUI() {
+  const nudgeEl   = document.getElementById('cart-bundle-nudge');
+  const breakdownEl = document.getElementById('cart-bundle-breakdown');
+  const totalEl   = document.getElementById('cart-total');
+  const origEl    = document.getElementById('cart-total-original');
   if (!nudgeEl) return;
 
-  const applied  = getBestBundle();
-  const next     = applied ? null : getNextBundle();
-  const subtotalPence = Math.round(cart.reduce((s, i) => s + i.price * i.qty, 0) * 100);
+  const result    = getCartBundleResult();
+  const totalQty  = cartItemCount();
 
-  if (applied) {
-    // Bundle applied — show saving and update displayed total
-    const savingPence = subtotalPence - applied.total_price_pence;
-    nudgeEl.style.display   = 'none';
-    savingEl.style.display  = 'flex';
-    savingText.textContent  = `${applied.badge_text} applied — saving £${(savingPence / 100).toFixed(2)}`;
-    if (totalEl) totalEl.textContent = `£${(applied.total_price_pence / 100).toFixed(2)}`;
-  } else if (next) {
-    // Nudge: how many more items to unlock next bundle
-    const needed = next.min_qty - cartItemCount();
-    nudgeEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Add <strong>${needed} more bottle${needed > 1 ? 's' : ''}</strong> to unlock the <strong>${next.badge_text}</strong>`;
-    nudgeEl.style.display  = 'flex';
-    savingEl.style.display = 'none';
+  // No active promos at all — reset display
+  if (!result) {
+    nudgeEl.style.display    = 'none';
+    if (breakdownEl) breakdownEl.style.display = 'none';
+    if (origEl)      origEl.style.display      = 'none';
+    if (totalEl)     totalEl.textContent = `£${cartTotal().toFixed(2)}`;
+    return;
+  }
+
+  const { totalPence, standardPence, savingsPence, breakdown, nextBundle } = result;
+  const bundlesApplied = breakdown.some(b => b.label !== `Single bottle${totalQty > 1 ? 's' : ''}`
+    && b.label !== 'Single bottle');
+
+  // ── Display bundle breakdown ───────────────────────────────────────
+  if (bundlesApplied && breakdownEl) {
+    breakdownEl.innerHTML = breakdown.map(b =>
+      `<div class="cart-bd-row">
+        <span>${b.packs}× ${b.label}</span>
+        <span>£${(b.subtotalPence / 100).toFixed(2)}</span>
+      </div>`
+    ).join('');
+
+    if (savingsPence > 0) {
+      breakdownEl.innerHTML += `<div class="cart-bd-saving">Bundle Discount Applied — you save £${(savingsPence / 100).toFixed(2)}</div>`;
+      if (origEl) { origEl.textContent = `£${(standardPence / 100).toFixed(2)}`; origEl.style.display = 'inline'; }
+    }
+    breakdownEl.style.display = 'block';
+    if (totalEl) totalEl.textContent = `£${(totalPence / 100).toFixed(2)}`;
   } else {
-    nudgeEl.style.display  = 'none';
-    savingEl.style.display = 'none';
+    if (breakdownEl) breakdownEl.style.display = 'none';
+    if (origEl)      origEl.style.display      = 'none';
+    if (totalEl)     totalEl.textContent = `£${cartTotal().toFixed(2)}`;
+  }
+
+  // ── Nudge: next unlock ─────────────────────────────────────────────
+  const lowestActive = [...ACTIVE_PROMOS].sort((a, b) => a.min_qty - b.min_qty)[0];
+  if (lowestActive && totalQty < lowestActive.min_qty) {
+    const needed = lowestActive.min_qty - totalQty;
+    nudgeEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Add <strong>${needed} more bottle${needed > 1 ? 's' : ''}</strong> to unlock the <strong>${lowestActive.badge_text}</strong>`;
+    nudgeEl.style.display = 'flex';
+  } else if (nextBundle) {
+    const needed = nextBundle.min_qty - totalQty;
+    nudgeEl.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Add <strong>${needed} more</strong> to also unlock the <strong>${nextBundle.badge_text}</strong>`;
+    nudgeEl.style.display = 'flex';
+  } else {
+    nudgeEl.style.display = 'none';
   }
 }
 
@@ -830,37 +899,39 @@ function initSubscriptions() {
   makeQtyControl('sub-weekly-minus',  'sub-weekly-qty',  'sub-weekly-plus',  1, 10);
   makeQtyControl('sub-monthly-minus', 'sub-monthly-qty', 'sub-monthly-plus', 1, 20);
 
-  async function subscribe(interval, qtyId, btn) {
-    const qty = parseInt(document.getElementById(qtyId)?.textContent) || 1;
+  async function subscribe(stripeInterval, qtyId, btn) {
+    const qty      = parseInt(document.getElementById(qtyId)?.textContent) || 1;
     const original = btn.textContent;
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = 'Redirecting…';
     try {
-      const res = await fetch('/api/create-subscription-session', {
-        method: 'POST',
+      const res = await fetch('/api/create-checkout-session', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ interval, quantity: qty }),
+        // interval must be 'week' or 'month' for Stripe recurring price_data
+        body: JSON.stringify({ interval: stripeInterval, quantity: qty }),
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
         showToast(data.error || 'Subscription setup failed. Please try again.');
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = original;
       }
     } catch {
       showToast('Something went wrong. Please try again.');
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = original;
     }
   }
 
+  // Stripe interval values: 'week' | 'month'
   document.getElementById('btn-subscribe-weekly')?.addEventListener('click', function() {
-    subscribe('weekly', 'sub-weekly-qty', this);
+    subscribe('week', 'sub-weekly-qty', this);
   });
   document.getElementById('btn-subscribe-monthly')?.addEventListener('click', function() {
-    subscribe('monthly', 'sub-monthly-qty', this);
+    subscribe('month', 'sub-monthly-qty', this);
   });
 }
 
