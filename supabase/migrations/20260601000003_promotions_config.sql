@@ -36,11 +36,18 @@ CREATE POLICY "auth_all_promos"
   FOR ALL TO authenticated
   USING (true) WITH CHECK (true);
 
--- ── Seed initial bundle deals ──────────────────────────────────────
+-- ── Seed: buy 6 get 1 free (5 × £1.99 = £9.95 for 6 bottles) ─────
 INSERT INTO public.promotions_config
   (id, name, description, badge_text, is_active, min_qty, total_price_pence, sort_order)
 VALUES
-  ('bundle_3', '3-Bottle Bundle',      'Pick any 3 bottles for a fixed price',                    '3 FOR £10.99',   false, 3, 1099, 1),
-  ('bundle_5', '5-Bottle Bundle',      'Pick any 5 bottles — great for sharing or stocking up',   '5 FOR £17.99',   false, 5, 1799, 2),
-  ('bundle_7', '7-Day Wellness Pack',  'A full week of cold-pressed wellness — 7 curated bottles','WELLNESS PACK',  false, 7, 2499, 3)
+  (
+    'bundle_6for5',
+    '6 for the Price of 5',
+    'Buy 6 bottles and only pay for 5 — one bottle completely free. Stacks on larger orders.',
+    'BUY 6 GET 1 FREE',
+    false,
+    6,
+    995,
+    1
+  )
 ON CONFLICT (id) DO NOTHING;
