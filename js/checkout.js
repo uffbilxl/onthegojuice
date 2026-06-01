@@ -44,9 +44,56 @@ const cart = JSON.parse(localStorage.getItem('otgj_cart') || '[]');
 
 /* ─── DISCOUNT STATE ────────────────────────────────────────────── */
 let appliedDiscount = null; // { code, discountPence }
+let activePromos    = [];   // fetched from /api/promotions-public
+
+async function loadPromos() {
+  try {
+    const res = await fetch('/api/promotions-public');
+    if (res.ok) activePromos = await res.json();
+  } catch { activePromos = []; }
+}
+
+/* ─── BUNDLE MATH (mirrors src/lib/bundleCalculator.js) ─────────── */
+function calcBundles(totalQty, promos, avgSinglePence) {
+  if (!promos.length || totalQty === 0) return null;
+
+  const sorted = [...promos].sort((a, b) => b.min_qty - a.min_qty);
+  let remaining  = totalQty;
+  let totalPence = 0;
+  const breakdown = [];
+
+  for (const b of sorted) {
+    const packs = Math.floor(remaining / b.min_qty);
+    if (packs > 0) {
+      totalPence += packs * b.total_price_pence;
+      remaining  -= packs * b.min_qty;
+      breakdown.push({ label: b.badge_text || b.name, packs, priceEach: b.total_price_pence });
+    }
+  }
+
+  if (remaining > 0) {
+    totalPence += remaining * avgSinglePence;
+    breakdown.push({ label: `Single bottle${remaining > 1 ? 's' : ''}`, packs: remaining, priceEach: avgSinglePence });
+  }
+
+  return { totalPence, breakdown };
+}
+
+function getCartBundleResult() {
+  if (!activePromos.length || !cart.length) return null;
+  const standardPence  = Math.round(cart.reduce((s, i) => s + i.price * i.qty, 0) * 100);
+  const totalQty       = cart.reduce((s, i) => s + i.qty, 0);
+  const avgSinglePence = Math.round(standardPence / totalQty);
+  return calcBundles(totalQty, activePromos, avgSinglePence);
+}
 
 function cartSubtotal() {
   return cart.reduce((s, i) => s + i.price * i.qty, 0);
+}
+
+function bundleAdjustedSubtotal() {
+  const result = getCartBundleResult();
+  return result ? result.totalPence / 100 : cartSubtotal();
 }
 
 /* ─── ORDER SUMMARY ────────────────────────────────────────────── */
@@ -71,35 +118,61 @@ function renderSummary() {
     </div>
   `).join('');
 
-  // Show subtotal but leave delivery as "—" until customer selects a delivery option
-  const sub = cartSubtotal();
-  const subtotalEl = document.getElementById('co-subtotal');
-  const totalEl = document.getElementById('co-total');
-  if (subtotalEl) subtotalEl.textContent = `£${sub.toFixed(2)}`;
-  if (totalEl) totalEl.textContent = `£${sub.toFixed(2)}`;
+  updateBundleSummary();
+}
+
+function updateBundleSummary() {
+  const standardTotal   = cartSubtotal();
+  const bundleResult    = getCartBundleResult();
+  const adjustedTotal   = bundleResult ? bundleResult.totalPence / 100 : standardTotal;
+  const savingsPence    = Math.round((standardTotal - adjustedTotal) * 100);
+
+  const subtotalEl      = document.getElementById('co-subtotal');
+  const originalEl      = document.getElementById('co-subtotal-original');
+  const bundleRow       = document.getElementById('co-bundle-row');
+  const bundleLabel     = document.getElementById('co-bundle-label');
+  const bundleAmount    = document.getElementById('co-bundle-amount');
+  const totalEl         = document.getElementById('co-total');
+
+  if (subtotalEl) subtotalEl.textContent = `£${adjustedTotal.toFixed(2)}`;
+
+  if (savingsPence > 0 && bundleResult) {
+    // Strike-through the original price
+    if (originalEl) { originalEl.textContent = `£${standardTotal.toFixed(2)}`; originalEl.style.display = 'inline'; }
+    // Bundle discount row
+    if (bundleRow)   bundleRow.style.display   = '';
+    if (bundleLabel) bundleLabel.textContent   = bundleResult.breakdown.filter(b => b.label !== `Single bottles` && b.label !== 'Single bottle').map(b => `${b.packs}× ${b.label}`).join(', ') || 'Bundle Discount';
+    if (bundleAmount) bundleAmount.textContent = `–£${(savingsPence / 100).toFixed(2)}`;
+  } else {
+    if (originalEl) originalEl.style.display = 'none';
+    if (bundleRow)  bundleRow.style.display  = 'none';
+  }
+
+  if (totalEl) totalEl.textContent = `£${adjustedTotal.toFixed(2)}`;
 }
 
 function updateDeliveryTotal() {
-  const sub = cartSubtotal();
-  const isDelivery = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
+  const sub          = bundleAdjustedSubtotal(); // use bundle price, not raw total
+  const isDelivery   = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
   const deliveryCost = isDelivery && sub < 10 ? 1.50 : 0;
   const discountAmount = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
-  const total = Math.max(0.50, sub + deliveryCost - discountAmount);
+  const total        = Math.max(0.50, sub + deliveryCost - discountAmount);
 
-  const subtotalEl = document.getElementById('co-subtotal');
-  const deliveryCostEl = document.getElementById('co-delivery-cost');
-  const discountRow = document.getElementById('co-discount-row');
-  const discountLabel = document.getElementById('co-discount-label');
+  const deliveryCostEl  = document.getElementById('co-delivery-cost');
+  const discountRow     = document.getElementById('co-discount-row');
+  const discountLabel   = document.getElementById('co-discount-label');
   const discountAmountEl = document.getElementById('co-discount-amount');
-  const totalEl = document.getElementById('co-total');
+  const totalEl         = document.getElementById('co-total');
 
-  if (subtotalEl) subtotalEl.textContent = `£${sub.toFixed(2)}`;
+  // Re-render the bundle summary rows (subtotal + saving) first
+  updateBundleSummary();
+
   if (deliveryCostEl) deliveryCostEl.textContent = deliveryCost === 0 ? 'Free' : `£${deliveryCost.toFixed(2)}`;
 
   if (discountRow) {
     if (appliedDiscount) {
       discountRow.style.display = '';
-      if (discountLabel) discountLabel.textContent = appliedDiscount.code;
+      if (discountLabel)    discountLabel.textContent    = appliedDiscount.code;
       if (discountAmountEl) discountAmountEl.textContent = `–£${discountAmount.toFixed(2)}`;
     } else {
       discountRow.style.display = 'none';
@@ -479,7 +552,10 @@ function initPayButton() {
 }
 
 /* ─── INIT ──────────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load active promos first so bundle math runs on first renderSummary()
+  await loadPromos();
+
   renderSummary();
   initAccordion();
   initPostcodeChecker();

@@ -200,7 +200,16 @@
         </div>
 
         <div class="co-summary-totals">
-          <div class="co-summary-row"><span>Subtotal</span><span id="co-subtotal">£0.00</span></div>
+          <div class="co-summary-row">
+            <span>Subtotal</span>
+            <span>
+              <span id="co-subtotal-original" style="display:none;text-decoration:line-through;color:#9ca3af;font-weight:400;margin-right:5px"></span><span id="co-subtotal">£0.00</span>
+            </span>
+          </div>
+          <div class="co-summary-row" id="co-bundle-row" style="display:none">
+            <span id="co-bundle-label" style="color:#15803d;font-weight:600">Bundle Discount</span>
+            <span id="co-bundle-amount" style="color:#15803d;font-weight:600">–£0.00</span>
+          </div>
           <div class="co-summary-row" id="co-discount-row" style="display:none">
             <span>Discount (<span id="co-discount-label"></span>)</span>
             <span id="co-discount-amount" style="color:#1d6c00;font-weight:600">–£0.00</span>
