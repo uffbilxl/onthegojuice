@@ -1,0 +1,333 @@
+/* ─── SHARED STYLES FOR EVENTS & PARTNERS PAGES ─────────────────── */
+
+/* Page hero */
+.page-hero {
+  background: var(--black);
+  padding: 100px 6vw 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29,108,0,0.25), transparent 70%);
+  pointer-events: none;
+}
+
+.page-hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+.page-hero .legal-tag { color: var(--orange); margin-bottom: 16px; }
+
+.page-hero h1 {
+  font-family: var(--font-accent);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  color: var(--white);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+
+.page-hero p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.75;
+  max-width: 520px;
+  margin: 0 auto 28px;
+}
+
+.page-hero-chips {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.page-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.75);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.page-chip svg { flex-shrink: 0; }
+
+/* Countdown timer */
+.countdown-section {
+  background: var(--off-white);
+  padding: 60px 6vw;
+  text-align: center;
+}
+
+.countdown-label {
+  font-family: var(--font-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 24px;
+}
+
+.countdown-grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.countdown-unit {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px 28px;
+  min-width: 100px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
+
+.countdown-num {
+  font-family: var(--font-accent);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  font-weight: 900;
+  color: var(--green);
+  line-height: 1;
+  display: block;
+  letter-spacing: -0.04em;
+}
+
+.countdown-unit-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--grey);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  display: block;
+}
+
+.countdown-expired {
+  font-family: var(--font-accent);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--orange);
+}
+
+/* General page section */
+.page-section {
+  padding: 72px 6vw;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.page-section-wide {
+  padding: 72px 6vw;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-section h2 {
+  font-family: var(--font-accent);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--black);
+  margin-bottom: 12px;
+}
+
+.page-section p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+/* Benefits grid (partners page) */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.benefit-card {
+  background: var(--off-white);
+  border-radius: 16px;
+  padding: 28px 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.benefit-icon {
+  width: 44px; height: 44px;
+  background: rgba(29,108,0,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: var(--green);
+}
+
+.benefit-card h3 {
+  font-family: var(--font-accent);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+
+.benefit-card p {
+  font-size: 0.85rem;
+  color: var(--grey);
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+
+/* Pull-quote block */
+.page-pullquote {
+  background: var(--black);
+  padding: 56px 6vw;
+  text-align: center;
+}
+
+.page-pullquote blockquote {
+  font-family: var(--font-accent);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.5;
+  max-width: 680px;
+  margin: 0 auto 16px;
+  letter-spacing: -0.02em;
+}
+
+.page-pullquote cite {
+  font-size: 0.82rem;
+  color: var(--orange);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Form section */
+.form-section {
+  background: var(--off-white);
+  padding: 72px 6vw;
+}
+
+.form-section-inner {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.form-section h2 {
+  font-family: var(--font-accent);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+
+.form-section p {
+  font-size: 0.93rem;
+  color: var(--grey);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.page-form { display: flex; flex-direction: column; gap: 18px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--black);
+  letter-spacing: 0.02em;
+}
+
+.form-control {
+  padding: 13px 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  color: var(--black);
+  background: var(--white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.form-control:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29,108,0,0.12);
+}
+
+.form-control::placeholder { color: #9ca3af; }
+
+select.form-control { background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--grey);
+  margin-top: 2px;
+}
+
+.btn-form-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: var(--green);
+  color: var(--white);
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  align-self: flex-start;
+}
+
+.btn-form-submit:hover { background: var(--green-dark); transform: translateY(-1px); }
+.btn-form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.form-success {
+  display: none;
+  background: rgba(29,108,0,0.08);
+  border: 1px solid rgba(29,108,0,0.25);
+  border-radius: 12px;
+  padding: 20px 24px;
+  color: var(--green);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.form-error-msg {
+  color: #dc2626;
+  font-size: 0.82rem;
+  margin-top: 8px;
+  display: none;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .page-hero { padding: 80px 5vw 60px; }
+  .countdown-unit { min-width: 76px; padding: 18px 20px; }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .btn-form-submit { width: 100%; }
+}
