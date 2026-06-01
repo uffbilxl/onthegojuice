@@ -796,6 +796,32 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 8px;
 }
 
+/* Shot product cards — visually smaller bottle to reflect 60ml real-world size */
+.product-card[data-type="shot"] .card-image-wrap {
+  aspect-ratio: 3/4;
+  padding: 20px 28%;
+  background: linear-gradient(180deg, #f8f8f8 0%, #f0f0f0 100%);
+  box-sizing: border-box;
+}
+
+.product-card[data-type="shot"] .card-image-wrap img {
+  padding: 0;
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+}
+
+/* 500ml disclaimer below product grid */
+.products-disclaimer {
+  text-align: center;
+  margin: 16px auto 0;
+  max-width: 1320px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--grey);
+  letter-spacing: 0.01em;
+}
+
 /* ─── ABOUT SECTION ──────────────────────────────────────────────── */
 .about-section {
   padding: 100px 6vw;
@@ -992,6 +1018,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .footer-bottom p { font-size: 0.8rem; opacity: 0.45; }
+.footer-disclaimer { font-style: italic; opacity: 0.55 !important; }
 
 .social-links { display: flex; gap: 16px; }
 .social-links a {

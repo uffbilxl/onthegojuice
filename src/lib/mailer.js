@@ -162,7 +162,7 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
 
   const deliveryInfo = isDelivery
     ? `<p style="margin:0;font-size:0.88rem;color:#374151;line-height:1.7">
-        Your order will be personally delivered by David to:<br/>
+        Your order will be personally delivered to:<br/>
         <strong>${shippingAddress || 'your address'}</strong><br/>
         We'll confirm your delivery slot by email shortly.
        </p>`
@@ -249,7 +249,7 @@ export async function sendPartnerAccepted(to, { businessName, contactName }) {
       <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#111;text-transform:uppercase;letter-spacing:0.08em">What happens next</p>
       <table cellpadding="0" cellspacing="0" style="width:100%">
         <tr><td style="font-size:13px;color:#4b5563;line-height:2.1">
-          ✓ &nbsp;David will be in touch within 48 hours to confirm delivery schedule<br>
+          ✓ &nbsp;Our team will be in touch within 48 hours to confirm delivery schedule<br>
           ✓ &nbsp;We'll agree on your first order quantity and pricing<br>
           ✓ &nbsp;Your first delivery will be arranged at a time that suits you<br>
           ✓ &nbsp;We'll provide point-of-sale materials to help you sell
@@ -262,13 +262,13 @@ export async function sendPartnerAccepted(to, { businessName, contactName }) {
       don't hesitate to get in touch. We're always happy to help.
     </p>
 
-    <a href="mailto:onthegojuiceadmin@gmail.com"
+    <a href="mailto:info@onthego-juice.co.uk"
        style="display:inline-block;background:${GREEN};color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
       Get in Touch &rarr;
     </a>
   `);
 
-  const text = `Hi ${firstName},\n\nGreat news — ${businessName} has been approved as an On The Go Juice stockist!\n\nWhat happens next:\n- David will contact you within 48 hours to confirm delivery schedule\n- We'll agree on your first order and pricing\n- Your first delivery will be arranged at a time that suits you\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+  const text = `Hi ${firstName},\n\nGreat news — ${businessName} has been approved as an On The Go Juice stockist!\n\nWhat happens next:\n- Our team will contact you within 48 hours to confirm delivery schedule\n- We'll agree on your first order and pricing\n- Your first delivery will be arranged at a time that suits you\n\nAny questions? Email info@onthego-juice.co.uk\n\nOn The Go Juice, Birmingham.`;
 
   await sendMail({ to, subject: `Welcome to On The Go Juice — Partnership Approved`, html, text });
 }
