@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
@@ -27,21 +27,18 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [tab, setTab]       = useState('orders');
   const [orders, setOrders] = useState(initialOrders);
   const [events, setEvents] = useState(initialEvents);
-  const [rsvps,  setRsvps]  = useState(null);
-  const [partners, setPartners] = useState(null);
+  const [rsvps,      setRsvps]      = useState(null);
+  const [partners,   setPartners]   = useState(null);
+  const [promotions, setPromotions] = useState(null);
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Load RSVPs when tab opens
   useEffect(() => {
-    if (tab === 'rsvps' && rsvps === null) {
-      fetch('/api/admin/list-rsvps').then(r => r.json()).then(setRsvps).catch(() => setRsvps([]));
-    }
-    if (tab === 'partners' && partners === null) {
-      fetch('/api/admin/list-partners').then(r => r.json()).then(setPartners).catch(() => setPartners([]));
-    }
+    if (tab === 'rsvps'      && rsvps      === null) fetch('/api/admin/list-rsvps').then(r=>r.json()).then(setRsvps).catch(()=>setRsvps([]));
+    if (tab === 'partners'   && partners   === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
+    if (tab === 'promotions' && promotions === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
   }, [tab]);
 
   if (!authorized) {
@@ -144,12 +141,13 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['qrcodes','QR Codes']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
-                {id === 'orders'   && <span className="adm-tab-badge">{orders.length}</span>}
-                {id === 'rsvps'    && Array.isArray(rsvps) && <span className="adm-tab-badge">{rsvps.length}</span>}
-                {id === 'partners' && Array.isArray(partners) && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
+                {id === 'orders'     && <span className="adm-tab-badge">{orders.length}</span>}
+                {id === 'rsvps'      && Array.isArray(rsvps)      && <span className="adm-tab-badge">{rsvps.length}</span>}
+                {id === 'partners'   && Array.isArray(partners)   && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
+                {id === 'promotions' && Array.isArray(promotions) && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
               </button>
             ))}
           </nav>
@@ -251,6 +249,16 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                 </div>
               )}
             </div>
+          )}
+
+          {/* ── PROMOTIONS TAB ─────────────────────────────────────── */}
+          {tab === 'promotions' && (
+            <PromotionsTab promotions={promotions} setPromotions={setPromotions} />
+          )}
+
+          {/* ── QR CODES TAB ───────────────────────────────────────── */}
+          {tab === 'qrcodes' && (
+            <QRCodesTab />
           )}
 
           {/* ── PARTNERS TAB ───────────────────────────────────────── */}
@@ -462,6 +470,185 @@ function EventsTab({ events, setEvents }) {
   );
 }
 
+/* ── Promotions toggle sub-component ─────────────────────────── */
+function PromotionsTab({ promotions, setPromotions }) {
+  const [saving, setSaving] = useState(null);
+
+  async function toggle(promo) {
+    setSaving(promo.id);
+    const res = await fetch('/api/admin/promotions', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: promo.id, is_active: !promo.is_active }),
+    });
+    const data = await res.json();
+    setSaving(null);
+    if (res.ok) setPromotions(prev => prev.map(p => p.id === data.id ? data : p));
+    else alert(data.error || 'Failed to update promotion.');
+  }
+
+  return (
+    <div>
+      <div className="adm-section-header">
+        <h2>Promotions &amp; Bundle Deals</h2>
+        <span className="adm-section-count">Toggle to activate on the live shop</span>
+      </div>
+      <p style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: 24, lineHeight: 1.6 }}>
+        When a bundle is <strong style={{ color: '#15803d' }}>active</strong>, the cart will automatically apply the bundle price when a customer&apos;s item count meets the minimum quantity — provided the bundle price is lower than their individual subtotal.
+      </p>
+
+      {promotions === null ? (
+        <div className="adm-empty">Loading…</div>
+      ) : promotions.length === 0 ? (
+        <div className="adm-empty">No promotions configured.</div>
+      ) : (
+        <div className="adm-promos-list">
+          {promotions.map(p => (
+            <div key={p.id} className={`adm-promo-card${p.is_active ? ' adm-promo-active' : ''}`}>
+              <div className="adm-promo-body">
+                <div className="adm-promo-badge">{p.badge_text}</div>
+                <h3 className="adm-promo-name">{p.name}</h3>
+                <p className="adm-promo-desc">{p.description}</p>
+                <div className="adm-promo-meta">
+                  <span>Min quantity: <strong>{p.min_qty}</strong></span>
+                  <span>Bundle price: <strong>£{(p.total_price_pence / 100).toFixed(2)}</strong></span>
+                </div>
+              </div>
+              <div className="adm-promo-toggle-wrap">
+                <button
+                  className={`adm-toggle-switch${p.is_active ? ' adm-toggle-on' : ''}`}
+                  onClick={() => toggle(p)}
+                  disabled={saving === p.id}
+                  aria-label={p.is_active ? 'Deactivate promotion' : 'Activate promotion'}
+                >
+                  <span className="adm-toggle-knob" />
+                </button>
+                <span className="adm-toggle-status">{saving === p.id ? 'Saving…' : p.is_active ? 'Active' : 'Inactive'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── QR Code generator sub-component ─────────────────────────── */
+function QRCodesTab() {
+  const [url,       setUrl]       = useState('');
+  const [label,     setLabel]     = useState('');
+  const [generated, setGenerated] = useState(false);
+  const [error,     setError]     = useState('');
+  const canvasRef = useRef(null);
+
+  const QUICK_LINKS = [
+    { label: 'Homepage',           url: 'https://onthegojuice.vercel.app/' },
+    { label: 'Shop (all products)',url: 'https://onthegojuice.vercel.app/#products' },
+    { label: 'Shots / Go Shots',   url: 'https://onthegojuice.vercel.app/#products' },
+    { label: 'Checkout',           url: 'https://onthegojuice.vercel.app/checkout' },
+    { label: 'Events / RSVP',      url: 'https://onthegojuice.vercel.app/events' },
+    { label: 'Partner Inquiry',    url: 'https://onthegojuice.vercel.app/partners' },
+  ];
+
+  const generate = useCallback(async () => {
+    setError('');
+    try {
+      const trimmed = url.trim();
+      if (!trimmed) { setError('Please enter a URL.'); return; }
+      new URL(trimmed); // validate
+      const QRCode = (await import('qrcode')).default;
+      await QRCode.toCanvas(canvasRef.current, trimmed, {
+        width: 400, margin: 2,
+        color: { dark: '#111111', light: '#ffffff' },
+      });
+      setGenerated(true);
+    } catch (e) {
+      setError(e.message?.includes('Invalid URL') ? 'Please enter a valid URL (include https://).' : 'Failed to generate QR code.');
+    }
+  }, [url]);
+
+  function download() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = `${(label || 'qr-code').replace(/[^a-z0-9-_]/gi, '-')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  return (
+    <div>
+      <div className="adm-section-header">
+        <h2>QR Code Generator</h2>
+        <span className="adm-section-count">Generate &amp; download PNG for print</span>
+      </div>
+
+      <div className="adm-qr-layout">
+        <div className="adm-qr-form">
+          <div className="adm-form-group" style={{ marginBottom: 16 }}>
+            <label className="adm-form-group label" style={{ fontSize: '0.78rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>Quick Links</label>
+            <div className="adm-qr-quick-links">
+              {QUICK_LINKS.map(l => (
+                <button key={l.label} className="adm-btn-sm adm-qr-quick-btn" onClick={() => { setUrl(l.url); setLabel(l.label); setGenerated(false); }}>
+                  {l.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="adm-form-group" style={{ marginBottom: 14 }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>URL *</label>
+            <input
+              className="adm-input"
+              value={url}
+              onChange={e => { setUrl(e.target.value); setGenerated(false); }}
+              placeholder="https://onthegojuice.vercel.app/…"
+            />
+          </div>
+          <div className="adm-form-group" style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, display: 'block', marginBottom: 6 }}>File label (for download)</label>
+            <input
+              className="adm-input"
+              value={label}
+              onChange={e => setLabel(e.target.value)}
+              placeholder="e.g. apple-ginger-shot-bottle"
+            />
+          </div>
+
+          {error && <p className="adm-form-error" style={{ marginBottom: 14 }}>{error}</p>}
+
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button className="adm-btn-primary" onClick={generate} disabled={!url.trim()}>Generate QR</button>
+            {generated && <button className="adm-btn-ghost" onClick={download}>⬇ Download PNG</button>}
+          </div>
+
+          {generated && (
+            <p style={{ marginTop: 14, fontSize: '0.78rem', color: '#6b7280' }}>
+              400×400px PNG — ready for bottles, flyers, and marketing materials.
+            </p>
+          )}
+        </div>
+
+        <div className="adm-qr-preview">
+          <canvas
+            ref={canvasRef}
+            style={{ display: generated ? 'block' : 'none', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
+          />
+          {!generated && (
+            <div className="adm-qr-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h.01M14 17h3M17 14v3M17 20h3M20 17v3"/>
+              </svg>
+              <p>QR code will appear here</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export async function getServerSideProps({ req }) {
   const cookie = req.cookies?.otgj_admin;
   if (cookie !== process.env.ADMIN_PASSWORD) {
@@ -625,11 +812,40 @@ function AdminStyles() {
       .adm-event-desc { font-size: 0.8rem; color: #4b5563; line-height: 1.55; max-width: 600px; }
       .adm-event-card-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
 
+      /* Promotions */
+      .adm-promos-list { display: flex; flex-direction: column; gap: 14px; }
+      .adm-promo-card { background: #fff; border-radius: 14px; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 2px solid #e5e7eb; transition: border-color 0.2s; }
+      .adm-promo-active { border-color: #22c55e; }
+      .adm-promo-body { flex: 1; min-width: 0; }
+      .adm-promo-badge { display: inline-block; background: var(--orange); color: #fff; font-family: var(--font-accent); font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+      .adm-promo-name { font-family: var(--font-accent); font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+      .adm-promo-desc { font-size: 0.82rem; color: #6b7280; margin-bottom: 12px; line-height: 1.5; }
+      .adm-promo-meta { display: flex; gap: 20px; font-size: 0.8rem; color: #4b5563; }
+      .adm-promo-toggle-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+      .adm-toggle-switch { position: relative; width: 52px; height: 28px; background: #d1d5db; border-radius: 999px; border: none; cursor: pointer; transition: background 0.25s; padding: 0; }
+      .adm-toggle-switch:disabled { opacity: 0.6; cursor: not-allowed; }
+      .adm-toggle-on { background: #22c55e; }
+      .adm-toggle-knob { position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+      .adm-toggle-on .adm-toggle-knob { transform: translateX(24px); }
+      .adm-toggle-status { font-size: 0.72rem; font-weight: 600; color: var(--grey); white-space: nowrap; }
+
+      /* QR Codes */
+      .adm-qr-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+      .adm-qr-form { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+      .adm-qr-preview { display: flex; align-items: center; justify-content: center; min-height: 420px; background: #fff; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+      .adm-qr-placeholder { display: flex; flex-direction: column; align-items: center; gap: 12px; color: #d1d5db; }
+      .adm-qr-placeholder p { font-size: 0.82rem; color: #9ca3af; }
+      .adm-qr-quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+      .adm-qr-quick-btn { background: #f3f4f6 !important; font-size: 0.72rem !important; }
+      .adm-qr-quick-btn:hover { background: #e5e7eb !important; }
+
       @media (max-width: 900px) {
         .adm-stats { grid-template-columns: repeat(2, 1fr); }
         .adm-header-inner { flex-direction: column; align-items: flex-start; }
         .adm-form-row { grid-template-columns: 1fr; }
         .adm-event-card { flex-direction: column; }
+        .adm-qr-layout { grid-template-columns: 1fr; }
+        .adm-promo-card { flex-direction: column; align-items: flex-start; }
       }
       @media (max-width: 560px) {
         .adm-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
