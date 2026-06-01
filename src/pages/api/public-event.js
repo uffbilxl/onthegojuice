@@ -14,6 +14,6 @@ export default async function handler(req, res) {
   if (error) return res.status(500).json({ error: error.message });
   if (!data)  return res.status(404).json({ error: 'No upcoming events.' });
 
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+  res.setHeader('Cache-Control', 'no-store');
   return res.status(200).json(data);
 }

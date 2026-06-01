@@ -315,10 +315,15 @@ function EventsTab({ events, setEvents }) {
 
   async function handleDelete(id) {
     if (!confirm('Delete this event? This cannot be undone.')) return;
-    await fetch('/api/admin/event-config', {
+    const res = await fetch('/api/admin/event-config', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error || 'Delete failed. Please try again.');
+      return;
+    }
     setEvents(prev => prev.filter(ev => ev.id !== id));
   }
 
