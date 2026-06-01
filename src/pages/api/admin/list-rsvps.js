@@ -1,9 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { parse } from 'cookie';
 
 export default async function handler(req, res) {
-  const cookies = parse(req.headers.cookie || '');
-  if (cookies.otgj_admin !== process.env.ADMIN_PASSWORD) return res.status(401).end();
+  if (req.cookies?.otgj_admin !== process.env.ADMIN_PASSWORD) return res.status(401).end();
 
   if (req.method !== 'GET') return res.status(405).end();
 

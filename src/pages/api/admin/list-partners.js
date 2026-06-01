@@ -1,13 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { parse } from 'cookie';
-
-function isAuthorized(req) {
-  const cookies = parse(req.headers.cookie || '');
-  return cookies.otgj_admin === process.env.ADMIN_PASSWORD;
-}
 
 export default async function handler(req, res) {
-  if (!isAuthorized(req)) return res.status(401).end();
+  if (req.cookies?.otgj_admin !== process.env.ADMIN_PASSWORD) return res.status(401).end();
 
   if (req.method === 'GET') {
     const { data, error } = await supabaseAdmin

@@ -195,7 +195,7 @@
 
     async function loadEvent() {
       try {
-        const res  = await fetch('/api/public-event');
+        const res  = await fetch('/api/public-event', { cache: 'no-store' });
         if (res.status === 404) {
           document.getElementById('event-hero').style.display = 'none';
           document.getElementById('event-none').style.display = 'block';
