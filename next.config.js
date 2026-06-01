@@ -20,6 +20,8 @@ const nextConfig = {
       { source: '/privacy-policy',  destination: '/privacy-policy.html' },
       { source: '/returns',         destination: '/returns.html' },
       { source: '/terms',           destination: '/terms-conditions.html' },
+      { source: '/events',          destination: '/events.html' },
+      { source: '/partners',        destination: '/partners.html' },
     ];
   },
 };
