@@ -228,6 +228,87 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
   await sendMail({ to, subject: `Order confirmed ${orderRef} — ${FROM_NAME}`, html, text });
 }
 
+export async function sendPartnerAccepted(to, { businessName, contactName }) {
+  const firstName = (contactName || 'there').split(' ')[0];
+
+  const html = wrap(`
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:${GREEN};border-radius:50%;margin-bottom:14px">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="margin:0 0 6px;font-size:24px;font-weight:900;color:#111;letter-spacing:-0.03em">Welcome aboard, ${businessName}!</h2>
+      <p style="margin:0;font-size:14px;color:#9ca3af">Your partnership application has been approved.</p>
+    </div>
+
+    <p style="margin:0 0 18px;font-size:15px;color:#374151;line-height:1.7">
+      Hi ${firstName}, we're delighted to welcome <strong>${businessName}</strong> as an official On The Go Juice stockist.
+      We're excited to work with you and bring our fresh, cold-pressed juices to your customers.
+    </p>
+
+    <div style="background:#f9f6f1;border-left:4px solid ${GREEN};border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#111;text-transform:uppercase;letter-spacing:0.08em">What happens next</p>
+      <table cellpadding="0" cellspacing="0" style="width:100%">
+        <tr><td style="font-size:13px;color:#4b5563;line-height:2.1">
+          ✓ &nbsp;David will be in touch within 48 hours to confirm delivery schedule<br>
+          ✓ &nbsp;We'll agree on your first order quantity and pricing<br>
+          ✓ &nbsp;Your first delivery will be arranged at a time that suits you<br>
+          ✓ &nbsp;We'll provide point-of-sale materials to help you sell
+        </td></tr>
+      </table>
+    </div>
+
+    <p style="margin:0 0 28px;font-size:14px;color:#6b7280;line-height:1.65">
+      In the meantime, if you have any questions about our range, delivery times, or pricing,
+      don't hesitate to get in touch. We're always happy to help.
+    </p>
+
+    <a href="mailto:onthegojuiceadmin@gmail.com"
+       style="display:inline-block;background:${GREEN};color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
+      Get in Touch &rarr;
+    </a>
+  `);
+
+  const text = `Hi ${firstName},\n\nGreat news — ${businessName} has been approved as an On The Go Juice stockist!\n\nWhat happens next:\n- David will contact you within 48 hours to confirm delivery schedule\n- We'll agree on your first order and pricing\n- Your first delivery will be arranged at a time that suits you\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+
+  await sendMail({ to, subject: `Welcome to On The Go Juice — Partnership Approved`, html, text });
+}
+
+export async function sendPartnerDeclined(to, { businessName, contactName }) {
+  const firstName = (contactName || 'there').split(' ')[0];
+
+  const html = wrap(`
+    <h2 style="margin:0 0 12px;font-size:24px;font-weight:900;color:#111;letter-spacing:-0.03em">
+      Thank you for your interest
+    </h2>
+    <p style="margin:0 0 18px;font-size:15px;color:#374151;line-height:1.7">
+      Hi ${firstName}, thank you for reaching out about stocking On The Go Juice at <strong>${businessName}</strong>.
+      We really appreciate you taking the time to get in touch with us.
+    </p>
+    <p style="margin:0 0 18px;font-size:15px;color:#374151;line-height:1.7">
+      Unfortunately, we're unable to move forward with a partnership at this time.
+      As a small, independent business, we're carefully managing our growth to ensure
+      we can maintain the freshness and quality our customers expect from every bottle.
+    </p>
+    <p style="margin:0 0 28px;font-size:15px;color:#374151;line-height:1.7">
+      This isn't a permanent decision — as we scale our production, we'd love to revisit
+      this conversation in the future. We'll keep your details on file and may reach out
+      when we're in a position to take on new stockists.
+    </p>
+    <p style="margin:0 0 28px;font-size:14px;color:#6b7280;line-height:1.65">
+      If you have any questions or would like to stay updated on our progress,
+      feel free to reach out at any time.
+    </p>
+    <a href="mailto:onthegojuiceadmin@gmail.com"
+       style="display:inline-block;background:#111;color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
+      Get in Touch
+    </a>
+  `);
+
+  const text = `Hi ${firstName},\n\nThank you for your interest in stocking On The Go Juice at ${businessName}.\n\nUnfortunately, we're unable to move forward with a partnership at this time. As a small independent business, we're carefully managing our growth to maintain quality.\n\nThis isn't permanent — we'll keep your details on file and may reach out when we're ready to expand.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+
+  await sendMail({ to, subject: `Your On The Go Juice Partnership Inquiry`, html, text });
+}
+
 export async function sendOrderCancelled(to, { name, orderId }) {
   const firstName = (name || 'there').split(' ')[0];
   const orderRef = `#OTGJ-${orderId.slice(-8).toUpperCase()}`;

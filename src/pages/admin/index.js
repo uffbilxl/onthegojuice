@@ -99,6 +99,34 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     setPartners(prev => prev.map(p => p.id === id ? { ...p, status } : p));
   }
 
+  async function sendPartnerEmail(partner) {
+    const action = partner.status === 'active' ? 'accepted' : 'declined';
+    if (!['active', 'declined'].includes(partner.status)) {
+      alert('Set the status to Active (acceptance) or Declined before sending the email.');
+      return;
+    }
+    const label = action === 'accepted' ? 'acceptance' : 'rejection';
+    if (!confirm(`Send the ${label} email to ${partner.contact_name} at ${partner.email}?`)) return;
+
+    setPartners(prev => prev.map(p => p.id === partner.id ? { ...p, _sending: true } : p));
+    const res = await fetch('/api/admin/partner-email', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:         partner.email,
+        business_name: partner.business_name,
+        contact_name:  partner.contact_name,
+        action,
+      }),
+    });
+    if (res.ok) {
+      setPartners(prev => prev.map(p => p.id === partner.id ? { ...p, _sending: false, _sent: action } : p));
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setPartners(prev => prev.map(p => p.id === partner.id ? { ...p, _sending: false } : p));
+      alert(d.error || 'Failed to send email. Please try again.');
+    }
+  }
+
   const totalRevenue      = orders.filter(o => o.payment_status === 'paid').reduce((s, o) => s + Number(o.total_amount), 0);
   const pendingDeliveries = orders.filter(o => o.delivery_method === 'local_delivery' && o.fulfillment_status !== 'completed').length;
 
@@ -237,10 +265,12 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
               : (
                 <div className="adm-table-wrap">
                   <table className="adm-table">
-                    <thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Type</th><th>Volume / Week</th><th>Message</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Type</th><th>Volume / Week</th><th>Message</th><th>Status</th><th>Email</th></tr></thead>
                     <tbody>
                       {partners.map(p => {
                         const col = PARTNER_STATUS_COLOURS[p.status] || PARTNER_STATUS_COLOURS.new;
+                        const canEmail = p.status === 'active' || p.status === 'declined';
+                        const sentLabel = p._sent === 'accepted' ? '✓ Acceptance sent' : p._sent === 'declined' ? '✓ Rejection sent' : null;
                         return (
                           <tr key={p.id}>
                             <td className="adm-cell-date">{new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
@@ -262,6 +292,20 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                               >
                                 {['new', 'contacted', 'active', 'declined'].map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                               </select>
+                            </td>
+                            <td>
+                              {sentLabel ? (
+                                <span className="adm-email-sent">{sentLabel}</span>
+                              ) : (
+                                <button
+                                  className={`adm-btn-send-email${canEmail ? '' : ' adm-btn-send-disabled'}`}
+                                  onClick={() => canEmail && sendPartnerEmail(p)}
+                                  disabled={p._sending || !canEmail}
+                                  title={canEmail ? `Send ${p.status === 'active' ? 'acceptance' : 'rejection'} email` : 'Set status to Active or Declined first'}
+                                >
+                                  {p._sending ? 'Sending…' : canEmail ? `Send ${p.status === 'active' ? 'Acceptance' : 'Rejection'} Email` : 'Send Email'}
+                                </button>
+                              )}
                             </td>
                           </tr>
                         );
@@ -562,6 +606,11 @@ function AdminStyles() {
       .adm-btn-toggle { border-color: #d1d5db; color: var(--grey); }
       .adm-btn-danger { border-color: #fecaca; color: #b91c1c; background: #fff5f5; }
       .adm-btn-danger:hover { background: #fee2e2; }
+      .adm-btn-send-email { padding: 7px 14px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1.5px solid var(--green); background: rgba(29,108,0,0.06); color: var(--green); font-family: var(--font-main); transition: background 0.2s; white-space: nowrap; }
+      .adm-btn-send-email:hover:not(:disabled) { background: rgba(29,108,0,0.14); }
+      .adm-btn-send-email:disabled { opacity: 0.6; cursor: not-allowed; }
+      .adm-btn-send-disabled { border-color: #e5e7eb !important; background: #fafafa !important; color: #d1d5db !important; cursor: not-allowed !important; }
+      .adm-email-sent { font-size: 0.75rem; font-weight: 700; color: #15803d; white-space: nowrap; }
 
       .adm-events-list { display: flex; flex-direction: column; gap: 12px; }
       .adm-event-card { background: #fff; border-radius: 14px; padding: 20px 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1.5px solid #e5e7eb; }
