@@ -2,178 +2,206 @@
 
 /* ─── PRODUCT DATA ──────────────────────────────────────────────── */
 const PRODUCTS = [
+  // Row 1
   {
     id: 1,
-    name: 'Carrot and Milk Juice Drink',
-    ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',
-    price: 1.99,
-    size: '330ml',
-    type: 'milk',
-    image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
-  },
-  {
-    id: 2,
     name: 'Carrot and Milk Juice Drink (No Added Sugar)',
     ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',
     price: 1.99,
     size: '330ml',
     type: 'milk',
-    image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png',
+    tags: ['noSugar'],
+    image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
-    id: 3,
-    name: 'Carrot, Beetroot and Milk Juice Drink',
-    ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
-    price: 1.99,
-    size: '330ml',
-    type: 'milk',
-    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
-  },
-  {
-    id: 4,
+    id: 2,
     name: 'Carrot, Beetroot & Milk Juice Drink (No Added Sugar)',
     ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',
     price: 1.99,
     size: '330ml',
     type: 'milk',
-    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png',
+    tags: ['noSugar'],
+    image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png',
   },
   {
-    id: 5,
-    name: 'Beetroot and Milk Juice Drink',
-    ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
-    price: 1.99,
-    size: '330ml',
-    type: 'milk',
-    image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
-  },
-  {
-    id: 6,
-    name: 'Carrot and Milk (Lactose Free) Juice Drink',
-    ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
-    price: 1.99,
-    size: '330ml',
-    type: 'milk',
-    image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
-  },
-  {
-    id: 7,
-    name: 'Carrot, Beetroot and Milk (Lactose Free) Juice Drink',
-    ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
-    price: 1.99,
-    size: '330ml',
-    type: 'milk',
-    image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
-  },
-  {
-    id: 8,
-    name: 'Mango and Milk Juice Drink',
+    id: 3,
+    name: 'Mango & Milk Juice Drink',
     ingredients: 'Mango, Whole Milk',
     price: 1.99,
     size: '330ml',
     type: 'milk',
-    image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png',
+    tags: [],
+    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
-    id: 9,
-    name: 'Breadfruit and Milk Juice Drink',
-    ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',
+    id: 4,
+    name: 'Carrot, Beetroot & Milk Juice Drink (No Added Sugar)',
+    ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
     price: 1.99,
     size: '330ml',
     type: 'milk',
-    image: 'images/products/Breadfruit_and_Milk_Juice_Drink_Breadfruit-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
+    tags: ['noSugar', 'lactoseFree'],
+    image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png',
   },
+  // Row 2
   {
-    id: 10,
-    name: 'Carrot and Ginger Juice Drink',
-    ingredients: 'Carrot, Ginger, Sugar, Water',
+    id: 5,
+    name: 'Carrot, Beetroot & Milk Juice Drink',
+    ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
     price: 1.99,
     size: '330ml',
-    type: 'juice',
-    image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png',
+    type: 'milk',
+    tags: [],
+    image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
-    id: 11,
-    name: 'Carrot and Lemon Juice Drink',
-    ingredients: 'Carrot, Lemon, Sugar, Water',
-    price: 1.99,
-    size: '330ml',
-    type: 'juice',
-    image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png',
-  },
-  {
-    id: 12,
-    name: 'Carrot and Lime Juice Drink',
-    ingredients: 'Carrot, Lime, Sugar, Water',
-    price: 1.99,
-    size: '330ml',
-    type: 'juice',
-    image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png',
-  },
-  {
-    id: 13,
-    name: 'Carrot and Grapefruit Juice Drink',
-    ingredients: 'Carrot, Grapefruit, Sugar, Water',
-    price: 1.99,
-    size: '330ml',
-    type: 'juice',
-    image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png',
-  },
-  {
-    id: 14,
-    name: 'Mango and Ginger Juice Drink',
+    id: 6,
+    name: 'Mango & Ginger Juice Drink',
     ingredients: 'Mango, Ginger, Sugar, Water',
     price: 1.99,
     size: '330ml',
     type: 'juice',
-    image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png',
+    tags: [],
+    image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
-    id: 15,
-    name: 'Beetroot and Apple Juice Drink',
-    ingredients: 'Beetroot, Apple, Sugar, Water',
+    id: 7,
+    name: 'Carrot & Milk Juice Drink',
+    ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
     price: 1.99,
     size: '330ml',
-    type: 'juice',
-    image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png',
+    type: 'milk',
+    tags: ['lactoseFree'],
+    image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png',
   },
   {
-    id: 16,
+    id: 8,
     name: 'Sorrel Juice Drink',
     ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',
     price: 1.99,
     size: '330ml',
     type: 'juice',
-    image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png',
+    tags: [],
+    image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png',
+  },
+  // Row 3
+  {
+    id: 9,
+    name: 'GO SHOT Ginger & Apple Ginger',
+    ingredients: 'Apple, Lemon, Ginger',
+    price: 1.50,
+    size: '60ml',
+    type: 'shot',
+    tags: [],
+    image: 'images/products/go-shot-apple-ginger.png',
   },
   {
-    id: 17,
-    name: 'Go Shot Ginger & Apple Ginger',
-    ingredients: 'Apple, Lemon',
-    price: 1.50,
+    id: 10,
+    name: 'Carrot and Lemon Juice Drink',
+    ingredients: 'Carrot, Lemon, Sugar, Water',
+    price: 1.99,
     size: '330ml',
+    type: 'juice',
+    tags: [],
+    image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png',
+  },
+  {
+    id: 11,
+    name: 'Breadfruit and Milk Juice Drink',
+    ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',
+    price: 1.99,
+    size: '330ml',
+    type: 'milk',
+    tags: [],
+    image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png',
+  },
+  {
+    id: 12,
+    name: 'Carrot & Grapefruit Juice Drink',
+    ingredients: 'Carrot, Grapefruit, Sugar, Water',
+    price: 1.99,
+    size: '330ml',
+    type: 'juice',
+    tags: [],
+    image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png',
+  },
+  // Row 4
+  {
+    id: 13,
+    name: 'Carrot and Ginger Juice Drink',
+    ingredients: 'Carrot, Ginger, Sugar, Water',
+    price: 1.99,
+    size: '330ml',
+    type: 'juice',
+    tags: [],
+    image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png',
+  },
+  {
+    id: 14,
+    name: 'Beetroot & Apple Juice Drink',
+    ingredients: 'Beetroot, Apple, Sugar, Water',
+    price: 1.99,
+    size: '330ml',
+    type: 'juice',
+    tags: [],
+    image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png',
+  },
+  {
+    id: 15,
+    name: 'Beetroot & Milk Juice Drink',
+    ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
+    price: 1.99,
+    size: '330ml',
+    type: 'milk',
+    tags: [],
+    image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png',
+  },
+  {
+    id: 16,
+    name: 'Carrot and Lime Juice Drink',
+    ingredients: 'Lime, Sugar, Water, Carrot',
+    price: 1.99,
+    size: '330ml',
+    type: 'juice',
+    tags: [],
+    image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png',
+  },
+  // Row 5
+  {
+    id: 17,
+    name: 'GO Shot Ginger & Pineapple Ginger',
+    ingredients: 'Pineapple, Lemon, Ginger',
+    price: 1.50,
+    size: '60ml',
     type: 'shot',
-    image: 'images/products/Go_Shot_Ginger_and_Apple_Ginger_Apple-Lemon.png',
+    tags: [],
+    image: 'images/products/go-shot-pineapple-ginger.png',
   },
   {
     id: 18,
-    name: 'Go Shot Ginger & Pineapple Ginger',
-    ingredients: 'Pineapple, Lemon',
+    name: 'Ginger and Turmeric Wellness Shot',
+    ingredients: 'Ginger, Turmeric, Lemon',
     price: 1.50,
-    size: '330ml',
+    size: '60ml',
     type: 'shot',
-    image: 'images/products/Go_Shot_Ginger_and_Pineapple_Ginger_Pineapple-Lemon.png',
+    tags: [],
+    image: 'images/products/ginger-turmeric-wellness-shot.png',
   },
   {
     id: 19,
-    name: 'Ginger & Turmeric Wellness Shot',
-    ingredients: 'Ginger, Turmeric, Lemon',
-    price: 1.50,
+    name: 'Carrot and Milk Juice Drink',
+    ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',
+    price: 1.99,
     size: '330ml',
-    type: 'shot',
+    type: 'milk',
+    tags: [],
     image: 'images/products/Ginger_and_Turmeric_Wellness_Shot_Ginger-Turmeric-Lemon.png',
   },
 ];
+
+/* ─── FILTER STATE ──────────────────────────────────────────────── */
+let activeCategoryFilter = 'all';
+const activeDietaryFilters = new Set();
 
 /* ─── CART STATE ────────────────────────────────────────────────── */
 let cart = JSON.parse(localStorage.getItem('otgj_cart') || '[]');
@@ -191,11 +219,26 @@ function cartItemCount() {
 }
 
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
-function renderProducts(filter = 'all') {
+const TYPE_ORDER = { juice: 0, milk: 1, shot: 2 };
+
+function renderProducts(categoryFilter = 'all', dietaryFilters = new Set()) {
   const grid = document.getElementById('products-grid');
   grid.innerHTML = '';
 
-  const filtered = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
+  let filtered = categoryFilter === 'all'
+    ? [...PRODUCTS].sort((a, b) => TYPE_ORDER[a.type] - TYPE_ORDER[b.type])
+    : PRODUCTS.filter(p => p.type === categoryFilter);
+
+  if (dietaryFilters.size > 0) {
+    filtered = filtered.filter(p =>
+      [...dietaryFilters].every(tag => p.tags.includes(tag))
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
+    return;
+  }
 
   filtered.forEach((p, idx) => {
     const card = document.createElement('div');
@@ -218,8 +261,9 @@ function renderProducts(filter = 'all') {
         </div>
       </div>
       <div class="card-body">
-        <div class="card-size">${p.size} · ${p.type === 'shot' ? 'Wellness Shot' : p.type === 'milk' ? 'Milk Blend' : 'Cold-Pressed Juice'}</div>
+        <div class="card-size">${p.size}</div>
         <h3 class="card-name">${p.name}</h3>
+        ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
         <p class="card-ingredients-mobile">${p.ingredients}</p>
         <p class="card-price">£${p.price.toFixed(2)}</p>
         <div class="card-actions">
@@ -236,7 +280,6 @@ function renderProducts(filter = 'all') {
     grid.appendChild(card);
   });
 
-  // Trigger fade animations
   requestAnimationFrame(() => {
     document.querySelectorAll('.product-card.fade-up').forEach(el => {
       el.classList.add('visible');
@@ -474,7 +517,25 @@ function initFilterTabs() {
     if (!btn) return;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    renderProducts(btn.dataset.filter);
+    activeCategoryFilter = btn.dataset.filter;
+    renderProducts(activeCategoryFilter, activeDietaryFilters);
+  });
+}
+
+/* ─── DIETARY FILTERS ────────────────────────────────────────────── */
+function initDietaryFilters() {
+  document.getElementById('dietary-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.dietary-btn');
+    if (!btn) return;
+    const tag = btn.dataset.tag;
+    if (activeDietaryFilters.has(tag)) {
+      activeDietaryFilters.delete(tag);
+      btn.classList.remove('active');
+    } else {
+      activeDietaryFilters.add(tag);
+      btn.classList.add('active');
+    }
+    renderProducts(activeCategoryFilter, activeDietaryFilters);
   });
 }
 
@@ -489,14 +550,21 @@ function initAnchorLinks() {
       window.scrollTo({ top: offset, behavior: 'smooth' });
       // Close mobile menu
       document.getElementById('mobile-menu').classList.remove('open');
+      document.getElementById('nav-burger').classList.remove('open');
+      document.getElementById('site-header').classList.remove('menu-open');
     });
   });
 }
 
 /* ─── MOBILE MENU ────────────────────────────────────────────────── */
 function initMobileMenu() {
-  document.getElementById('nav-burger').addEventListener('click', () => {
-    document.getElementById('mobile-menu').classList.toggle('open');
+  const burger = document.getElementById('nav-burger');
+  const menu   = document.getElementById('mobile-menu');
+  const header = document.getElementById('site-header');
+  burger.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('open');
+    burger.classList.toggle('open', isOpen);
+    header.classList.toggle('menu-open', isOpen);
   });
 }
 
@@ -511,6 +579,18 @@ function initRewards() {
   });
 
   close.addEventListener('click', () => modal.classList.remove('open'));
+
+  const joinBtn = modal.querySelector('.rewards-join');
+  if (joinBtn) {
+    joinBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+      const popup = document.getElementById('welcome-popup');
+      if (popup) {
+        localStorage.removeItem('otgj_popup_shown');
+        popup.classList.add('visible');
+      }
+    });
+  }
 
   document.addEventListener('click', e => {
     if (
@@ -552,10 +632,35 @@ function initPopup() {
   document.getElementById('popup-close').addEventListener('click', closePopup);
   document.getElementById('popup-skip').addEventListener('click', closePopup);
 
-  document.getElementById('popup-form').addEventListener('submit', e => {
+  document.getElementById('popup-form').addEventListener('submit', async e => {
     e.preventDefault();
-    showToast("You're in! Check your inbox for your 20% off code.");
-    closePopup();
+    const input = e.target.querySelector('input[type="email"]');
+    const email = input?.value?.trim();
+    if (!email) return;
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Something went wrong. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
+        return;
+      }
+
+      showToast("Code sent! Check your inbox — or spam folder if you don't see it.");
+      closePopup();
+    } catch {
+      showToast('Something went wrong. Please try again.');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
+    }
   });
 
   popup.addEventListener('click', e => {
@@ -600,15 +705,41 @@ function createPlaceholder(width, height, text, bg = '#1d6c00') {
   return canvas.toDataURL();
 }
 
+/* ─── SPLASH SCREEN ─────────────────────────────────────────────── */
+(function initSplash() {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+  document.body.style.overflow = 'hidden';
+
+  const MIN_MS = 1500;
+  const t0 = Date.now();
+
+  function hide() {
+    const delay = Math.max(0, MIN_MS - (Date.now() - t0));
+    setTimeout(() => {
+      splash.classList.add('fade-out');
+      document.body.style.overflow = '';
+      setTimeout(() => splash.remove(), 600);
+    }, delay);
+  }
+
+  if (document.readyState === 'complete') {
+    hide();
+  } else {
+    window.addEventListener('load', hide, { once: true });
+  }
+})();
+
 /* ─── INIT ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof AOS !== 'undefined') {
     AOS.init({ once: true, duration: 650, easing: 'ease-out-cubic', offset: 60 });
   }
 
-  renderProducts();
+  renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
   initFilterTabs();
+  initDietaryFilters();
   initAnchorLinks();
   initMobileMenu();
   initRewards();
