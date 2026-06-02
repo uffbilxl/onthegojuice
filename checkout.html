@@ -59,6 +59,11 @@
               <input type="tel" id="phone" placeholder=" " autocomplete="tel" />
               <label for="phone">Phone Number</label>
             </div>
+            <!-- Student discount banner — shown automatically for .ac.uk emails -->
+            <div id="student-banner" style="display:none;align-items:center;gap:10px;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:12px 16px;font-size:0.85rem;font-weight:600;color:#1d4ed8;margin-top:4px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              Student Discount Applied — 20% Off Your Order!
+            </div>
             <button class="co-next-btn" data-next="section-delivery">Continue to Delivery</button>
           </div>
         </div>
@@ -184,6 +189,21 @@
         <div class="co-summary-items" id="co-summary-items">
           <div class="co-summary-empty">Your cart is empty. <a href="/#products">Shop now</a></div>
         </div>
+        <!-- Loyalty points toggle — shown when user has points (set by account page) -->
+        <div id="loyalty-section" style="display:none;padding:14px 0 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:12px 16px;">
+            <div>
+              <div style="font-size:0.83rem;font-weight:700;color:#7c3aed">Use Loyalty Points</div>
+              <div id="loyalty-balance" style="font-size:0.75rem;color:#6b7280;margin-top:2px"></div>
+            </div>
+            <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;cursor:pointer">
+              <input type="checkbox" id="loyalty-toggle" style="opacity:0;width:0;height:0;position:absolute" />
+              <span id="loyalty-knob-track" style="position:absolute;inset:0;background:#d1d5db;border-radius:999px;transition:background 0.25s"></span>
+              <span id="loyalty-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:transform 0.25s"></span>
+            </label>
+          </div>
+        </div>
+
         <!-- Promo code -->
         <div class="co-promo">
           <button type="button" class="co-promo-toggle" id="co-promo-toggle">
@@ -213,6 +233,14 @@
           <div class="co-summary-row" id="co-discount-row" style="display:none">
             <span>Discount (<span id="co-discount-label"></span>)</span>
             <span id="co-discount-amount" style="color:#1d6c00;font-weight:600">–£0.00</span>
+          </div>
+          <div class="co-summary-row" id="co-student-row" style="display:none">
+            <span style="color:#1d4ed8;font-weight:600">Student Discount (20%)</span>
+            <span id="co-student-amount" style="color:#1d4ed8;font-weight:600">–£0.00</span>
+          </div>
+          <div class="co-summary-row" id="co-loyalty-row" style="display:none">
+            <span style="color:#7c3aed;font-weight:600">Loyalty Points</span>
+            <span id="co-loyalty-amount" style="color:#7c3aed;font-weight:600">–£0.00</span>
           </div>
           <div class="co-summary-row"><span>Delivery</span><span id="co-delivery-cost">—</span></div>
           <div class="co-summary-row total"><span>Total</span><span id="co-total">£0.00</span></div>
