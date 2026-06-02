@@ -435,11 +435,7 @@ function initRewards() {
   if (joinBtn) {
     joinBtn.addEventListener('click', () => {
       modal.classList.remove('open');
-      const popup = document.getElementById('welcome-popup');
-      if (popup) {
-        localStorage.removeItem('otgj_popup_shown');
-        popup.classList.add('visible');
-      }
+      window.location.href = '/account';
     });
   }
 
@@ -483,35 +479,11 @@ function initPopup() {
   document.getElementById('popup-close').addEventListener('click', closePopup);
   document.getElementById('popup-skip').addEventListener('click', closePopup);
 
-  document.getElementById('popup-form').addEventListener('submit', async e => {
+  // The popup form now routes users to the secure account page for their discount
+  document.getElementById('popup-form').addEventListener('submit', e => {
     e.preventDefault();
-    const input = e.target.querySelector('input[type="email"]');
-    const email = input?.value?.trim();
-    if (!email) return;
-
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
-
-    try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        showToast(data.error || 'Something went wrong. Please try again.');
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
-        return;
-      }
-
-      showToast("Code sent! Check your inbox — or spam folder if you don't see it.");
-      closePopup();
-    } catch {
-      showToast('Something went wrong. Please try again.');
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Claim My Discount'; }
-    }
+    closePopup();
+    window.location.href = '/account';
   });
 
   popup.addEventListener('click', e => {

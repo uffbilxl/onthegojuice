@@ -1,13 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { sendWelcomeDiscount } from '@/lib/mailer';
 
-function generateCode() {
-  // Avoid visually confusing chars (0/O, 1/I/l)
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  return `OTGJ${rand}`;
-}
-
+// Newsletter sign-up only — no discount codes generated here.
+// Welcome discounts are now issued exclusively to verified accounts at /account.
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -18,36 +12,28 @@ export default async function handler(req, res) {
 
   const normalised = email.toLowerCase().trim();
 
-  // If they already have a welcome code, just resend it
-  const { data: existing } = await supabaseAdmin
+  // Record the newsletter subscriber (idempotent — ignore duplicate emails)
+  const { error } = await supabaseAdmin
     .from('discount_codes')
-    .select('code')
-    .eq('email', normalised)
-    .eq('type', 'welcome')
+    .insert({
+      code:             `NEWS-${Date.now()}`, // placeholder, not a real discount
+      email:            normalised,
+      type:             'newsletter',
+      discount_percent: 0,
+      min_order_pence:  0,
+    })
+    .select()
     .maybeSingle();
 
-  let code = existing?.code;
-
-  if (!code) {
-    code = generateCode();
-    const { error } = await supabaseAdmin.from('discount_codes').insert({
-      code,
-      email: normalised,
-      type: 'welcome',
-      discount_percent: 20,
-      min_order_pence: 1000,
-    });
-    if (error) {
-      console.error('[subscribe] DB insert error:', error.message);
-      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
-    }
+  // Silently swallow duplicate errors — the important thing is the user sees success
+  if (error && !error.message.includes('unique')) {
+    console.error('[subscribe]', error.message);
   }
 
-  try {
-    await sendWelcomeDiscount(normalised, code);
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    console.error('[subscribe] Email error:', err.message);
-    return res.status(500).json({ error: 'Failed to send email. Please try again.' });
-  }
+  // Redirect users to sign up for the real discount
+  return res.status(200).json({
+    success: true,
+    message: 'Thanks for subscribing! Create a free account to unlock your 20% welcome discount.',
+    redirect: '/account',
+  });
 }
