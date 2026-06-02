@@ -57,7 +57,19 @@ export default function AccountPage() {
   async function handleRegister(e) {
     e.preventDefault();
     setError(''); setSubmitting(true);
-    const { data, error: err } = await supabase.auth.signUp({ email, password });
+
+    // Dynamically resolve the redirect so local dev and every Vercel
+    // preview URL work without any extra environment variables.
+    const origin = typeof window !== 'undefined'
+      ? window.location.origin
+      : (process.env.NEXT_PUBLIC_SITE_URL || 'https://onthegojuice.vercel.app');
+
+    const { data, error: err } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${origin}/account` },
+    });
+
     if (err) { setError(err.message); setSubmitting(false); return; }
     if (data.session) {
       await loadProfile(data.session.access_token);
