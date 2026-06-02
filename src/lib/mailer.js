@@ -105,9 +105,9 @@ export async function sendFreeBottleReward(to, code) {
 
     <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;width:100%">
       <tr><td style="font-size:13px;color:#6b7280;line-height:2">
-        ✓ &nbsp;£1.99 off your next order<br>
+        ✓ &nbsp;Up to £4.99 off your next order<br>
         ✓ &nbsp;No minimum spend<br>
-        ✓ &nbsp;Single use
+        ✓ &nbsp;Single use — earned by you
       </td></tr>
     </table>
 
