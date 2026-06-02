@@ -4,6 +4,9 @@ import { sendFreeBottleReward, sendOrderConfirmation } from '@/lib/mailer';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Points rate: £1 spent = 10 points (100 pence = 10 points → 10 pence = 1 point)
+const POINTS_PER_10P = 1;
+
 function generateFreeBottleCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const rand = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
@@ -24,7 +27,7 @@ async function readRawBody(readable) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const rawBody = await readRawBody(req);
+  const rawBody  = await readRawBody(req);
   const signature = req.headers['stripe-signature'];
 
   let event;
@@ -37,7 +40,7 @@ export default async function handler(req, res) {
 
   // ── Payment Intent (Stripe Elements flow) ────────────────────────
   if (event.type === 'payment_intent.succeeded') {
-    const pi = event.data.object;
+    const pi   = event.data.object;
     const meta = pi.metadata || {};
     const ship = pi.shipping;
 
@@ -51,33 +54,33 @@ export default async function handler(req, res) {
           .filter(Boolean).join(', ')
       : '';
 
-    const { error } = await supabaseAdmin.from('orders').insert({
-      customer_name: meta.customer_name || ship?.name || '',
-      customer_email: meta.customer_email || '',
-      customer_phone: meta.customer_phone || ship?.phone || '',
-      delivery_method: meta.delivery_method || 'pickup',
-      shipping_address: shippingAddress,
-      postcode: meta.postcode || ship?.address?.postal_code || '',
+    const { error: orderErr } = await supabaseAdmin.from('orders').insert({
+      customer_name:      meta.customer_name || ship?.name || '',
+      customer_email:     meta.customer_email || '',
+      customer_phone:     meta.customer_phone || ship?.phone || '',
+      delivery_method:    meta.delivery_method || 'pickup',
+      shipping_address:   shippingAddress,
+      postcode:           meta.postcode || ship?.address?.postal_code || '',
       items,
-      total_amount: pi.amount / 100,
-      payment_status: 'paid',
+      total_amount:       pi.amount / 100,
+      payment_status:     'paid',
       fulfillment_status: 'processing',
-      stripe_session_id: pi.id,
+      stripe_session_id:  pi.id,
     });
 
-    if (error) console.error('[webhook] Supabase insert error:', error.message);
+    if (orderErr) console.error('[webhook] Supabase insert error:', orderErr.message);
 
     // Send order confirmation email
     if (meta.customer_email) {
       try {
         await sendOrderConfirmation(meta.customer_email, {
-          name: meta.customer_name || '',
-          orderId: pi.id,
+          name:            meta.customer_name || '',
+          orderId:         pi.id,
           items,
-          deliveryMethod: meta.delivery_method || 'pickup',
-          shippingAddress: shippingAddress,
-          totalPence: pi.amount,
-          discountPence: parseInt(meta.discount_pence || '0', 10),
+          deliveryMethod:  meta.delivery_method || 'pickup',
+          shippingAddress,
+          totalPence:      pi.amount,
+          discountPence:   parseInt(meta.discount_pence || '0', 10),
         });
       } catch (e) {
         console.error('[webhook] Failed to send order confirmation:', e.message);
@@ -85,18 +88,16 @@ export default async function handler(req, res) {
     }
 
     // Mark discount code as used
-    const discountCode = meta.discount_code;
-    if (discountCode) {
-      const { error: dcErr } = await supabaseAdmin
+    if (meta.discount_code) {
+      await supabaseAdmin
         .from('discount_codes')
         .update({ used: true, used_at: new Date().toISOString(), used_by_order: pi.id })
-        .eq('code', discountCode)
+        .eq('code', meta.discount_code)
         .eq('used', false);
-      if (dcErr) console.error('[webhook] Failed to mark discount code used:', dcErr.message);
     }
 
-    // Bottle reward tracking (7 bottles → 1 free)
-    const customerEmail = meta.customer_email;
+    // ── Bottle reward tracking (7 bottles → 1 free) ───────────────
+    const customerEmail  = meta.customer_email;
     if (customerEmail) {
       const bottlesOrdered = items.reduce((s, i) => s + (i.q || i.qty || 0), 0);
       if (bottlesOrdered > 0) {
@@ -106,9 +107,9 @@ export default async function handler(req, res) {
           .eq('email', customerEmail)
           .maybeSingle();
 
-        const prevBottles = existing?.bottles_purchased || 0;
-        const prevRewards = existing?.rewards_sent || 0;
-        const newBottles = prevBottles + bottlesOrdered;
+        const prevBottles  = existing?.bottles_purchased || 0;
+        const prevRewards  = existing?.rewards_sent || 0;
+        const newBottles   = prevBottles + bottlesOrdered;
         const newRewardCount = Math.floor(newBottles / 7);
 
         await supabaseAdmin.from('customer_rewards').upsert(
@@ -116,7 +117,6 @@ export default async function handler(req, res) {
           { onConflict: 'email' }
         );
 
-        // Send a free bottle code for each newly earned reward
         for (let r = prevRewards + 1; r <= newRewardCount; r++) {
           const code = generateFreeBottleCode();
           const { error: codeErr } = await supabaseAdmin.from('discount_codes').insert({
@@ -132,6 +132,30 @@ export default async function handler(req, res) {
             );
           }
         }
+      }
+    }
+
+    // ── Loyalty points: award earned, deduct redeemed ─────────────
+    if (customerEmail) {
+      const pointsRedeemed = parseInt(meta.loyalty_points_redeemed || '0', 10);
+      // Award 1 point per 10p spent (= 10 points per £1)
+      const pointsEarned   = Math.floor(pi.amount / 10) * POINTS_PER_10P;
+
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('loyalty_points')
+        .eq('email', customerEmail)
+        .maybeSingle();
+
+      if (profile) {
+        const newPoints = Math.max(0, profile.loyalty_points - pointsRedeemed + pointsEarned);
+        const { error: pointsErr } = await supabaseAdmin
+          .from('profiles')
+          .update({ loyalty_points: newPoints, updated_at: new Date().toISOString() })
+          .eq('email', customerEmail);
+
+        if (pointsErr) console.error('[webhook] Failed to update loyalty points:', pointsErr.message);
+        else console.log(`[webhook] Loyalty points for ${customerEmail}: -${pointsRedeemed} redeemed, +${pointsEarned} earned → ${newPoints} total`);
       }
     }
   }
@@ -152,8 +176,8 @@ export default async function handler(req, res) {
         { limit: 50, expand: ['data.price.product'] }
       );
       lineItems = expanded.data.map(li => ({
-        name: li.description || li.price?.product?.name || 'Item',
-        qty: li.quantity,
+        name:  li.description || li.price?.product?.name || 'Item',
+        qty:   li.quantity,
         price: (li.price?.unit_amount ?? 0) / 100,
       }));
     } catch {
@@ -162,27 +186,41 @@ export default async function handler(req, res) {
       } catch {}
     }
 
-    const meta = session.metadata || {};
+    const meta     = session.metadata || {};
     const shipping = session.shipping_details;
 
-    const { error } = await supabaseAdmin.from('orders').insert({
-      customer_name: session.customer_details?.name || '',
-      customer_email: session.customer_details?.email || '',
-      customer_phone: session.customer_details?.phone || meta.customer_phone || '',
-      delivery_method: meta.delivery_method || 'pickup',
-      shipping_address: shipping
+    const { error: sessOrderErr } = await supabaseAdmin.from('orders').insert({
+      customer_name:      session.customer_details?.name || '',
+      customer_email:     session.customer_details?.email || '',
+      customer_phone:     session.customer_details?.phone || meta.customer_phone || '',
+      delivery_method:    meta.delivery_method || 'pickup',
+      shipping_address:   shipping
         ? [shipping.address?.line1, shipping.address?.line2, shipping.address?.city, shipping.address?.postal_code]
             .filter(Boolean).join(', ')
         : meta.shipping_address || '',
-      postcode: shipping?.address?.postal_code || '',
-      items: lineItems,
-      total_amount: (session.amount_total ?? 0) / 100,
-      payment_status: 'paid',
+      postcode:           shipping?.address?.postal_code || '',
+      items:              lineItems,
+      total_amount:       (session.amount_total ?? 0) / 100,
+      payment_status:     'paid',
       fulfillment_status: 'processing',
-      stripe_session_id: session.id,
+      stripe_session_id:  session.id,
     });
 
-    if (error) console.error('[webhook] Supabase insert error (session):', error.message);
+    if (sessOrderErr) console.error('[webhook] Supabase insert error (session):', sessOrderErr.message);
+
+    // Award loyalty points for session-based checkout
+    const sessEmail = session.customer_details?.email;
+    if (sessEmail && session.amount_total) {
+      const pointsEarned = Math.floor(session.amount_total / 10) * POINTS_PER_10P;
+      const { data: profile } = await supabaseAdmin
+        .from('profiles').select('loyalty_points').eq('email', sessEmail).maybeSingle();
+      if (profile) {
+        await supabaseAdmin
+          .from('profiles')
+          .update({ loyalty_points: profile.loyalty_points + pointsEarned, updated_at: new Date().toISOString() })
+          .eq('email', sessEmail);
+      }
+    }
   }
 
   return res.status(200).json({ received: true });

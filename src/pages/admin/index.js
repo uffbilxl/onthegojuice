@@ -30,6 +30,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [rsvps,      setRsvps]      = useState(null);
   const [partners,   setPartners]   = useState(null);
   const [promotions, setPromotions] = useState(null);
+  const [products,   setProducts]   = useState(null);
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
@@ -39,6 +40,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (tab === 'rsvps'      && rsvps      === null) fetch('/api/admin/list-rsvps').then(r=>r.json()).then(setRsvps).catch(()=>setRsvps([]));
     if (tab === 'partners'   && partners   === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
     if (tab === 'promotions' && promotions === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
+    if (tab === 'products'   && products   === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
   }, [tab]);
 
   if (!authorized) {
@@ -141,7 +143,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['qrcodes','QR Codes']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['qrcodes','QR Codes']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
                 {id === 'orders'     && <span className="adm-tab-badge">{orders.length}</span>}
@@ -256,6 +258,11 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <PromotionsTab promotions={promotions} setPromotions={setPromotions} />
           )}
 
+          {/* ── PRODUCTS TAB ───────────────────────────────────────── */}
+          {tab === 'products' && (
+            <ProductsTab products={products} setProducts={setProducts} />
+          )}
+
           {/* ── QR CODES TAB ───────────────────────────────────────── */}
           {tab === 'qrcodes' && (
             <QRCodesTab />
@@ -327,6 +334,147 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
         </div>
       </div>
     </>
+  );
+}
+
+/* ── Products price editor sub-component ────────────────────────── */
+const CATEGORY_LABELS = { juice: 'Core Wellness', milk: 'Creamy Nutrition', shot: 'Functional Shot' };
+const CATEGORY_COLOURS = {
+  juice: { bg: '#f0fdf4', text: '#15803d' },
+  milk:  { bg: '#eff6ff', text: '#1d4ed8' },
+  shot:  { bg: '#fef9c3', text: '#854d0e' },
+};
+
+function ProductsTab({ products, setProducts }) {
+  const [editing,  setEditing]  = useState(null); // product id being edited
+  const [editVal,  setEditVal]  = useState('');   // price string in input
+  const [saving,   setSaving]   = useState(null);
+  const [error,    setError]    = useState('');
+
+  function startEdit(product) {
+    setEditing(product.id);
+    setEditVal((product.price_pence / 100).toFixed(2));
+    setError('');
+  }
+
+  async function savePrice(product) {
+    const pence = Math.round(parseFloat(editVal) * 100);
+    if (!pence || pence <= 0 || isNaN(pence)) { setError('Enter a valid price (e.g. 3.99)'); return; }
+    setSaving(product.id); setError('');
+    const res  = await fetch('/api/admin/products', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: product.id, price_pence: pence }),
+    });
+    const data = await res.json();
+    setSaving(null);
+    if (!res.ok) { setError(data.error || 'Save failed.'); return; }
+    setProducts(prev => prev.map(p => p.id === data.id ? data : p));
+    setEditing(null);
+  }
+
+  async function toggleActive(product) {
+    setSaving(product.id);
+    const res  = await fetch('/api/admin/products', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: product.id, active: !product.active }),
+    });
+    const data = await res.json();
+    setSaving(null);
+    if (res.ok) setProducts(prev => prev.map(p => p.id === data.id ? data : p));
+  }
+
+  return (
+    <div>
+      <div className="adm-section-header">
+        <h2>Product Catalogue</h2>
+        <span className="adm-section-count">Edit prices live — changes apply instantly at checkout</span>
+      </div>
+      <p style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: 24, lineHeight: 1.6 }}>
+        Prices here are the server-authoritative values charged at checkout. The shop frontend also fetches these prices, so changes appear immediately without a deployment.
+      </p>
+
+      {products === null ? (
+        <div className="adm-empty">Loading…</div>
+      ) : products.length === 0 ? (
+        <div className="adm-empty">No products found. Run the migration SQL to seed the table.</div>
+      ) : (
+        <>
+          {error && <p className="adm-form-error" style={{ marginBottom: 16 }}>{error}</p>}
+          <div className="adm-table-wrap">
+            <table className="adm-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map(p => {
+                  const catCol = CATEGORY_COLOURS[p.category] || { bg: '#f3f4f6', text: '#374151' };
+                  const isEditing = editing === p.id;
+                  return (
+                    <tr key={p.id} style={{ opacity: p.active ? 1 : 0.5 }}>
+                      <td style={{ fontWeight: 700, color: '#9ca3af', width: 40 }}>{p.id}</td>
+                      <td style={{ fontWeight: 500, maxWidth: 280 }}>{p.name}</td>
+                      <td>
+                        <span className="adm-payment-badge" style={{ background: catCol.bg, color: catCol.text }}>
+                          {CATEGORY_LABELS[p.category] || p.category}
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 700, fontFamily: 'var(--font-accent)', whiteSpace: 'nowrap' }}>
+                        {isEditing ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ color: '#6b7280' }}>£</span>
+                            <input
+                              className="adm-input"
+                              style={{ width: 80, padding: '6px 10px', fontSize: '0.88rem' }}
+                              value={editVal}
+                              onChange={e => setEditVal(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') savePrice(p); if (e.key === 'Escape') setEditing(null); }}
+                              autoFocus
+                            />
+                          </div>
+                        ) : (
+                          `£${(p.price_pence / 100).toFixed(2)}`
+                        )}
+                      </td>
+                      <td>
+                        <span className="adm-payment-badge" style={{ background: p.active ? '#dcfce7' : '#f3f4f6', color: p.active ? '#15803d' : '#6b7280' }}>
+                          {p.active ? 'Active' : 'Hidden'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          {isEditing ? (
+                            <>
+                              <button className="adm-btn-sm adm-btn-primary" style={{ fontSize: '0.72rem' }} onClick={() => savePrice(p)} disabled={saving === p.id}>
+                                {saving === p.id ? 'Saving…' : 'Save'}
+                              </button>
+                              <button className="adm-btn-sm" onClick={() => setEditing(null)}>Cancel</button>
+                            </>
+                          ) : (
+                            <>
+                              <button className="adm-btn-sm" onClick={() => startEdit(p)}>Edit Price</button>
+                              <button className="adm-btn-sm adm-btn-toggle" onClick={() => toggleActive(p)} disabled={saving === p.id}>
+                                {saving === p.id ? '…' : p.active ? 'Hide' : 'Show'}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
