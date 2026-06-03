@@ -1,4 +1,4 @@
--- Hide Carrot, Beetroot & Milk Juice Drink (plain/regular) until a bottle image is available
+-- Re-activate Carrot, Beetroot & Milk Juice Drink now that a bottle image is available
 UPDATE public.products
-SET active = false
+SET active = true
 WHERE id = 5;

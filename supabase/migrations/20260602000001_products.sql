@@ -47,7 +47,7 @@ INSERT INTO public.products (id, name, category, price_pence, active) VALUES
   (2,  'Carrot, Beetroot & Milk Juice Drink (No Added Sugar)',  'milk',  499, true),
   (3,  'Mango & Milk Juice Drink',                              'milk',  499, true),
   (4,  'Carrot, Beetroot & Milk Juice Drink (Lactose Free)',    'milk',  499, true),
-  (5,  'Carrot, Beetroot & Milk Juice Drink',                   'milk',  499, false),
+  (5,  'Carrot, Beetroot & Milk Juice Drink',                   'milk',  499, true),
   (6,  'Mango & Ginger Juice Drink',                            'juice', 399, true),
   (7,  'Carrot & Milk Juice Drink (Lactose Free)',               'milk',  499, true),
   (8,  'Sorrel Juice Drink',                                    'juice', 399, true),
