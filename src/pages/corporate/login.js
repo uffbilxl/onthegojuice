@@ -43,7 +43,7 @@ export default function CorporateLoginPage() {
         .select('role')
         .eq('id', session.user.id)
         .single();
-      if (profile?.role === 'corporate') {
+      if (profile?.role === 'corporate' || profile?.role === 'admin') {
         setCorporateCookie();
         router.replace('/corporate/dashboard');
       }
@@ -69,9 +69,9 @@ export default function CorporateLoginPage() {
       setSubmitting(false); return;
     }
 
-    if (profile.role !== 'corporate') {
+    if (profile.role !== 'corporate' && profile.role !== 'admin') {
       await supabase.auth.signOut();
-      setError('This portal is for corporate accounts only. Regular customers can sign in at /login.');
+      setError('Unauthorized: Corporate accounts only. Regular customers can sign in at /login.');
       setSubmitting(false); return;
     }
 
