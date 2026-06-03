@@ -31,6 +31,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [partners,   setPartners]   = useState(null);
   const [promotions, setPromotions] = useState(null);
   const [products,   setProducts]   = useState(null);
+  const [users,      setUsers]      = useState(null);
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
@@ -41,6 +42,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (tab === 'partners'   && partners   === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
     if (tab === 'promotions' && promotions === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
     if (tab === 'products'   && products   === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
+    if (tab === 'users'      && users      === null) fetch('/api/admin/users').then(r=>r.json()).then(setUsers).catch(()=>setUsers([]));
   }, [tab]);
 
   if (!authorized) {
@@ -143,13 +145,14 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['qrcodes','QR Codes']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
                 {id === 'orders'     && <span className="adm-tab-badge">{orders.length}</span>}
                 {id === 'rsvps'      && Array.isArray(rsvps)      && <span className="adm-tab-badge">{rsvps.length}</span>}
                 {id === 'partners'   && Array.isArray(partners)   && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
                 {id === 'promotions' && Array.isArray(promotions) && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
+                {id === 'users'      && Array.isArray(users)      && <span className="adm-tab-badge">{users.length}</span>}
               </button>
             ))}
           </nav>
@@ -261,6 +264,11 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
           {/* ── PRODUCTS TAB ───────────────────────────────────────── */}
           {tab === 'products' && (
             <ProductsTab products={products} setProducts={setProducts} />
+          )}
+
+          {/* ── USERS TAB ──────────────────────────────────────────── */}
+          {tab === 'users' && (
+            <UsersTab users={users} setUsers={setUsers} />
           )}
 
           {/* ── QR CODES TAB ───────────────────────────────────────── */}
@@ -793,6 +801,199 @@ function QRCodesTab() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ── Users management sub-component ─────────────────────────────── */
+const ROLE_COLOURS = {
+  customer:  { bg: '#f3f4f6', text: '#374151' },
+  corporate: { bg: '#dbeafe', text: '#1d4ed8' },
+  admin:     { bg: '#fef9c3', text: '#854d0e' },
+};
+
+function UsersTab({ users, setUsers }) {
+  const [search,  setSearch]  = useState('');
+  const [filter,  setFilter]  = useState('all');  // all | corporate | customer
+  const [saving,  setSaving]  = useState(null);
+  const [editing, setEditing] = useState({});      // { [userId]: { role, company_name } }
+  const [saved,   setSaved]   = useState({});      // { [userId]: true } for flash
+  const [error,   setError]   = useState('');
+
+  const displayed = (users || []).filter(u => {
+    const matchSearch = !search || u.email.toLowerCase().includes(search.toLowerCase()) ||
+      (u.company_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      `${u.first_name} ${u.last_name}`.toLowerCase().includes(search.toLowerCase());
+    const matchFilter = filter === 'all' || u.role === filter;
+    return matchSearch && matchFilter;
+  });
+
+  function getDraft(user) {
+    return editing[user.id] ?? { role: user.role, company_name: user.company_name || '' };
+  }
+
+  function setDraft(userId, patch) {
+    setEditing(prev => ({ ...prev, [userId]: { ...getDraft({ id: userId, role: '', company_name: '' }), ...prev[userId], ...patch } }));
+  }
+
+  function isDirty(user) {
+    const d = getDraft(user);
+    return d.role !== user.role || (d.company_name || '') !== (user.company_name || '');
+  }
+
+  async function saveUser(user) {
+    const draft = getDraft(user);
+    setSaving(user.id); setError('');
+    const res = await fetch('/api/admin/users', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, role: draft.role, company_name: draft.company_name }),
+    });
+    const data = await res.json();
+    setSaving(null);
+    if (!res.ok) { setError(data.error || 'Save failed.'); return; }
+    setUsers(prev => prev.map(u => u.id === user.id
+      ? { ...u, role: data.role, company_name: data.company_name || '' }
+      : u
+    ));
+    setEditing(prev => { const next = { ...prev }; delete next[user.id]; return next; });
+    setSaved(prev => ({ ...prev, [user.id]: true }));
+    setTimeout(() => setSaved(prev => { const next = { ...prev }; delete next[user.id]; return next; }), 2200);
+  }
+
+  const corporateCount = (users || []).filter(u => u.role === 'corporate').length;
+
+  return (
+    <div>
+      <div className="adm-section-header">
+        <h2>User Accounts</h2>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          {corporateCount > 0 && (
+            <span className="adm-section-count" style={{ background: '#dbeafe', color: '#1d4ed8' }}>
+              {corporateCount} corporate
+            </span>
+          )}
+          <span className="adm-section-count">{(users || []).length} total</span>
+        </div>
+      </div>
+
+      <p style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: 20, lineHeight: 1.6 }}>
+        Set a user's role to <strong>Corporate</strong> to give them access to the wholesale portal at <code>/corporate/dashboard</code>.
+        Add their company name so it appears on wholesale invoices.
+      </p>
+
+      {/* Search + filter bar */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+        <input
+          className="adm-input"
+          style={{ maxWidth: 320, flex: 1 }}
+          placeholder="Search by email or company…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        {['all', 'corporate', 'customer', 'admin'].map(f => (
+          <button
+            key={f}
+            className={`adm-btn-sm${filter === f ? ' adm-btn-primary' : ''}`}
+            onClick={() => setFilter(f)}
+            style={{ textTransform: 'capitalize' }}
+          >
+            {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {error && <p className="adm-form-error" style={{ marginBottom: 14 }}>{error}</p>}
+
+      {users === null ? (
+        <div className="adm-empty">Loading…</div>
+      ) : displayed.length === 0 ? (
+        <div className="adm-empty">{search ? `No users match "${search}".` : 'No users found.'}</div>
+      ) : (
+        <div className="adm-table-wrap">
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Joined</th>
+                <th>Role</th>
+                <th>Company Name</th>
+                <th>Loyalty</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayed.map(user => {
+                const draft    = getDraft(user);
+                const dirty    = isDirty(user);
+                const isSaving = saving === user.id;
+                const wasSaved = saved[user.id];
+                const roleCol  = ROLE_COLOURS[draft.role] || ROLE_COLOURS.customer;
+
+                return (
+                  <tr key={user.id}>
+                    <td>
+                      <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>
+                        {user.first_name || user.last_name
+                          ? `${user.first_name} ${user.last_name}`.trim()
+                          : <span style={{ color: '#9ca3af', fontStyle: 'italic' }}>No name</span>
+                        }
+                      </div>
+                      <a href={`mailto:${user.email}`} className="adm-email">{user.email}</a>
+                      {!user.email_verified && (
+                        <div style={{ fontSize: '0.7rem', color: '#f97316', marginTop: 2 }}>⚠ Unverified</div>
+                      )}
+                    </td>
+                    <td className="adm-cell-date">
+                      {new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td>
+                      <select
+                        className="adm-status-select"
+                        style={{ background: roleCol.bg, color: roleCol.text, minWidth: 120 }}
+                        value={draft.role}
+                        onChange={e => setDraft(user.id, { role: e.target.value })}
+                      >
+                        <option value="customer">Customer</option>
+                        <option value="corporate">Corporate</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        className="adm-input"
+                        style={{ fontSize: '0.82rem', padding: '7px 10px', minWidth: 180 }}
+                        placeholder={draft.role === 'corporate' ? 'Company Ltd' : '—'}
+                        value={draft.company_name}
+                        disabled={draft.role !== 'corporate'}
+                        onChange={e => setDraft(user.id, { company_name: e.target.value })}
+                      />
+                    </td>
+                    <td style={{ fontSize: '0.78rem', color: '#6b7280', whiteSpace: 'nowrap' }}>
+                      <div>{user.bottle_progress}/7 bottles</div>
+                      <div style={{ color: '#9ca3af' }}>{user.lifetime_bottles_bought} lifetime</div>
+                    </td>
+                    <td>
+                      {wasSaved ? (
+                        <span style={{ color: '#15803d', fontSize: '0.78rem', fontWeight: 700 }}>✓ Saved</span>
+                      ) : (
+                        <button
+                          className={`adm-btn-sm${dirty ? ' adm-btn-primary' : ''}`}
+                          onClick={() => saveUser(user)}
+                          disabled={!dirty || isSaving}
+                          style={{ opacity: (!dirty || isSaving) ? 0.45 : 1 }}
+                        >
+                          {isSaving ? 'Saving…' : 'Save'}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
