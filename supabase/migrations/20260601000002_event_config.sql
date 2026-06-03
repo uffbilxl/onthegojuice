@@ -50,7 +50,7 @@ CREATE POLICY "auth_all_event_config"
 INSERT INTO public.event_config (name, description, event_date, location_name, address, is_active)
 VALUES (
   'Birmingham City Centre Soft Launch',
-  'Our first public event — free tastings, launch-day deals, and a chance to meet the founder behind every bottle. Come and try the full range of cold-pressed juices, milk blends, and wellness shots.',
+  'Our first public event — free tastings, launch-day deals, and a chance to meet the founder behind every bottle. Come and try the full range of fresh juices, milk blends, and Go Shots.',
   '2026-07-05T10:00:00+01:00',
   'Birmingham City Centre',
   'Birmingham City Centre, Birmingham, B1 1BB',

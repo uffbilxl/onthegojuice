@@ -7,25 +7,25 @@ let PRODUCTS = [];
 
 // Static metadata keyed by product id — never changes without a code deploy
 const PRODUCT_STATIC = {
-  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                           size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',                 size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png' },
-  3:  { ingredients: 'Mango, Whole Milk',                                              size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla',    size: '330ml', type: 'milk',  tags: ['noSugar', 'lactoseFree'], image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png' },
-  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',          size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                       size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png' },
-  9:  { ingredients: 'Apple, Lemon, Ginger',                                          size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-apple-ginger.png' },
-  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png' },
-  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',                size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png' },
-  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png' },
-  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                                  size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png' },
-  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                                 size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png' },
-  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',                  size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png' },
-  16: { ingredients: 'Lime, Sugar, Water, Carrot',                                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png' },
-  17: { ingredients: 'Pineapple, Lemon, Ginger',                                      size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-pineapple-ginger.png' },
-  18: { ingredients: 'Ginger, Turmeric, Lemon',                                       size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/ginger-turmeric-wellness-shot.png' },
-  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                    size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Ginger_and_Turmeric_Wellness_Shot_Ginger-Turmeric-Lemon.png' },
+  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                           size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png' },
+  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',                 size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png' },
+  3:  { ingredients: 'Mango, Whole Milk',                                              size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png' },
+  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla',    size: '330ml', type: 'milk',  tags: ['noSugar', 'lactoseFree'], image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',          size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png' },
+  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                       size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png' },
+  9:  { ingredients: 'Apple, Lemon, Ginger',                                          size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Apple_Ginger_Apple-Lemon.png' },
+  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png' },
+  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',                size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Breadfruit_and_Milk_Juice_Drink_Breadfruit-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png' },
+  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                                  size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png' },
+  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                                 size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png' },
+  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',                  size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  16: { ingredients: 'Lime, Sugar, Water, Carrot',                                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png' },
+  17: { ingredients: 'Pineapple, Lemon, Ginger',                                      size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Pineapple_Ginger_Pineapple-Lemon.png' },
+  18: { ingredients: 'Ginger, Turmeric, Lemon',                                       size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Turmeric_Ginger-Turmeric-Lemon.png' },
+  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                    size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
 };
 
 async function loadProducts() {
@@ -107,7 +107,7 @@ function renderProducts(categoryFilter = 'all', dietaryFilters = new Set()) {
         <div class="card-overlay">
           <span class="overlay-label">Ingredients</span>
           <p class="overlay-ingredients">${p.ingredients}</p>
-          <span class="overlay-type-badge">${p.type === 'shot' ? 'Wellness Shot' : p.type === 'milk' ? 'Milk Blend' : 'Cold-Pressed Juice'}</span>
+          <span class="overlay-type-badge">${p.type === 'shot' ? 'Go Shot' : p.type === 'milk' ? 'Milk Blend' : 'Fresh Juice'}</span>
         </div>
       </div>
       <div class="card-body">
