@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const [profileRes, rewardsRes] = await Promise.all([
     supabaseAdmin
       .from('profiles')
-      .select('welcome_discount_claimed, bottle_progress, lifetime_bottles_bought, created_at')
+      .select('first_name, last_name, welcome_discount_claimed, bottle_progress, lifetime_bottles_bought, created_at')
       .eq('id', user.id)
       .maybeSingle(),
     supabaseAdmin
@@ -31,6 +31,8 @@ export default async function handler(req, res) {
 
   return res.status(200).json({
     email:                   user.email,
+    first_name:              p.first_name || user.user_metadata?.first_name || '',
+    last_name:               p.last_name  || user.user_metadata?.last_name  || '',
     email_verified:          !!user.email_confirmed_at,
     welcome_discount_claimed: p.welcome_discount_claimed,
     bottle_progress:         p.bottle_progress,

@@ -1467,31 +1467,46 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transform: translateY(-1px);
 }
 
-.nav-account-btn {
+.nav-welcome-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-welcome-text {
+  color: rgba(255,255,255,0.9);
+  font-family: var(--font-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+.nav-welcome-text:hover { color: #fff; }
+.nav-logout-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--orange);
-  text-decoration: none;
-  transition: background var(--transition), transform var(--transition);
-  flex-shrink: 0;
-}
-.nav-account-btn:hover { background: var(--orange-light); transform: translateY(-1px); }
-.nav-account-initial {
-  color: #fff;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.7);
   font-family: var(--font-accent);
-  font-size: 0.85rem;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+.nav-logout-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.5);
+  color: #fff;
 }
 
-.mobile-signin-link  { color: var(--white) !important; opacity: 0.85; }
+.mobile-signin-link   { color: var(--white) !important; opacity: 0.85; }
 .mobile-register-link { color: var(--white) !important; font-weight: 700; }
 .mobile-account-link  { color: var(--orange) !important; font-weight: 600; }
+.mobile-logout-link   { color: rgba(255,255,255,0.5) !important; font-size: 0.85rem; }
 .mobile-partner-link  { color: rgba(255,255,255,0.5) !important; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; padding-top: 16px !important; }
 
 .nav-rewards-btn {

@@ -35,9 +35,18 @@ export default function LoginPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(''); setSubmitting(true);
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password });
     if (err) { setError(err.message); setSubmitting(false); return; }
-    router.replace(redirect || '/account');
+    // Store name + email so the main site nav can show "Welcome, [name]"
+    try {
+      const meta = data.user?.user_metadata || {};
+      localStorage.setItem('otgj_user', JSON.stringify({
+        email:      data.user?.email || email,
+        first_name: meta.first_name || '',
+        last_name:  meta.last_name  || '',
+      }));
+    } catch {}
+    router.replace(redirect || '/');
   }
 
   return (

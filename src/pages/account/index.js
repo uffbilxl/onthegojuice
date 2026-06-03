@@ -25,8 +25,10 @@ export default function AccountPage() {
         setProfile(data);
         if (typeof window !== 'undefined') {
           localStorage.setItem('otgj_user', JSON.stringify({
-            email:  data.email,
-            points: data.loyalty_points || 0,
+            email:      data.email,
+            first_name: data.first_name || '',
+            last_name:  data.last_name  || '',
+            points:     data.loyalty_points || 0,
           }));
         }
         setView('dashboard');

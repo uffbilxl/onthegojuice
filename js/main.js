@@ -820,25 +820,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       const raw  = localStorage.getItem('otgj_user');
       const user = raw ? JSON.parse(raw) : null;
 
-      const signinBtn      = document.getElementById('nav-signin-btn');
-      const registerBtn    = document.getElementById('nav-register-btn');
-      const accountBtn     = document.getElementById('nav-account-btn');
-      const accountInitial = document.getElementById('nav-account-initial');
-      const mobileSignin   = document.getElementById('mobile-signin-link');
-      const mobileRegister = document.getElementById('mobile-register-link');
-      const mobileAccount  = document.getElementById('mobile-account-link');
+      const signinBtn     = document.getElementById('nav-signin-btn');
+      const registerBtn   = document.getElementById('nav-register-btn');
+      const welcomeWrap   = document.getElementById('nav-welcome-wrap');
+      const welcomeText   = document.getElementById('nav-welcome-text');
+      const mobileSignin  = document.getElementById('mobile-signin-link');
+      const mobileRegister= document.getElementById('mobile-register-link');
+      const mobileAccount = document.getElementById('mobile-account-link');
+      const mobileLogout  = document.getElementById('mobile-logout-link');
 
       if (user && user.email) {
-        // Logged in — show avatar, hide sign in + sign up
-        if (signinBtn)      signinBtn.style.display   = 'none';
-        if (registerBtn)    registerBtn.style.display  = 'none';
-        if (accountBtn)     accountBtn.style.display   = 'inline-flex';
-        if (accountInitial) accountInitial.textContent  = user.email[0].toUpperCase();
-        if (mobileSignin)   mobileSignin.style.display  = 'none';
-        if (mobileRegister) mobileRegister.style.display = 'none';
-        if (mobileAccount)  mobileAccount.style.display  = '';
+        // Logged in — show "Welcome, [Name]" + Log Out; hide Sign In / Sign Up
+        const name = user.first_name || user.email.split('@')[0];
+        if (signinBtn)   signinBtn.style.display    = 'none';
+        if (registerBtn) registerBtn.style.display   = 'none';
+        if (welcomeWrap) welcomeWrap.style.display   = 'flex';
+        if (welcomeText) welcomeText.textContent     = `Welcome, ${name}`;
+        if (mobileSignin)   mobileSignin.style.display   = 'none';
+        if (mobileRegister) mobileRegister.style.display  = 'none';
+        if (mobileAccount)  mobileAccount.style.display   = '';
+        if (mobileLogout)   mobileLogout.style.display    = '';
       }
-      // else: defaults (Sign In/Up visible, account hidden) already set in HTML
+      // else: defaults (Sign In/Up visible, welcome hidden) already set in HTML
     } catch {}
   })();
 

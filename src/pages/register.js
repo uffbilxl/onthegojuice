@@ -56,7 +56,14 @@ export default function RegisterPage() {
     if (err) { setError(err.message); setSubmitting(false); return; }
 
     if (data.session) {
-      router.replace(redirect || '/account');
+      try {
+        localStorage.setItem('otgj_user', JSON.stringify({
+          email:      data.user?.email || email,
+          first_name: firstName,
+          last_name:  lastName,
+        }));
+      } catch {}
+      router.replace(redirect || '/');
     } else {
       setMessage('Account created! Check your inbox to verify your email, then sign in to claim your 20% welcome discount.');
     }
