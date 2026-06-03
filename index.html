@@ -61,9 +61,10 @@
       <div class="nav-actions">
         <a href="/register" class="nav-register-btn" id="nav-register-btn" aria-label="Create account">Sign Up</a>
         <a href="/login" class="nav-signin-btn" id="nav-signin-btn" aria-label="Sign in">Sign In</a>
-        <a href="/account" class="nav-account-btn" id="nav-account-btn" aria-label="My account" style="display:none">
-          <span class="nav-account-initial" id="nav-account-initial">?</span>
-        </a>
+        <span class="nav-welcome-wrap" id="nav-welcome-wrap" style="display:none">
+          <a href="/account" class="nav-welcome-text" id="nav-welcome-text" aria-label="My account">Welcome</a>
+          <a href="/logout" class="nav-logout-btn" aria-label="Log out">Log Out</a>
+        </span>
         <div class="cart-hover-wrap" id="cart-hover-wrap">
           <button class="cart-trigger" id="cart-trigger" aria-label="Open cart">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -104,6 +105,7 @@
       <a href="/register" class="mobile-link mobile-register-link" id="mobile-register-link">Sign Up</a>
       <a href="/login" class="mobile-link mobile-signin-link" id="mobile-signin-link">Sign In</a>
       <a href="/account" class="mobile-link mobile-account-link" id="mobile-account-link" style="display:none">My Account</a>
+      <a href="/logout" class="mobile-link mobile-logout-link" id="mobile-logout-link" style="display:none">Log Out</a>
       <a href="/corporate/login" class="mobile-link mobile-partner-link">Partner Portal →</a>
     </div>
   </header>
