@@ -463,6 +463,37 @@ function initNewsletter() {
   });
 }
 
+/* ─── PROMO POPUP (20% off – sessionStorage, once per visit) ────── */
+function initPromoPopup() {
+  if (sessionStorage.getItem('otgj_promo_dismissed')) return;
+
+  const popup = document.createElement('div');
+  popup.id = 'promo-popup';
+  popup.innerHTML = `
+    <div class="promo-popup-inner">
+      <button class="promo-popup-close" aria-label="Close">&times;</button>
+      <div class="promo-popup-icon">🎉</div>
+      <h3 class="promo-popup-title">Get 20% off your first order</h3>
+      <p class="promo-popup-body">Create a free account and we'll send you an exclusive discount code instantly.</p>
+      <a href="/register" class="promo-popup-btn">Create Account</a>
+      <button class="promo-popup-skip">No thanks</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  function dismiss() {
+    popup.classList.remove('promo-visible');
+    sessionStorage.setItem('otgj_promo_dismissed', '1');
+    setTimeout(() => popup.remove(), 350);
+  }
+
+  popup.querySelector('.promo-popup-close').addEventListener('click', dismiss);
+  popup.querySelector('.promo-popup-skip').addEventListener('click', dismiss);
+  popup.addEventListener('click', e => { if (e.target === popup) dismiss(); });
+
+  setTimeout(() => popup.classList.add('promo-visible'), 1800);
+}
+
 /* ─── WELCOME POPUP ──────────────────────────────────────────────── */
 function initPopup() {
   const popup = document.getElementById('welcome-popup');
@@ -775,12 +806,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   initNewsletter();
   initFadeObserver();
   initMiniCart();
+  initPromoPopup();
   initPopup();
   initSloganRotator();
   initSubscriptions();
 
   window.addEventListener('scroll', handleNavScroll, { passive: true });
   handleNavScroll();
+
+  /* ── Auth state in nav ─────────────────────────────────────────── */
+  (function updateNavAuth() {
+    try {
+      const raw  = localStorage.getItem('otgj_user');
+      const user = raw ? JSON.parse(raw) : null;
+
+      const signinBtn      = document.getElementById('nav-signin-btn');
+      const accountBtn     = document.getElementById('nav-account-btn');
+      const accountInitial = document.getElementById('nav-account-initial');
+      const mobileSignin   = document.getElementById('mobile-signin-link');
+      const mobileAccount  = document.getElementById('mobile-account-link');
+
+      if (user && user.email) {
+        // Logged in — show avatar, hide sign in
+        if (signinBtn)  signinBtn.style.display  = 'none';
+        if (accountBtn) accountBtn.style.display  = 'inline-flex';
+        if (accountInitial) accountInitial.textContent = user.email[0].toUpperCase();
+        if (mobileSignin)  mobileSignin.style.display  = 'none';
+        if (mobileAccount) mobileAccount.style.display  = '';
+      }
+      // else: defaults (Sign In visible, account hidden) already set in HTML
+    } catch {}
+  })();
 
   document.getElementById('cart-trigger').addEventListener('click', openCart);
   document.getElementById('cart-close').addEventListener('click', closeCart);

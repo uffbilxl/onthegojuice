@@ -1410,6 +1410,52 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .btn-sub:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* ─── REWARDS NAV BUTTON ─────────────────────────────────────────── */
+.nav-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: var(--white);
+  font-family: var(--font-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.nav-signin-btn:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.6);
+  transform: translateY(-1px);
+}
+
+.nav-account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--orange);
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+  flex-shrink: 0;
+}
+.nav-account-btn:hover { background: var(--orange-light); transform: translateY(-1px); }
+.nav-account-initial {
+  color: #fff;
+  font-family: var(--font-accent);
+  font-size: 0.85rem;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.mobile-signin-link { color: var(--white) !important; opacity: 0.85; }
+.mobile-account-link { color: var(--orange) !important; font-weight: 600; }
+
 .nav-rewards-btn {
   background: var(--orange);
   color: var(--white);
@@ -1826,4 +1872,43 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 5px 14px;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 999px;
+}
+
+/* ─── PROMO POPUP ──────────────────────────────────────────────── */
+#promo-popup {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+  padding: 20px; box-sizing: border-box;
+}
+#promo-popup.promo-visible { opacity: 1; pointer-events: all; }
+.promo-popup-inner {
+  background: #fff; border-radius: 20px; padding: 40px 32px;
+  max-width: 400px; width: 100%; text-align: center;
+  position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  transform: translateY(20px); transition: transform 0.35s ease;
+  font-family: 'Poppins', sans-serif;
+}
+#promo-popup.promo-visible .promo-popup-inner { transform: translateY(0); }
+.promo-popup-close {
+  position: absolute; top: 14px; right: 18px; background: none;
+  border: none; font-size: 1.5rem; color: #9ca3af; cursor: pointer; line-height: 1;
+}
+.promo-popup-icon { font-size: 2.8rem; margin-bottom: 12px; }
+.promo-popup-title {
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 1.35rem; color: #0a2800; margin: 0 0 10px; letter-spacing: -0.03em;
+}
+.promo-popup-body { color: #6b7280; font-size: 0.88rem; margin: 0 0 22px; line-height: 1.6; }
+.promo-popup-btn {
+  display: block; background: linear-gradient(135deg, #f77f00, #e65c00);
+  color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-size: 0.9rem; padding: 13px 24px; border-radius: 10px;
+  text-decoration: none; margin-bottom: 12px; transition: opacity 0.2s;
+}
+.promo-popup-btn:hover { opacity: 0.88; }
+.promo-popup-skip {
+  background: none; border: none; color: #9ca3af; font-size: 0.8rem;
+  cursor: pointer; font-family: inherit; text-decoration: underline;
 }

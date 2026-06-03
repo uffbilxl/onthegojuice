@@ -58,6 +58,10 @@
         <li><button class="nav-rewards-btn" id="rewards-widget">Rewards</button></li>
       </ul>
       <div class="nav-actions">
+        <a href="/login" class="nav-signin-btn" id="nav-signin-btn" aria-label="Sign in">Sign In</a>
+        <a href="/account" class="nav-account-btn" id="nav-account-btn" aria-label="My account" style="display:none">
+          <span class="nav-account-initial" id="nav-account-initial">?</span>
+        </a>
         <div class="cart-hover-wrap" id="cart-hover-wrap">
           <button class="cart-trigger" id="cart-trigger" aria-label="Open cart">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -75,7 +79,7 @@
                 <span>Subtotal</span>
                 <span id="mini-cart-total">£0.00</span>
               </div>
-              <a href="/checkout" class="btn-checkout-mini">
+              <a href="/checkout-gateway" class="btn-checkout-mini">
                 Go to Checkout
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </a>
@@ -95,6 +99,8 @@
       <a href="#footer" class="mobile-link">Contact</a>
       <a href="/order-status" class="mobile-link">Track Order</a>
       <button class="mobile-link mobile-rewards-btn" id="rewards-widget-mobile">Rewards</button>
+      <a href="/login" class="mobile-link mobile-signin-link" id="mobile-signin-link">Sign In</a>
+      <a href="/account" class="mobile-link mobile-account-link" id="mobile-account-link" style="display:none">My Account</a>
     </div>
   </header>
 
@@ -460,7 +466,7 @@
         </span>
       </div>
       <p class="cart-shipping-note">Shipping calculated at checkout</p>
-      <a href="/checkout" class="btn btn-checkout">Checkout</a>
+      <a href="/checkout-gateway" class="btn btn-checkout">Checkout</a>
     </div>
   </aside>
 
