@@ -11,7 +11,7 @@ const PRODUCT_STATIC = {
   2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-beetroot-milk-no-sugar.png' },
   3:  { ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/mango-milk.png' },
   4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'],       image: 'images/products/carrot-beetroot-milk-lactose-free.png' },
-  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/placeholder.jpg' },
+  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-beetroot-milk.png' },
   6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/mango-ginger.png' },
   7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/carrot-milk-lactose-free.png' },
   8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/sorrel.png' },
