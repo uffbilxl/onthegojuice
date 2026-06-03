@@ -242,7 +242,7 @@ export async function sendPartnerAccepted(to, { businessName, contactName }) {
 
     <p style="margin:0 0 18px;font-size:15px;color:#374151;line-height:1.7">
       Hi ${firstName}, we're delighted to welcome <strong>${businessName}</strong> as an official On The Go Juice stockist.
-      We're excited to work with you and bring our fresh, cold-pressed juices to your customers.
+      We're excited to work with you and bring our fresh, natural juices to your customers.
     </p>
 
     <div style="background:#f9f6f1;border-left:4px solid ${GREEN};border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px">
@@ -306,7 +306,7 @@ export async function sendPartnerDeclined(to, { businessName, contactName }) {
 
   const text = `Hi ${firstName},\n\nThank you for your interest in stocking On The Go Juice at ${businessName}.\n\nUnfortunately, we're unable to move forward with a partnership at this time. As a small independent business, we're carefully managing our growth to maintain quality.\n\nThis isn't permanent — we'll keep your details on file and may reach out when we're ready to expand.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
 
-  await sendMail({ to, subject: `Your On The Go Juice Partnership Inquiry`, html, text });
+  await sendMail({ to, subject: `Your On The Go Juice Partnership Enquiry`, html, text });
 }
 
 export async function sendOrderCancelled(to, { name, orderId }) {

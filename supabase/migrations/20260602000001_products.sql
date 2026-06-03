@@ -60,6 +60,6 @@ INSERT INTO public.products (id, name, category, price_pence, active) VALUES
   (15, 'Beetroot & Milk Juice Drink',                           'milk',  499, true),
   (16, 'Carrot and Lime Juice Drink',                           'juice', 399, true),
   (17, 'GO Shot Pineapple Ginger',                              'shot',  299, true),
-  (18, 'Ginger and Turmeric Wellness Shot',                     'shot',  299, true),
+  (18, 'Ginger and Turmeric Go Shot',                           'shot',  299, true),
   (19, 'Carrot and Milk Juice Drink',                           'milk',  499, true)
 ON CONFLICT (id) DO NOTHING;

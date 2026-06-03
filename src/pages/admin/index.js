@@ -695,7 +695,7 @@ function QRCodesTab() {
     { label: 'Shots / Go Shots',   url: 'https://onthegojuice.vercel.app/#products' },
     { label: 'Checkout',           url: 'https://onthegojuice.vercel.app/checkout' },
     { label: 'Events / RSVP',      url: 'https://onthegojuice.vercel.app/events' },
-    { label: 'Partner Inquiry',    url: 'https://onthegojuice.vercel.app/partners' },
+    { label: 'Partner Enquiry',    url: 'https://onthegojuice.vercel.app/partners' },
   ];
 
   const generate = useCallback(async () => {
