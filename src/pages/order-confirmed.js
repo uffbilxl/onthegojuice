@@ -5,30 +5,68 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { sendOrderConfirmation } from '@/lib/mailer';
 
 export async function getServerSideProps({ query }) {
-  const { session_id } = query;
-  if (!session_id) return { props: { status: 'no_session' } };
+  const { session_id, payment_intent, redirect_status } = query;
+
+  // Stripe Elements passes ?payment_intent=pi_xxx&redirect_status=succeeded
+  // Stripe Checkout Session passes ?session_id=cs_xxx
+  const stripeRef = session_id || payment_intent;
+  if (!stripeRef) return { props: { status: 'no_session' } };
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  // ── 1. Retrieve and validate the Stripe session ────────────────
-  let session;
-  try {
-    session = await stripe.checkout.sessions.retrieve(session_id);
-  } catch (err) {
-    console.error('[order-confirmed] stripe.sessions.retrieve failed:', err.message);
-    return { props: { status: 'stripe_error' } };
-  }
+  // ── 1. Retrieve payment data from Stripe ───────────────────────
+  let meta = {}, email = '', name = '', phone = '', shipping = null, totalPence = 0;
 
-  if (session.payment_status !== 'paid') {
-    console.warn('[order-confirmed] session not paid:', session_id, session.payment_status);
-    return { props: { status: 'not_paid' } };
+  if (payment_intent) {
+    // Stripe Elements flow — retrieve the PaymentIntent
+    if (redirect_status !== 'succeeded') {
+      console.warn('[order-confirmed] payment_intent not succeeded:', payment_intent, redirect_status);
+      return { props: { status: 'not_paid' } };
+    }
+    let pi;
+    try {
+      pi = await stripe.paymentIntents.retrieve(payment_intent);
+    } catch (err) {
+      console.error('[order-confirmed] paymentIntents.retrieve failed:', err.message);
+      return { props: { status: 'stripe_error' } };
+    }
+    if (pi.status !== 'succeeded') {
+      console.warn('[order-confirmed] PI not succeeded:', pi.id, pi.status);
+      return { props: { status: 'not_paid' } };
+    }
+    meta       = pi.metadata || {};
+    email      = meta.customer_email || '';
+    name       = meta.customer_name  || pi.shipping?.name || '';
+    phone      = meta.customer_phone || pi.shipping?.phone || '';
+    shipping   = pi.shipping;
+    totalPence = pi.amount;
+
+  } else {
+    // Stripe Checkout Session flow
+    let session;
+    try {
+      session = await stripe.checkout.sessions.retrieve(session_id);
+    } catch (err) {
+      console.error('[order-confirmed] sessions.retrieve failed:', err.message);
+      return { props: { status: 'stripe_error' } };
+    }
+    if (session.payment_status !== 'paid') {
+      console.warn('[order-confirmed] session not paid:', session_id, session.payment_status);
+      return { props: { status: 'not_paid' } };
+    }
+    meta       = session.metadata || {};
+    email      = session.customer_details?.email || '';
+    name       = session.customer_details?.name  || '';
+    phone      = session.customer_details?.phone || meta.customer_phone || '';
+    shipping   = session.shipping_details;
+    totalPence = session.amount_total ?? 0;
   }
 
   // ── 2. Deduplicate — webhook may have already created this order ─
   const { data: existing, error: lookupErr } = await supabaseAdmin
     .from('orders')
     .select('id')
-    .eq('stripe_session_id', session_id)
+    .eq('stripe_session_id', stripeRef)
     .maybeSingle();
 
   if (lookupErr) {
@@ -36,24 +74,11 @@ export async function getServerSideProps({ query }) {
   }
 
   if (existing) {
-    console.log('[order-confirmed] order already exists for session', session_id);
+    console.log('[order-confirmed] order already exists for', stripeRef);
     return { props: { status: 'ok' } };
   }
 
-  // ── 3. Gather customer data ────────────────────────────────────
-  const meta     = session.metadata || {};
-  const email    = session.customer_details?.email || '';
-  const name     = session.customer_details?.name  || '';
-  const phone    = session.customer_details?.phone || meta.customer_phone || '';
-  const shipping = session.shipping_details;
-
-  const shippingAddress = shipping
-    ? [shipping.address?.line1, shipping.address?.line2,
-       shipping.address?.city,  shipping.address?.postal_code]
-        .filter(Boolean).join(', ')
-    : meta.shipping_address || '';
-
-  // ── 4. Resolve user_id (null for guests) ──────────────────────
+  // ── 3. Resolve user_id (null for guests) ──────────────────────
   let userId = null;
   if (email) {
     const { data: profile } = await supabaseAdmin
@@ -64,28 +89,40 @@ export async function getServerSideProps({ query }) {
     userId = profile?.id || null;
   }
 
-  // ── 5. Fetch line items from Stripe ───────────────────────────
+  // ── 4. Build line items ────────────────────────────────────────
   let lineItems = [];
   try {
-    const expanded = await stripe.checkout.sessions.listLineItems(session_id, {
-      limit: 50,
-      expand: ['data.price.product'],
-    });
-    lineItems = expanded.data.map(li => ({
-      name:     li.description || li.price?.product?.name || 'Item',
-      quantity: li.quantity,
-      price:    (li.price?.unit_amount ?? 0) / 100,
+    lineItems = JSON.parse(meta.items || '[]').map(i => ({
+      name:     i.n || i.name,
+      quantity: i.q || i.qty,
+      price:    (i.p || i.price_pence || 0) / 100,
     }));
   } catch (e) {
-    console.error('[order-confirmed] listLineItems failed:', e.message);
+    console.error('[order-confirmed] items parse failed:', e.message);
+  }
+
+  // For Checkout Session flow also try to fetch from Stripe
+  if (!lineItems.length && session_id) {
     try {
-      lineItems = JSON.parse(meta.items || '[]').map(i => ({
-        name: i.n, quantity: i.q, price: i.p,
+      const expanded = await stripe.checkout.sessions.listLineItems(session_id, {
+        limit: 50, expand: ['data.price.product'],
+      });
+      lineItems = expanded.data.map(li => ({
+        name:     li.description || li.price?.product?.name || 'Item',
+        quantity: li.quantity,
+        price:    (li.price?.unit_amount ?? 0) / 100,
       }));
-    } catch (e2) {
-      console.error('[order-confirmed] metadata items parse failed:', e2.message);
+    } catch (e) {
+      console.error('[order-confirmed] listLineItems failed:', e.message);
     }
   }
+
+  // ── 5. Build shipping address ──────────────────────────────────
+  const shippingAddress = shipping?.address
+    ? [shipping.address.line1, shipping.address.line2,
+       shipping.address.city,  shipping.address.postal_code]
+        .filter(Boolean).join(', ')
+    : meta.shipping_address || '';
 
   // ── 6. Insert the order ───────────────────────────────────────
   const orderRow = {
@@ -95,12 +132,12 @@ export async function getServerSideProps({ query }) {
     customer_phone:     phone,
     delivery_method:    meta.delivery_method || 'pickup',
     shipping_address:   shippingAddress,
-    postcode:           shipping?.address?.postal_code || '',
-    items:              lineItems,              // JSONB snapshot for admin display
-    total_amount:       (session.amount_total ?? 0) / 100,
+    postcode:           shipping?.address?.postal_code || meta.postcode || '',
+    items:              lineItems,
+    total_amount:       totalPence / 100,
     payment_status:     'paid',
     fulfillment_status: 'processing',
-    stripe_session_id:  session_id,
+    stripe_session_id:  stripeRef,
   };
 
   console.log('[order-confirmed] inserting order:', JSON.stringify({
