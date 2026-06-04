@@ -32,7 +32,7 @@ const nextConfig = {
       "default-src 'self'",
       // Stripe.js + AOS from unpkg; 'unsafe-inline' required for existing inline handlers
       "script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
       // API calls: Stripe, Supabase, postcode lookup
