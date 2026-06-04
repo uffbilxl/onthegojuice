@@ -93,7 +93,7 @@ export default async function handler(req, res) {
   let validatedCode = null;
 
   if (discountCode && !bundlesActive) {
-    const { data: dc } = await supabaseAdmin
+    let { data: dc } = await supabaseAdmin
       .from('discount_codes')
       .select('*')
       .eq('code', discountCode.toUpperCase().trim())
@@ -106,10 +106,9 @@ export default async function handler(req, res) {
         const { data: prof } = await supabaseAdmin
           .from('profiles')
           .select('welcome_discount_claimed')
-          .eq('email', email)
+          .eq('email', email.toLowerCase())
           .maybeSingle();
         if (prof?.welcome_discount_claimed) {
-          // Already redeemed — silently ignore the code
           dc = null;
         }
       }

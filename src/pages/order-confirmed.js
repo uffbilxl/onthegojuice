@@ -193,12 +193,12 @@ export async function getServerSideProps({ query }) {
   if (email) {
     sendOrderConfirmation(email, {
       name,
-      orderId:         session_id,
+      orderId:         stripeRef,
       items:           lineItems,
       deliveryMethod:  meta.delivery_method || 'pickup',
       shippingAddress,
-      totalPence:      session.amount_total ?? 0,
-      discountPence:   0,
+      totalPence,
+      discountPence:   parseInt(meta.discount_pence || '0', 10),
     }).catch(e => console.error('[order-confirmed] confirmation email failed:', e.message));
   }
 
