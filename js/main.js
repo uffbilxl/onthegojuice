@@ -385,6 +385,34 @@ function initFilterTabs() {
   });
 }
 
+/* ─── SIGN-IN DROPDOWN ───────────────────────────────────────────── */
+function initSignInDropdown() {
+  const btn  = document.getElementById('nav-signin-btn');
+  const menu = document.getElementById('nav-signin-dropdown');
+  if (!btn || !menu) return;
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const opening = !menu.classList.contains('open');
+    menu.classList.toggle('open', opening);
+    btn.setAttribute('aria-expanded', opening);
+  });
+
+  document.addEventListener('click', e => {
+    if (!btn.parentElement.contains(e.target)) {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 /* ─── SORT CONTROLS ──────────────────────────────────────────────── */
 function initSortControls() {
   const container = document.getElementById('sort-controls');
@@ -796,6 +824,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([loadProducts(), loadActivePromos()]);
   renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
+  initSignInDropdown();
   initFilterTabs();
   initSortControls();
   initDietaryFilters();
