@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "prebuild": "cp -r images public/images && cp -r css public/ && cp -r js public/ && cp index.html checkout.html thank-you.html order-status.html delivery-info.html privacy-policy.html returns.html terms-conditions.html events.html partners.html public/",
+    "prebuild": "cp -r images public/images && cp -r css public/ && cp -r js public/ && cp index.html checkout.html thank-you.html order-status.html delivery-info.html privacy-policy.html returns.html terms-conditions.html events.html partners.html our-story.html public/",
     "build": "next build",
     "start": "next start -p 3001"
   },
