@@ -66,7 +66,7 @@ export default function CorporateDashboard() {
   }
 
   function setQty(id, raw) {
-    const v = Math.max(0, parseInt(raw) || 0);
+    const v = Math.max(0, Math.min(1000, parseInt(raw) || 0));
     setQtys(prev => ({ ...prev, [id]: v }));
   }
 

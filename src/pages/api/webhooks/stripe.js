@@ -84,6 +84,12 @@ async function handleRewardsAndLoyalty({ customerEmail, bottlesOrdered, amountPe
 
   // Mark discount code used
   if (discountCode) {
+    const { data: dc } = await supabaseAdmin
+      .from('discount_codes')
+      .select('type, email')
+      .eq('code', discountCode)
+      .maybeSingle();
+
     await Promise.all([
       supabaseAdmin
         .from('discount_codes')
@@ -96,6 +102,14 @@ async function handleRewardsAndLoyalty({ customerEmail, bottlesOrdered, amountPe
         .eq('promo_code', discountCode)
         .eq('redeemed', false),
     ]);
+
+    // If it was a welcome code, permanently flag the profile so it can't be reused
+    if (dc?.type === 'welcome' && dc?.email) {
+      await supabaseAdmin
+        .from('profiles')
+        .update({ welcome_discount_claimed: true })
+        .eq('email', dc.email);
+    }
   }
 
   // Bottle tracking

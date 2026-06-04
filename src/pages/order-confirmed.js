@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Stripe from 'stripe';
@@ -5,6 +6,7 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { sendOrderConfirmation } from '@/lib/mailer';
 
 export async function getServerSideProps({ query }) {
+  try {
   const { session_id, payment_intent, redirect_status } = query;
 
   // Stripe Elements passes ?payment_intent=pi_xxx&redirect_status=succeeded
@@ -201,9 +203,21 @@ export async function getServerSideProps({ query }) {
   }
 
   return { props: { status: 'ok' } };
+
+  } catch (err) {
+    // Top-level safety net — never let a crash produce a 500 on this page.
+    // The customer already paid; always show the confirmation.
+    console.error('[order-confirmed] Unhandled error in getServerSideProps:', err.message);
+    return { props: { status: 'ok' } };
+  }
 }
 
 export default function OrderConfirmed() {
+  useEffect(() => {
+    // Clear the cart from localStorage so items don't persist after purchase
+    try { localStorage.removeItem('otgj_cart'); } catch {}
+  }, []);
+
   return (
     <>
       <Head>

@@ -88,10 +88,25 @@ export default async function handler(req, res) {
       .maybeSingle();
 
     if (dc && subtotal >= dc.min_order_pence) {
-      discountPence = dc.discount_percent
-        ? Math.round(subtotal * dc.discount_percent / 100)
-        : Math.min(dc.discount_fixed_pence ?? 0, subtotal);
-      validatedCode = dc.code;
+      // Welcome codes are one-time per customer — check the profile flag
+      if (dc.type === 'welcome' && email) {
+        const { data: prof } = await supabaseAdmin
+          .from('profiles')
+          .select('welcome_discount_claimed')
+          .eq('email', email)
+          .maybeSingle();
+        if (prof?.welcome_discount_claimed) {
+          // Already redeemed — silently ignore the code
+          dc = null;
+        }
+      }
+
+      if (dc) {
+        discountPence = dc.discount_percent
+          ? Math.round(subtotal * dc.discount_percent / 100)
+          : Math.min(dc.discount_fixed_pence ?? 0, subtotal);
+        validatedCode = dc.code;
+      }
     }
   }
 
