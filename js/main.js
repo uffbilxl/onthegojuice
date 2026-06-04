@@ -387,29 +387,33 @@ function initFilterTabs() {
 
 /* ─── SIGN-IN DROPDOWN ───────────────────────────────────────────── */
 function initSignInDropdown() {
-  const btn  = document.getElementById('nav-signin-btn');
-  const menu = document.getElementById('nav-signin-dropdown');
+  const btn     = document.getElementById('nav-signin-btn');
+  const menu    = document.getElementById('nav-signin-dropdown');
+  const chevron = document.getElementById('nav-signin-chevron');
   if (!btn || !menu) return;
+
+  function openMenu() {
+    menu.style.display = 'block';
+    btn.setAttribute('aria-expanded', 'true');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+  function closeMenu() {
+    menu.style.display = 'none';
+    btn.setAttribute('aria-expanded', 'false');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
 
   btn.addEventListener('click', e => {
     e.stopPropagation();
-    const opening = !menu.classList.contains('open');
-    menu.classList.toggle('open', opening);
-    btn.setAttribute('aria-expanded', opening);
+    menu.style.display === 'none' ? openMenu() : closeMenu();
   });
 
   document.addEventListener('click', e => {
-    if (!btn.parentElement.contains(e.target)) {
-      menu.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-    }
+    if (!btn.parentElement.contains(e.target)) closeMenu();
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      menu.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-    }
+    if (e.key === 'Escape') closeMenu();
   });
 }
 
