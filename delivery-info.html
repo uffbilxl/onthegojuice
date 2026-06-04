@@ -8,18 +8,73 @@
   <title>Delivery Info – On The Go Juice</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/popup-minicart.css" />
   <link rel="stylesheet" href="css/legal.css" />
+  <style>.site-header+*,.site-header~main,.site-header~.page-hero,.site-header~.os-wrap,.site-header~section{scroll-margin-top:72px} main.legal-page{padding-top:96px}</style>
 </head>
 <body>
-  <header class="legal-header">
-    <a href="/" class="legal-logo">
-      <img src="images/logo.png" alt="On The Go Juice" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
-      <span class="legal-logo-text" style="display:none">On The Go Juice</span>
-    </a>
-    <a href="index.html" class="legal-back">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back to Home
-    </a>
+    <header class="site-header" id="site-header">
+    <nav class="nav-inner">
+      <a class="nav-logo" href="/">
+        <img src="images/logo.png" alt="On The Go Juice" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+        <span class="logo-text-fallback">On The Go Juice</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/#products">Shop</a></li>
+        <li><a href="/our-story">Our Story</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/partners">Partners</a></li>
+        <li><a href="/#footer">Contact</a></li>
+        <li><button class="nav-rewards-btn" id="rewards-widget">Rewards</button></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/register" class="nav-register-btn" id="nav-register-btn" aria-label="Create account">Sign Up</a>
+        <a href="/login" class="nav-signin-btn" id="nav-signin-btn" aria-label="Sign in">Sign In</a>
+        <span class="nav-welcome-wrap" id="nav-welcome-wrap" style="display:none">
+          <a href="/account" class="nav-welcome-text" id="nav-welcome-text" aria-label="My account">Welcome</a>
+          <a href="/logout" class="nav-logout-btn" aria-label="Log out">Log Out</a>
+        </span>
+        <div class="cart-hover-wrap" id="cart-hover-wrap">
+          <button class="cart-trigger" id="cart-trigger" aria-label="Open cart">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="cart-count" id="cart-count">0</span>
+          </button>
+          <div class="mini-cart" id="mini-cart">
+            <div class="mini-cart-empty" id="mini-cart-empty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <p>Your cart is empty</p>
+            </div>
+            <ul class="mini-cart-items" id="mini-cart-items"></ul>
+            <div class="mini-cart-footer" id="mini-cart-footer" style="display:none">
+              <div class="mini-cart-total-row">
+                <span>Subtotal</span><span id="mini-cart-total">£0.00</span>
+              </div>
+              <a href="/checkout-gateway" class="btn-checkout-mini">
+                Go to Checkout
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="/#products" class="mobile-link">Shop</a>
+      <a href="/our-story" class="mobile-link">Our Story</a>
+      <a href="/events" class="mobile-link">Events</a>
+      <a href="/partners" class="mobile-link">Partners</a>
+      <a href="/#footer" class="mobile-link">Contact</a>
+      <a href="/order-status" class="mobile-link">Track Order</a>
+      <button class="mobile-link mobile-rewards-btn" id="rewards-widget-mobile">Rewards</button>
+      <a href="/register" class="mobile-link mobile-register-link" id="mobile-register-link">Sign Up</a>
+      <a href="/login" class="mobile-link mobile-signin-link" id="mobile-signin-link">Sign In</a>
+      <a href="/account" class="mobile-link mobile-account-link" id="mobile-account-link" style="display:none">My Account</a>
+      <a href="/logout" class="mobile-link mobile-logout-link" id="mobile-logout-link" style="display:none">Log Out</a>
+    </div>
   </header>
 
   <main class="legal-page">
@@ -75,5 +130,50 @@
   <footer class="legal-footer">
     <p>&copy; 2026 On The Go Juice. All rights reserved. &nbsp;|&nbsp; <a href="privacy-policy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms-conditions.html">Terms &amp; Conditions</a></p>
   </footer>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="cart-close" id="cart-close" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty" id="cart-empty">
+        <div class="cart-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <p>Your cart is empty.</p>
+        <a href="/#products" class="btn btn-primary" id="cart-shop-link">Start Shopping</a>
+      </div>
+      <ul class="cart-items" id="cart-items"></ul>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div id="cart-bundle-nudge" class="cart-bundle-nudge" style="display:none"></div>
+      <div id="cart-bundle-breakdown" class="cart-bundle-breakdown" style="display:none"></div>
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span>
+          <span id="cart-total-original" class="cart-total-original" style="display:none"></span>
+          <span id="cart-total">£0.00</span>
+        </span>
+      </div>
+      <p class="cart-shipping-note">Shipping calculated at checkout</p>
+      <a href="/checkout-gateway" class="btn btn-checkout">Checkout</a>
+    </div>
+  </aside>
+
+  <div class="rewards-modal" id="rewards-modal">
+    <div class="rewards-modal-inner">
+      <button class="rewards-modal-close" id="rewards-modal-close">&times;</button>
+      <div class="rewards-modal-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+      <h3>On The Go Rewards</h3>
+      <p>Two ways to save — a welcome discount just for signing up, and a free bottle every time you hit 7.</p>
+      <ul class="rewards-perks">
+        <li><strong>20% off your first order</strong><br/><span>Sign up with your email and we'll send you a unique discount code instantly. Minimum spend £10.</span></li>
+        <li><strong>Buy 7 bottles, get 1 free</strong><br/><span>Every bottle counts. Once you hit 7, we'll email you a free bottle code automatically.</span></li>
+      </ul>
+      <button class="btn btn-primary rewards-join">Get My 20% Off</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>

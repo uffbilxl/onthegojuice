@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/popup-minicart.css" />
   <link rel="stylesheet" href="css/checkout.css" />
   <style>
     body { display: flex; flex-direction: column; min-height: 100vh; background: var(--off-white); }
@@ -98,6 +100,7 @@
       .os-title { font-size: 1.5rem; }
     }
   </style>
+  <style>.site-header+*,.site-header~main,.site-header~.page-hero,.site-header~.os-wrap,.site-header~section{scroll-margin-top:72px} main.legal-page{padding-top:96px}</style>
 </head>
 <body>
 
@@ -332,5 +335,50 @@
     if (params.get('email')) emailInput.value = params.get('email');
     if (params.get('ref') && params.get('email')) lookup();
   </script>
+
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="cart-close" id="cart-close" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty" id="cart-empty">
+        <div class="cart-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <p>Your cart is empty.</p>
+        <a href="/#products" class="btn btn-primary" id="cart-shop-link">Start Shopping</a>
+      </div>
+      <ul class="cart-items" id="cart-items"></ul>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div id="cart-bundle-nudge" class="cart-bundle-nudge" style="display:none"></div>
+      <div id="cart-bundle-breakdown" class="cart-bundle-breakdown" style="display:none"></div>
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span>
+          <span id="cart-total-original" class="cart-total-original" style="display:none"></span>
+          <span id="cart-total">£0.00</span>
+        </span>
+      </div>
+      <p class="cart-shipping-note">Shipping calculated at checkout</p>
+      <a href="/checkout-gateway" class="btn btn-checkout">Checkout</a>
+    </div>
+  </aside>
+
+  <div class="rewards-modal" id="rewards-modal">
+    <div class="rewards-modal-inner">
+      <button class="rewards-modal-close" id="rewards-modal-close">&times;</button>
+      <div class="rewards-modal-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+      <h3>On The Go Rewards</h3>
+      <p>Two ways to save — a welcome discount just for signing up, and a free bottle every time you hit 7.</p>
+      <ul class="rewards-perks">
+        <li><strong>20% off your first order</strong><br/><span>Sign up with your email and we'll send you a unique discount code instantly. Minimum spend £10.</span></li>
+        <li><strong>Buy 7 bottles, get 1 free</strong><br/><span>Every bottle counts. Once you hit 7, we'll email you a free bottle code automatically.</span></li>
+      </ul>
+      <button class="btn btn-primary rewards-join">Get My 20% Off</button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
