@@ -9,6 +9,7 @@
   <meta name="description" content="From a Caribbean grandmother's kitchen to the streets of Birmingham. The story behind On The Go Juice and the family heritage in every bottle." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
   <link rel="stylesheet" href="css/legal.css" />
   <link rel="stylesheet" href="css/page.css" />
 
@@ -130,12 +131,18 @@
       line-height: 1.9;
       margin-bottom: 22px;
     }
+
+    /* Divider animates its width in when AOS triggers */
     .story-divider {
-      width: 48px;
+      width: 0;
       height: 3px;
       background: var(--green);
       border-radius: 2px;
       margin: 40px 0;
+      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .story-divider.aos-animate {
+      width: 48px;
     }
 
     /* ── Pull quote ───────────────────────────────────── */
@@ -288,6 +295,12 @@
     @media (max-width: 480px) {
       .story-video-wrap { transform: translateY(-20px); }
     }
+
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      [data-aos] { transition: none !important; animation: none !important; opacity: 1 !important; transform: none !important; }
+      .story-divider { width: 48px; transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -315,7 +328,7 @@
 
   <!-- Video -->
   <section class="story-video-section">
-    <div class="story-video-wrap">
+    <div class="story-video-wrap" data-aos="fade-up" data-aos-duration="900">
       <video
         controls
         preload="metadata"
@@ -330,18 +343,18 @@
 
   <!-- Inclusivity -->
   <section class="inclusivity-section">
-    <p class="inclusivity-label">For Everyone</p>
-    <h2 class="inclusivity-headline">
+    <p class="inclusivity-label" data-aos="fade-up">For Everyone</p>
+    <h2 class="inclusivity-headline" data-aos="fade-up" data-aos-delay="80">
       Juice that belongs<br/>to <em>every body.</em>
     </h2>
-    <p class="inclusivity-body">
+    <p class="inclusivity-body" data-aos="fade-up" data-aos-delay="140">
       At On The Go Juice, we believe that nourishing yourself with real, natural ingredients is a right, not a privilege. Whether you are a student grabbing a bottle between lectures, a parent fuelling a busy day, an athlete pushing for performance, or simply someone who loves the taste of something genuinely fresh, our juice is yours.
     </p>
-    <p class="inclusivity-body">
+    <p class="inclusivity-body" data-aos="fade-up" data-aos-delay="180">
       We are proud to serve Birmingham and beyond with a range that suits every lifestyle, every dietary need, and every budget. Our 15 flavours span dairy-free juices, milk blends, and concentrated Go Shots. Wellness looks different for everyone, and that is exactly how it should be.
     </p>
     <div class="inclusivity-cards">
-      <div class="inclusivity-card">
+      <div class="inclusivity-card" data-aos="fade-up" data-aos-delay="0">
         <div class="inclusivity-card-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="12" r="10"/>
@@ -351,7 +364,7 @@
         <h3>Every Background</h3>
         <p>Born from Caribbean heritage, made for everyone. Our roots are in community. That has never changed.</p>
       </div>
-      <div class="inclusivity-card">
+      <div class="inclusivity-card" data-aos="fade-up" data-aos-delay="120">
         <div class="inclusivity-card-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
@@ -364,7 +377,7 @@
         <h3>Every Lifestyle</h3>
         <p>From busy professionals to fitness enthusiasts, with 15 flavours to fit your routine, your goals, and your day.</p>
       </div>
-      <div class="inclusivity-card">
+      <div class="inclusivity-card" data-aos="fade-up" data-aos-delay="240">
         <div class="inclusivity-card-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <line x1="12" y1="1" x2="12" y2="23"/>
@@ -380,81 +393,81 @@
   <!-- David's Story -->
   <section class="story-section">
     <div class="story-inner">
-      <p class="legal-tag">Where It All Began</p>
-      <h2 class="story-headline">A young boy, his grandmother, and a morning ritual.</h2>
+      <p class="legal-tag" data-aos="fade-up">Where It All Began</p>
+      <h2 class="story-headline" data-aos="fade-up" data-aos-delay="80" data-aos-duration="800">A young boy, his grandmother, and a morning ritual.</h2>
 
-      <p class="story-para">Every bottle of On the Go Juice begins with a story that started generations ago.</p>
+      <p class="story-para" data-aos="fade-up">Every bottle of On the Go Juice begins with a story that started generations ago.</p>
 
-      <p class="story-para">Growing up in the Caribbean, my father had a choice every morning before school. While many children spent their mornings playing or sleeping a little longer, he chose something different. He would wake up early and help his grandmother prepare natural juices for family, friends, and members of the local community.</p>
+      <p class="story-para" data-aos="fade-up">Growing up in the Caribbean, my father had a choice every morning before school. While many children spent their mornings playing or sleeping a little longer, he chose something different. He would wake up early and help his grandmother prepare natural juices for family, friends, and members of the local community.</p>
 
-      <p class="story-para">His grandmother was passionate about using fresh, natural ingredients. She believed that nature provided everything needed to create delicious drinks that nourished the body and supported a healthy lifestyle. From selecting fresh fruits and vegetables to carefully preparing ingredients and creating unique flavour combinations, every step was done with patience, care, and pride.</p>
+      <p class="story-para" data-aos="fade-up">His grandmother was passionate about using fresh, natural ingredients. She believed that nature provided everything needed to create delicious drinks that nourished the body and supported a healthy lifestyle. From selecting fresh fruits and vegetables to carefully preparing ingredients and creating unique flavour combinations, every step was done with patience, care, and pride.</p>
 
-      <div class="story-divider"></div>
+      <div class="story-divider" data-aos="story-divider-reveal"></div>
 
-      <p class="story-para">Morning after morning, before heading off to school, my father stood beside her and learned the process. He watched, listened, and practised. What began as helping his grandmother soon became a lifelong passion.</p>
+      <p class="story-para" data-aos="fade-up">Morning after morning, before heading off to school, my father stood beside her and learned the process. He watched, listened, and practised. What began as helping his grandmother soon became a lifelong passion.</p>
 
-      <p class="story-para">Over the years, he mastered the art of creating natural juices. He learned how different ingredients worked together, how flavours could be balanced, and how fresh fruits, vegetables, roots, and herbs could be transformed into drinks that people genuinely enjoyed.</p>
+      <p class="story-para" data-aos="fade-up">Over the years, he mastered the art of creating natural juices. He learned how different ingredients worked together, how flavours could be balanced, and how fresh fruits, vegetables, roots, and herbs could be transformed into drinks that people genuinely enjoyed.</p>
 
-      <p class="story-para">The knowledge passed down from his grandmother became more than just a skill. It became part of who he was.</p>
+      <p class="story-para" data-aos="fade-up">The knowledge passed down from his grandmother became more than just a skill. It became part of who he was.</p>
 
-      <div class="story-divider"></div>
+      <div class="story-divider" data-aos="story-divider-reveal"></div>
 
-      <p class="story-para">As the years passed, family and friends would often seek out his juices, impressed by both the flavour and the quality. The recipes evolved, new combinations were created, and the passion continued to grow.</p>
+      <p class="story-para" data-aos="fade-up">As the years passed, family and friends would often seek out his juices, impressed by both the flavour and the quality. The recipes evolved, new combinations were created, and the passion continued to grow.</p>
 
-      <p class="story-para">Today, that same passion lives on through On the Go Juice. Our brand was created to honour those early mornings, the family traditions, and the belief that great tasting juice should be made from real ingredients, not shortcuts.</p>
+      <p class="story-para" data-aos="fade-up">Today, that same passion lives on through On the Go Juice. Our brand was created to honour those early mornings, the family traditions, and the belief that great tasting juice should be made from real ingredients, not shortcuts.</p>
 
-      <p class="story-para">From refreshing wellness blends and nutritious milk-based drinks to our signature Go Shots, every bottle carries a piece of that Caribbean heritage.</p>
+      <p class="story-para" data-aos="fade-up">From refreshing wellness blends and nutritious milk-based drinks to our signature Go Shots, every bottle carries a piece of that Caribbean heritage.</p>
 
-      <p class="story-para">What started as a young boy helping his grandmother before school has grown into a mission to share natural wellness with the world, one bottle at a time.</p>
+      <p class="story-para" data-aos="fade-up">What started as a young boy helping his grandmother before school has grown into a mission to share natural wellness with the world, one bottle at a time.</p>
 
-      <p class="story-para">Today, On the Go Juice proudly offers 15 different flavours, each crafted with the same dedication, care, and attention to detail that inspired the very first recipes.</p>
+      <p class="story-para" data-aos="fade-up">Today, On the Go Juice proudly offers 15 different flavours, each crafted with the same dedication, care, and attention to detail that inspired the very first recipes.</p>
     </div>
   </section>
 
   <!-- Pull Quote -->
   <div class="story-pullquote">
-    <blockquote>
+    <blockquote data-aos="fade-up" data-aos-duration="900">
       "Because for us, juice is not just a drink.<br/>
       It is tradition. It is family. It is heritage.<br/>
       It is wellness on the go."
     </blockquote>
-    <cite>David, Founder</cite>
+    <cite data-aos="fade-up" data-aos-delay="200">David, Founder</cite>
   </div>
 
   <!-- Values -->
   <section class="values-section">
-    <p class="legal-tag">What We Stand For</p>
-    <h2 class="values-headline">Every flavour reflects the values passed down through generations.</h2>
+    <p class="legal-tag" data-aos="fade-up">What We Stand For</p>
+    <h2 class="values-headline" data-aos="fade-up" data-aos-delay="80">Every flavour reflects the values passed down through generations.</h2>
     <div class="values-grid">
-      <div class="value-card">
+      <div class="value-card" data-aos="fade-up" data-aos-delay="0">
         <div class="value-dot"></div>
         <div>
           <strong>Fresh Ingredients</strong>
           <p>Whole fruits, vegetables, roots and herbs. Nothing from concentrate, never frozen.</p>
         </div>
       </div>
-      <div class="value-card">
+      <div class="value-card" data-aos="fade-up" data-aos-delay="80">
         <div class="value-dot"></div>
         <div>
           <strong>Authentic Recipes</strong>
           <p>Developed over generations, refined over decades. Not invented in a factory.</p>
         </div>
       </div>
-      <div class="value-card">
+      <div class="value-card" data-aos="fade-up" data-aos-delay="160">
         <div class="value-dot"></div>
         <div>
           <strong>Quality Without Compromise</strong>
           <p>Every bottle is made to order. We do not cut corners on flavour or ingredients.</p>
         </div>
       </div>
-      <div class="value-card">
+      <div class="value-card" data-aos="fade-up" data-aos-delay="240">
         <div class="value-dot"></div>
         <div>
           <strong>Natural Goodness</strong>
           <p>No artificial additives, no preservatives. Just real food, bottled.</p>
         </div>
       </div>
-      <div class="value-card">
+      <div class="value-card" data-aos="fade-up" data-aos-delay="320">
         <div class="value-dot"></div>
         <div>
           <strong>A Commitment to Wellness</strong>
@@ -466,12 +479,12 @@
 
   <!-- Closing CTA -->
   <section class="story-cta">
-    <div class="story-cta-taglines">
+    <div class="story-cta-taglines" data-aos="fade-up">
       <p>Pure Power. Real Results.</p>
       <p>Your Journey. Our Juice.</p>
     </div>
-    <p class="story-cta-sub">15 flavours. One story. Ready when you are.</p>
-    <a href="/#products" class="story-cta-btn">
+    <p class="story-cta-sub" data-aos="fade-up" data-aos-delay="120">15 flavours. One story. Ready when you are.</p>
+    <a href="/#products" class="story-cta-btn" data-aos="fade-up" data-aos-delay="220">
       Shop the Range
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -483,5 +496,26 @@
     <a href="mailto:info@onthego-juice.co.uk">info@onthego-juice.co.uk</a>
   </footer>
 
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      once: true,
+      duration: 650,
+      easing: 'ease-out-cubic',
+      offset: 60,
+    });
+
+    // Divider line-draw: watch for element entering viewport, then expand width
+    const dividers = document.querySelectorAll('.story-divider');
+    const dividerObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.width = '48px';
+          dividerObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    dividers.forEach(d => dividerObserver.observe(d));
+  </script>
 </body>
 </html>
