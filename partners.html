@@ -253,7 +253,7 @@
         </div>
         <p class="form-error-msg" id="inquiry-error"></p>
         <button type="submit" class="btn-form-submit" id="inquiry-submit">
-          Send Enquiry
+          Continue to Payment
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </form>
@@ -290,18 +290,21 @@
       }
 
       btn.disabled = true;
-      btn.textContent = 'Sending…';
+      btn.textContent = 'Redirecting to payment…';
 
       try {
-        const res = await fetch('/api/partner-inquiry', {
+        const res = await fetch('/api/partner-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ business_name, contact_name, email, phone, org_type, weekly_volume, message }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Something went wrong.');
-        document.getElementById('inquiry-form').style.display = 'none';
-        document.getElementById('inquiry-success').style.display = 'block';
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error('No checkout URL returned. Please try again.');
+        }
       } catch (err) {
         errEl.textContent = err.message;
         errEl.style.display = 'block';
