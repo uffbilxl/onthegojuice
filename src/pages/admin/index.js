@@ -28,7 +28,6 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [tab, setTab]       = useState('orders');
   const [orders, setOrders] = useState(initialOrders);
   const [events, setEvents] = useState(initialEvents);
-  const [rsvps,      setRsvps]      = useState(null);
   const [partners,   setPartners]   = useState(null);
   const [promotions, setPromotions] = useState(null);
   const [products,   setProducts]   = useState(null);
@@ -39,7 +38,6 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
-    if (tab === 'rsvps'      && rsvps      === null) fetch('/api/admin/list-rsvps').then(r=>r.json()).then(setRsvps).catch(()=>setRsvps([]));
     if (tab === 'partners'   && partners   === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
     if (tab === 'promotions' && promotions === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
     if (tab === 'products'   && products   === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
@@ -146,11 +144,10 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
                 {id === 'orders'     && <span className="adm-tab-badge">{orders.length}</span>}
-                {id === 'rsvps'      && Array.isArray(rsvps)      && <span className="adm-tab-badge">{rsvps.length}</span>}
                 {id === 'partners'   && Array.isArray(partners)   && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
                 {id === 'promotions' && Array.isArray(promotions) && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
                 {id === 'users'      && Array.isArray(users)      && <span className="adm-tab-badge">{users.length}</span>}
@@ -227,34 +224,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <EventsTab events={events} setEvents={setEvents} />
           )}
 
-          {/* ── RSVPs TAB ──────────────────────────────────────────── */}
-          {tab === 'rsvps' && (
-            <div>
-              <div className="adm-section-header">
-                <h2>Event RSVPs</h2>
-                {Array.isArray(rsvps) && <span className="adm-section-count">{rsvps.reduce((s, r) => s + (parseInt(r.attendees) || 1), 0)} total attendees</span>}
-              </div>
-              {rsvps === null ? <div className="adm-empty">Loading…</div>
-              : rsvps.length === 0 ? <div className="adm-empty">No RSVPs yet.</div>
-              : (
-                <div className="adm-table-wrap">
-                  <table className="adm-table">
-                    <thead><tr><th>Registered</th><th>Name</th><th>Email</th><th>Attendees</th><th>Message</th></tr></thead>
-                    <tbody>
-                      {rsvps.map(r => (
-                        <tr key={r.id}>
-                          <td className="adm-cell-date">{new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</td>
-                          <td><strong>{r.name}</strong></td>
-                          <td><a href={`mailto:${r.email}`} className="adm-email">{r.email}</a></td>
-                          <td style={{ textAlign: 'center', fontWeight: 700 }}>{r.attendees}</td>
-                          <td style={{ color: '#6b7280', fontSize: '0.8rem' }}>{r.message || '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+          {false /* RSVPs tab removed */
           )}
 
           {/* ── PROMOTIONS TAB ─────────────────────────────────────── */}
