@@ -293,6 +293,35 @@ function initAccordion() {
       const nextId = btn.dataset.next;
       if (!nextId) return;
 
+      if (currentSection.id === 'section-contact') {
+        const firstName  = document.getElementById('first-name')?.value?.trim() || '';
+        const lastName   = document.getElementById('last-name')?.value?.trim() || '';
+        const emailVal   = document.getElementById('email')?.value?.trim() || '';
+        const phoneVal   = document.getElementById('phone')?.value?.trim() || '';
+        const errEl      = document.getElementById('contact-error');
+        const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!firstName || !lastName || !emailVal || !phoneVal) {
+          errEl.textContent = 'Please fill in all fields before continuing.';
+          errEl.style.display = 'block';
+          return;
+        }
+        if (!emailRegex.test(emailVal)) {
+          errEl.textContent = 'Please enter a valid email address.';
+          errEl.style.display = 'block';
+          document.getElementById('email')?.focus();
+          return;
+        }
+        if (!phoneRegex.test(phoneVal)) {
+          errEl.textContent = 'Please enter a valid phone number (e.g. 07700 900000 or +44 7700 900000).';
+          errEl.style.display = 'block';
+          document.getElementById('phone')?.focus();
+          return;
+        }
+        errEl.style.display = 'none';
+      }
+
       if (currentSection.id === 'section-delivery') {
         const selected = document.querySelector('input[name="delivery"]:checked')?.value;
         if (!selected) {

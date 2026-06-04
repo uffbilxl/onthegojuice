@@ -88,26 +88,32 @@ export default function CorporateDashboard() {
     }
     setError(''); setPlacing(true);
 
-    const res = await fetch('/api/corporate/checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({
-        items: orderLines.map(l => ({ id: l.id, qty: l.qty })),
-      }),
-    });
+    try {
+      const res = await fetch('/api/corporate/checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          items: orderLines.map(l => ({ id: l.id, qty: l.qty })),
+        }),
+      });
 
-    const data = await res.json();
-    setPlacing(false);
+      const data = await res.json();
 
-    if (!res.ok) {
-      setError(data.error || 'Failed to create checkout. Please try again.');
-      return;
+      if (!res.ok || !data.url) {
+        setError(data.error || 'Failed to create checkout. Please try again.');
+        setPlacing(false);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('[corporate/placeOrder]', err.message);
+      setError('Network error. Please check your connection and try again.');
+      setPlacing(false);
     }
-
-    window.location.href = data.url;
   }
 
   if (loading) return <LoadingScreen />;
