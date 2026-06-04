@@ -322,6 +322,31 @@ function initAccordion() {
         errEl.style.display = 'none';
       }
 
+      if (currentSection.id === 'section-address') {
+        const addr1    = document.getElementById('address1')?.value?.trim() || '';
+        const postcode = document.getElementById('postcode-addr')?.value?.trim() || '';
+        let addrErr    = document.getElementById('address-error');
+        if (!addrErr) {
+          addrErr = document.createElement('p');
+          addrErr.id = 'address-error';
+          addrErr.style.cssText = 'display:none;color:#dc2626;font-size:0.84rem;font-weight:600;margin:8px 0 2px';
+          document.getElementById('address1')?.closest('.co-section-content')?.appendChild(addrErr);
+        }
+        if (!addr1) {
+          addrErr.textContent = 'Please enter your address before continuing.';
+          addrErr.style.display = 'block';
+          document.getElementById('address1')?.focus();
+          return;
+        }
+        if (!postcode) {
+          addrErr.textContent = 'Please enter your postcode before continuing.';
+          addrErr.style.display = 'block';
+          document.getElementById('postcode-addr')?.focus();
+          return;
+        }
+        addrErr.style.display = 'none';
+      }
+
       if (currentSection.id === 'section-delivery') {
         const selected = document.querySelector('input[name="delivery"]:checked')?.value;
         if (!selected) {
@@ -501,10 +526,11 @@ function initPromoCode() {
 
     try {
       const subtotalPence = Math.round(cartSubtotal() * 100);
+      const emailVal = document.getElementById('email')?.value?.trim() || '';
       const res  = await fetch('/api/validate-discount', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, subtotalPence }),
+        body: JSON.stringify({ code, subtotalPence, email: emailVal }),
       });
       const data = await res.json();
 
@@ -512,6 +538,7 @@ function initPromoCode() {
         resultEl.className   = 'co-promo-result invalid';
         resultEl.textContent = data.error || 'Invalid code.';
         appliedDiscount = null;
+        input.value = '';
       } else {
         appliedDiscount      = { code: data.code, discountPence: data.discountPence };
         resultEl.className   = 'co-promo-result valid';
