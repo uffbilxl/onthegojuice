@@ -154,7 +154,7 @@ function attachCardListeners() {
       const id = +btn.dataset.id;
       const display = document.querySelector(`.qty-num[data-id="${id}"]`);
       let val = parseInt(display.textContent);
-      val++;
+      if (val < MAX_ITEM_QTY) val++;
       display.textContent = val;
     });
   });
@@ -171,15 +171,17 @@ function attachCardListeners() {
 }
 
 /* ─── CART LOGIC ─────────────────────────────────────────────────── */
+const MAX_ITEM_QTY = 100; // standard customer / guest cap
+
 function addToCart(productId, qty = 1) {
   const product = PRODUCTS.find(p => p.id === productId);
   if (!product) return;
 
   const existing = cart.find(i => i.id === productId);
   if (existing) {
-    existing.qty += qty;
+    existing.qty = Math.min(MAX_ITEM_QTY, existing.qty + qty);
   } else {
-    cart.push({ id: productId, name: product.name, price: product.price, image: product.image, qty });
+    cart.push({ id: productId, name: product.name, price: product.price, image: product.image, qty: Math.min(MAX_ITEM_QTY, qty) });
   }
 
   saveCart();

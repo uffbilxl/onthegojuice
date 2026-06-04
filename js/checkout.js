@@ -529,10 +529,18 @@ async function initStripePayment() {
   const firstName  = document.getElementById('first-name')?.value?.trim() || '';
   const lastName   = document.getElementById('last-name')?.value?.trim() || '';
 
+  const phoneRaw   = document.getElementById('phone')?.value?.trim() || '';
+  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+  if (phoneRaw && !phoneRegex.test(phoneRaw)) {
+    const errEl = document.getElementById('payment-error');
+    if (errEl) { errEl.textContent = 'Please enter a valid phone number.'; errEl.style.display = 'block'; }
+    return;
+  }
+
   const customer = {
     name:  [firstName, lastName].filter(Boolean).join(' '),
     email: document.getElementById('email')?.value?.trim() || '',
-    phone: document.getElementById('phone')?.value?.trim() || '',
+    phone: phoneRaw,
   };
 
   const address = {
