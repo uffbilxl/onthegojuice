@@ -1,7 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 function isAuthorized(req) {
-  return req.cookies?.otgj_admin === process.env.ADMIN_PASSWORD;
+  return verifyAdminToken(req.cookies?.otgj_admin);
 }
 
 export default async function handler(req, res) {

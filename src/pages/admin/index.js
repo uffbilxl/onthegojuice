@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 const FULFILLMENT_LABELS = {
   processing:       'Processing',
@@ -1000,7 +1001,7 @@ function UsersTab({ users, setUsers }) {
 
 export async function getServerSideProps({ req }) {
   const cookie = req.cookies?.otgj_admin;
-  if (cookie !== process.env.ADMIN_PASSWORD) {
+  if (!verifyAdminToken(cookie)) {
     return { props: { orders: [], events: [], authorized: false } };
   }
 

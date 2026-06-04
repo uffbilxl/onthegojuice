@@ -1,7 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 function isAuthorized(req) {
-  return req.cookies?.otgj_admin === process.env.ADMIN_PASSWORD;
+  return verifyAdminToken(req.cookies?.otgj_admin);
 }
 
 export default async function handler(req, res) {
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
       .select('*')
       .order('event_date', { ascending: false });
 
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/event-config GET]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data);
   }
 
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
       .insert({ name: name.trim(), description: description?.trim() || null, event_date, location_name: location_name.trim(), address: address?.trim() || null, is_active: is_active !== false })
       .select()
       .single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/event-config POST]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(201).json(data);
   }
 
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
       .eq('id', id)
       .select()
       .single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/event-config PATCH]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data);
   }
 
@@ -54,7 +55,7 @@ export default async function handler(req, res) {
     const { id } = req.body;
     if (!id) return res.status(400).json({ error: 'Event id is required.' });
     const { error } = await supabaseAdmin.from('event_config').delete().eq('id', id);
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/event-config DELETE]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json({ ok: true });
   }
 

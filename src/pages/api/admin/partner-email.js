@@ -1,8 +1,9 @@
 import { sendPartnerAccepted, sendPartnerDeclined } from '@/lib/mailer';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
-  if (req.cookies?.otgj_admin !== process.env.ADMIN_PASSWORD) return res.status(401).end();
+  if (!verifyAdminToken(req.cookies?.otgj_admin)) return res.status(401).end();
 
   const { email, business_name, contact_name, action } = req.body;
 

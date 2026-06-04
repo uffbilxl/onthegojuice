@@ -1,9 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 export default async function handler(req, res) {
-  // Cookie-based admin auth (same pattern as rest of admin API)
-  const cookie = req.cookies?.otgj_admin;
-  if (cookie !== process.env.ADMIN_PASSWORD) {
+  if (!verifyAdminToken(req.cookies?.otgj_admin)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -12,7 +11,7 @@ export default async function handler(req, res) {
       .from('promotions_config')
       .select('*')
       .order('sort_order');
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/promotions GET]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data ?? []);
   }
 
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
       .eq('id', id)
       .select()
       .single();
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/promotions PATCH]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data);
   }
 

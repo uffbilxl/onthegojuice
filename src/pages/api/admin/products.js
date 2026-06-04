@@ -1,7 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 export default async function handler(req, res) {
-  if (req.cookies?.otgj_admin !== process.env.ADMIN_PASSWORD) {
+  if (!verifyAdminToken(req.cookies?.otgj_admin)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
@@ -10,7 +11,7 @@ export default async function handler(req, res) {
       .from('products')
       .select('*')
       .order('id');
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/products GET]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data);
   }
 
@@ -34,7 +35,7 @@ export default async function handler(req, res) {
       .select()
       .single();
 
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) { console.error('[admin/products PATCH]', error.message); return res.status(500).json({ error: 'Internal server error' }); }
     return res.status(200).json(data);
   }
 
