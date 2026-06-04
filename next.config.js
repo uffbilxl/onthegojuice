@@ -36,7 +36,7 @@ const nextConfig = {
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
       // API calls: Stripe, Supabase, postcode lookup
-      "connect-src 'self' https://api.stripe.com https://esmnvkumvcrolunhpsqc.supabase.co https://api.postcodes.io",
+      "connect-src 'self' https://api.stripe.com https://yzhfphcypahajeriztqk.supabase.co https://api.postcodes.io",
       // Stripe Payment Element renders inside an iframe
       "frame-src https://js.stripe.com https://hooks.stripe.com",
       "object-src 'none'",
