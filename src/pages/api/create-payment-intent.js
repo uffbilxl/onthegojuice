@@ -127,6 +127,21 @@ export default async function handler(req, res) {
           ? Math.round(subtotal * dc.discount_percent / 100)
           : Math.min(dc.discount_fixed_pence ?? 0, subtotal);
         validatedCode = dc.code;
+
+        // Pre-emptively lock the code at payment-creation time so it cannot be
+        // reused even if the webhook is delayed or misfires.
+        if (dc.type === 'welcome' && dc.email) {
+          supabaseAdmin
+            .from('profiles')
+            .update({ welcome_discount_claimed: true })
+            .eq('email', dc.email.toLowerCase())
+            .then(() => {});
+
+          supabaseAdmin
+            .from('used_discounts')
+            .insert({ email: dc.email.toLowerCase(), discount_code: dc.code })
+            .then(() => {});
+        }
       }
     }
   }

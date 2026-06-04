@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { code, subtotalPence } = req.body;
+  const { code, subtotalPence, email: requestEmail } = req.body;
   if (!code) return res.status(400).json({ error: 'Please enter a discount code.' });
 
   const { data, error } = await supabaseAdmin
@@ -17,27 +17,42 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid or already used code.' });
   }
 
-  // Check used_discounts ledger — blocks reuse by email even for guest checkouts
-  const { email } = req.body;
-  if (email && data.type === 'welcome') {
-    const { data: alreadyUsed } = await supabaseAdmin
-      .from('used_discounts')
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .eq('discount_code', data.code)
-      .maybeSingle();
-    if (alreadyUsed) {
-      return res.status(403).json({ error: 'This email has already claimed this discount code.' });
-    }
+  // ── One-time-use enforcement for welcome codes ──────────────────────
+  // Use the email stored ON the code row (always present, regardless of
+  // whether the user has typed their email into the form yet).
+  if (data.type === 'welcome' && data.email) {
+    const codeEmail = data.email.toLowerCase();
 
-    // Also check profile flag
+    // 1. Check profile flag — set when the code was first redeemed
     const { data: prof } = await supabaseAdmin
       .from('profiles')
       .select('welcome_discount_claimed')
-      .eq('email', email.toLowerCase())
+      .eq('email', codeEmail)
       .maybeSingle();
+
     if (prof?.welcome_discount_claimed) {
-      return res.status(403).json({ error: 'This email has already claimed this discount code.' });
+      return res.status(400).json({ error: 'This discount code has already been used.' });
+    }
+
+    // 2. Check used_discounts ledger (belt-and-suspenders; handles guests)
+    const { data: alreadyUsed, error: ledgerErr } = await supabaseAdmin
+      .from('used_discounts')
+      .select('id')
+      .eq('email', codeEmail)
+      .eq('discount_code', data.code)
+      .maybeSingle();
+
+    if (!ledgerErr && alreadyUsed) {
+      return res.status(400).json({ error: 'This discount code has already been used.' });
+    }
+
+    // 3. If the caller sent their email, also check it directly
+    if (requestEmail) {
+      const reqEmailLower = requestEmail.toLowerCase();
+
+      if (reqEmailLower !== codeEmail) {
+        return res.status(400).json({ error: 'This discount code is not valid for your account.' });
+      }
     }
   }
 
