@@ -1,5 +1,15 @@
 'use strict';
 
+/* ─── HTML ESCAPING ─────────────────────────────────────────────── */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /* ─── STRIPE CONFIG ─────────────────────────────────────────────── */
 const STRIPE_PK = 'pk_test_51TcXP15I1DB6R6KTaDOYuWcvM71JjTcDXzzXHntIAPjLd5h8xYOuGvuW9YafAaz8TekHxJOvKZNw9p0dd704unCP00g28CzoQe';
 
@@ -94,17 +104,21 @@ function renderSummary() {
     return;
   }
 
-  container.innerHTML = cart.map(item => `
+  container.innerHTML = cart.map(item => {
+    const price = Number(item.price) || 0;
+    const qty   = parseInt(item.qty, 10) || 0;
+    return `
     <div class="co-summary-item">
-      <img class="co-summary-item-img" src="${item.image}" alt="${item.name}"
+      <img class="co-summary-item-img" src="${esc(item.image)}" alt="${esc(item.name)}"
         onerror="this.src='images/products/placeholder.jpg';this.onerror=null;" />
       <div class="co-summary-item-info">
-        <p class="co-summary-item-name">${item.name}</p>
-        <p class="co-summary-item-qty">Qty: ${item.qty}</p>
+        <p class="co-summary-item-name">${esc(item.name)}</p>
+        <p class="co-summary-item-qty">Qty: ${qty}</p>
       </div>
-      <span class="co-summary-item-price">£${(item.price * item.qty).toFixed(2)}</span>
+      <span class="co-summary-item-price">£${(price * qty).toFixed(2)}</span>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   updateBundleSummary();
 }

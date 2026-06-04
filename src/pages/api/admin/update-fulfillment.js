@@ -1,13 +1,13 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { sendOrderCancelled } from '@/lib/mailer';
+import { verifyAdminToken } from '@/lib/adminAuth';
 
 const VALID_STATUSES = ['processing', 'out_for_delivery', 'completed', 'cancelled'];
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const cookie = req.cookies?.otgj_admin;
-  if (cookie !== process.env.ADMIN_PASSWORD) {
+  if (!verifyAdminToken(req.cookies?.otgj_admin)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
