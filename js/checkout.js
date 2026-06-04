@@ -332,10 +332,17 @@ function initAccordion() {
           addrErr.style.cssText = 'display:none;color:#dc2626;font-size:0.84rem;font-weight:600;margin:8px 0 2px';
           document.getElementById('address1')?.closest('.co-section-content')?.appendChild(addrErr);
         }
+        const city     = document.getElementById('city')?.value?.trim() || '';
         if (!addr1) {
           addrErr.textContent = 'Please enter your address before continuing.';
           addrErr.style.display = 'block';
           document.getElementById('address1')?.focus();
+          return;
+        }
+        if (!city) {
+          addrErr.textContent = 'Please enter your city before continuing.';
+          addrErr.style.display = 'block';
+          document.getElementById('city')?.focus();
           return;
         }
         if (!postcode) {
