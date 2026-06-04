@@ -108,7 +108,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error('[corporate/checkout-session]', err.message);
-    return res.status(500).json({ error: 'Failed to create checkout session' });
+    console.error('[corporate/checkout-session] Stripe error:', err.message, err.code ?? '');
+    const msg = err.type === 'StripeInvalidRequestError'
+      ? `Payment setup failed: ${err.message}`
+      : 'Failed to create checkout session. Please try again.';
+    return res.status(500).json({ error: msg });
   }
 }

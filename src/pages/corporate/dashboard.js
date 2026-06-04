@@ -89,11 +89,19 @@ export default function CorporateDashboard() {
     setError(''); setPlacing(true);
 
     try {
+      // Always fetch a fresh token — stored token may have expired
+      const { data: { session: freshSession } } = await supabase.auth.getSession();
+      if (!freshSession) {
+        router.replace('/corporate/login');
+        return;
+      }
+      const freshToken = freshSession.access_token;
+
       const res = await fetch('/api/corporate/checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${freshToken}`,
         },
         body: JSON.stringify({
           items: orderLines.map(l => ({ id: l.id, qty: l.qty })),
@@ -102,8 +110,13 @@ export default function CorporateDashboard() {
 
       const data = await res.json();
 
+      if (res.status === 401) {
+        router.replace('/corporate/login');
+        return;
+      }
+
       if (!res.ok || !data.url) {
-        setError(data.error || 'Failed to create checkout. Please try again.');
+        setError(data.error || 'Checkout failed — please try again or contact support.');
         setPlacing(false);
         return;
       }
@@ -155,7 +168,11 @@ export default function CorporateDashboard() {
           </div>
         </div>
 
-        {error && <div className="cd-alert">{error}</div>}
+        {error && (
+          <div className="cd-alert" ref={el => el?.scrollIntoView({ behavior: 'smooth', block: 'center' })}>
+            {error}
+          </div>
+        )}
 
         {/* Products table by category */}
         {categories.map(cat => {
