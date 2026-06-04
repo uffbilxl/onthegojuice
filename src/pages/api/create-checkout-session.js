@@ -27,7 +27,10 @@ const PRODUCT_PRICES = {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { interval, quantity } = req.body;
+  const { interval, quantity, flavors } = req.body;
+  const flavorsJson = Array.isArray(flavors) && flavors.length
+    ? JSON.stringify(flavors).slice(0, 490)
+    : '';
 
   if (!interval || !['week', 'month'].includes(interval)) {
     return res.status(400).json({ error: 'interval must be "week" or "month"' });
@@ -84,16 +87,22 @@ export default async function handler(req, res) {
       cancel_url:  `${base}/#subscribe-save`,
 
       metadata: {
-        type:          'subscription',
+        type:             'subscription',
         interval,
-        quantity:      String(qty),
-        bundle_applied: bundleDesc.slice(0, 200),
-        standard_pence: String(qty * singlePricePence),
-        total_pence:    String(totalUnitAmount),
+        quantity:         String(qty),
+        bundle_applied:   bundleDesc.slice(0, 200),
+        standard_pence:   String(qty * singlePricePence),
+        total_pence:      String(totalUnitAmount),
+        flavors_selected: flavorsJson,
       },
 
       subscription_data: {
-        metadata: { interval, quantity: String(qty), bundle_applied: bundleDesc.slice(0, 200) },
+        metadata: {
+          interval,
+          quantity:         String(qty),
+          bundle_applied:   bundleDesc.slice(0, 200),
+          flavors_selected: flavorsJson,
+        },
       },
     });
 

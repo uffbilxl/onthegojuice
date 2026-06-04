@@ -592,6 +592,9 @@ function initPayButton() {
   payBtn.addEventListener('click', async () => {
     if (!stripeInstance || !stripeElements || payBtn.disabled) return;
 
+    // Track checkout attempt for analytics
+    if (typeof window.va === 'function') window.va('event', { name: 'Checkout_Started' });
+
     payBtn.disabled = true;
     const textEl    = payBtn.querySelector('.pay-btn-text');
     const spinnerEl = payBtn.querySelector('.pay-btn-spinner');
