@@ -224,8 +224,6 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <EventsTab events={events} setEvents={setEvents} />
           )}
 
-          {false /* RSVPs tab removed */
-          )}
 
           {/* ── PROMOTIONS TAB ─────────────────────────────────────── */}
           {tab === 'promotions' && (
