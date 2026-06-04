@@ -17,6 +17,30 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid or already used code.' });
   }
 
+  // Check used_discounts ledger — blocks reuse by email even for guest checkouts
+  const { email } = req.body;
+  if (email && data.type === 'welcome') {
+    const { data: alreadyUsed } = await supabaseAdmin
+      .from('used_discounts')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .eq('discount_code', data.code)
+      .maybeSingle();
+    if (alreadyUsed) {
+      return res.status(403).json({ error: 'This email has already claimed this discount code.' });
+    }
+
+    // Also check profile flag
+    const { data: prof } = await supabaseAdmin
+      .from('profiles')
+      .select('welcome_discount_claimed')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+    if (prof?.welcome_discount_claimed) {
+      return res.status(403).json({ error: 'This email has already claimed this discount code.' });
+    }
+  }
+
   const sub = parseInt(subtotalPence, 10) || 0;
 
   if (sub < data.min_order_pence) {

@@ -5,9 +5,9 @@ export default async function handler(req, res) {
 
   const { data, error } = await supabaseAdmin
     .from('promotions_config')
-    .select('id, name, description, badge_text, min_qty, total_price_pence')
+    .select('id, name, min_qty, total_price_pence')
     .eq('is_active', true)
-    .order('sort_order');
+    .order('min_qty', { ascending: true });
 
   if (error) {
     console.error('[promotions-public]', error);

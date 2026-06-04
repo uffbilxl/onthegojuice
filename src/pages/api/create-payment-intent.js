@@ -101,16 +101,25 @@ export default async function handler(req, res) {
       .maybeSingle();
 
     if (dc && subtotal >= dc.min_order_pence) {
-      // Welcome codes are one-time per customer — check the profile flag
-      if (dc.type === 'welcome' && email) {
+      // Hard lock: check used_discounts ledger (covers guests + logged-in users)
+      if (email) {
+        const { data: alreadyUsed } = await supabaseAdmin
+          .from('used_discounts')
+          .select('id')
+          .eq('email', email.toLowerCase())
+          .eq('discount_code', dc.code.toUpperCase())
+          .maybeSingle();
+        if (alreadyUsed) dc = null;
+      }
+
+      // Soft lock for welcome codes: also check profile flag (belt-and-suspenders)
+      if (dc && dc.type === 'welcome' && email) {
         const { data: prof } = await supabaseAdmin
           .from('profiles')
           .select('welcome_discount_claimed')
           .eq('email', email.toLowerCase())
           .maybeSingle();
-        if (prof?.welcome_discount_claimed) {
-          dc = null;
-        }
+        if (prof?.welcome_discount_claimed) dc = null;
       }
 
       if (dc) {

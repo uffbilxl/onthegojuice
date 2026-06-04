@@ -103,6 +103,19 @@ async function handleRewardsAndLoyalty({ customerEmail, bottlesOrdered, amountPe
         .eq('redeemed', false),
     ]);
 
+    // Record in used_discounts ledger — prevents any future reuse by this email
+    supabaseAdmin
+      .from('used_discounts')
+      .insert({
+        email:         customerEmail.toLowerCase(),
+        discount_code: discountCode.toUpperCase(),
+      })
+      .then(({ error }) => {
+        if (error && error.code !== '23505') { // 23505 = unique violation (already recorded)
+          console.error('[webhook] used_discounts insert failed:', error.message);
+        }
+      });
+
     // If it was a welcome code, permanently flag the profile so it can't be reused
     if (dc?.type === 'welcome' && dc?.email) {
       await supabaseAdmin
