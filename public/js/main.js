@@ -7,25 +7,25 @@ let PRODUCTS = [];
 
 // Static metadata keyed by product id — never changes without a code deploy
 const PRODUCT_STATIC = {
-  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                           size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Whole_Milk-Nutmeg-Vanilla.png' },
-  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',                 size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_No_Added_Sugar_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla.png' },
-  3:  { ingredients: 'Mango, Whole Milk',                                              size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Mango_and_Milk_Juice_Drink_Mango-Whole_Milk.png' },
-  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla',    size: '330ml', type: 'milk',  tags: ['noSugar', 'lactoseFree'], image: 'images/products/Carrot_Beetroot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Beetroot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',          size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_Beetroot_and_Milk_Juice_Drink_Carrot-Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Mango_and_Ginger_Juice_Drink_Mango-Ginger-Sugar-Water.png' },
-  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/Carrot_and_Milk_Lactose_Free_Juice_Drink_Carrot-Lactose_Free_Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                       size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Sorrel_Juice_Drink_Sorrel-Cinnamon-Pimento-Sugar-Water.png' },
-  9:  { ingredients: 'Apple, Lemon, Ginger',                                          size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Apple_Ginger_Apple-Lemon.png' },
-  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                   size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Lemon_Juice_Drink_Carrot-Lemon-Sugar-Water.png' },
-  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',                size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Breadfruit_and_Milk_Juice_Drink_Breadfruit-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Grapefruit_Juice_Drink_Carrot-Grapefruit-Sugar-Water.png' },
-  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                                  size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Ginger_Juice_Drink_Carrot-Ginger-Sugar-Water.png' },
-  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                                 size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Beetroot_and_Apple_Juice_Drink_Beetroot-Apple-Sugar-Water.png' },
-  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',                  size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Beetroot_and_Milk_Juice_Drink_Beetroot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
-  16: { ingredients: 'Lime, Sugar, Water, Carrot',                                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/Carrot_and_Lime_Juice_Drink_Carrot-Lime-Sugar-Water.png' },
-  17: { ingredients: 'Pineapple, Lemon, Ginger',                                      size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Pineapple_Ginger_Pineapple-Lemon.png' },
-  18: { ingredients: 'Ginger, Turmeric, Lemon',                                       size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/Go_Shot_Ginger_and_Turmeric_Ginger-Turmeric-Lemon.png' },
-  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                    size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/Carrot_and_Milk_Juice_Drink_Carrot-Whole_Milk-Nutmeg-Vanilla-Sugar.png' },
+  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                        size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-milk-no-sugar.png' },
+  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-beetroot-milk-no-sugar.png' },
+  3:  { ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/mango-milk.png' },
+  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'],       image: 'images/products/carrot-beetroot-milk-lactose-free.png' },
+  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-beetroot-milk.png' },
+  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/mango-ginger.png' },
+  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/carrot-milk-lactose-free.png' },
+  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/sorrel.png' },
+  9:  { ingredients: 'Apple, Lemon, Ginger',                                        size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-apple-ginger.png' },
+  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lemon.png' },
+  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',             size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/breadfruit-milk.png' },
+  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                           size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-grapefruit.png' },
+  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                               size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-ginger.png' },
+  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/beetroot-apple.png' },
+  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',               size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/beetroot-milk.png' },
+  16: { ingredients: 'Lime, Sugar, Water',                                          size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lime.png' },
+  17: { ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-pineapple-ginger.png' },
+  18: { ingredients: 'Ginger, Turmeric, Lemon',                                    size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-turmeric.png' },
+  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-milk.png' },
 };
 
 async function loadProducts() {
@@ -467,13 +467,13 @@ function initNewsletter() {
 function initPopup() {
   const popup = document.getElementById('welcome-popup');
   if (!popup) return;
-  if (localStorage.getItem('otgj_popup_shown')) return;
+  if (sessionStorage.getItem('otgj_popup_shown')) return;
 
-  setTimeout(() => popup.classList.add('visible'), 3000);
+  setTimeout(() => popup.classList.add('visible'), 2000);
 
   function closePopup() {
     popup.classList.remove('visible');
-    localStorage.setItem('otgj_popup_shown', '1');
+    sessionStorage.setItem('otgj_popup_shown', '1');
   }
 
   document.getElementById('popup-close').addEventListener('click', closePopup);
@@ -483,7 +483,7 @@ function initPopup() {
   document.getElementById('popup-form').addEventListener('submit', e => {
     e.preventDefault();
     closePopup();
-    window.location.href = '/account';
+    window.location.href = '/register';
   });
 
   popup.addEventListener('click', e => {
@@ -782,6 +782,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('scroll', handleNavScroll, { passive: true });
   handleNavScroll();
 
+  /* ── Auth state in nav ─────────────────────────────────────────── */
+  (function updateNavAuth() {
+    try {
+      const raw  = localStorage.getItem('otgj_user');
+      const user = raw ? JSON.parse(raw) : null;
+
+      const signinBtn     = document.getElementById('nav-signin-btn');
+      const registerBtn   = document.getElementById('nav-register-btn');
+      const welcomeWrap   = document.getElementById('nav-welcome-wrap');
+      const welcomeText   = document.getElementById('nav-welcome-text');
+      const mobileSignin  = document.getElementById('mobile-signin-link');
+      const mobileRegister= document.getElementById('mobile-register-link');
+      const mobileAccount = document.getElementById('mobile-account-link');
+      const mobileLogout  = document.getElementById('mobile-logout-link');
+
+      if (user && user.email) {
+        // Logged in — show "Welcome, [Name]" + Log Out; hide Sign In / Sign Up
+        const name = user.first_name || user.email.split('@')[0];
+        if (signinBtn)   signinBtn.style.display    = 'none';
+        if (registerBtn) registerBtn.style.display   = 'none';
+        if (welcomeWrap) welcomeWrap.style.display   = 'flex';
+        if (welcomeText) welcomeText.textContent     = `Welcome, ${name}`;
+        if (mobileSignin)   mobileSignin.style.display   = 'none';
+        if (mobileRegister) mobileRegister.style.display  = 'none';
+        if (mobileAccount)  mobileAccount.style.display   = '';
+        if (mobileLogout)   mobileLogout.style.display    = '';
+      }
+      // else: defaults (Sign In/Up visible, welcome hidden) already set in HTML
+    } catch {}
+  })();
+
   document.getElementById('cart-trigger').addEventListener('click', openCart);
   document.getElementById('cart-close').addEventListener('click', closeCart);
   document.getElementById('cart-overlay').addEventListener('click', closeCart);
@@ -795,7 +826,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const popup = document.getElementById('welcome-popup');
       if (popup && popup.classList.contains('visible')) {
         popup.classList.remove('visible');
-        localStorage.setItem('otgj_popup_shown', '1');
+        sessionStorage.setItem('otgj_popup_shown', '1');
       }
     }
   });
