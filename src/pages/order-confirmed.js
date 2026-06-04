@@ -1,6 +1,133 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import Stripe from 'stripe';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { sendOrderConfirmation } from '@/lib/mailer';
 
+// ── Server-side: create order from Stripe session ────────────────────
+export async function getServerSideProps({ query }) {
+  const { session_id } = query;
+
+  if (!session_id) {
+    return { props: { status: 'no_session' } };
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  let session;
+  try {
+    session = await stripe.checkout.sessions.retrieve(session_id);
+  } catch (err) {
+    console.error('[order-confirmed] Failed to retrieve Stripe session:', err.message);
+    return { props: { status: 'stripe_error' } };
+  }
+
+  if (session.payment_status !== 'paid') {
+    console.warn('[order-confirmed] Session not paid:', session_id, session.payment_status);
+    return { props: { status: 'not_paid' } };
+  }
+
+  // Check if webhook already created this order
+  const { data: existing, error: lookupErr } = await supabaseAdmin
+    .from('orders')
+    .select('id')
+    .eq('stripe_session_id', session_id)
+    .maybeSingle();
+
+  if (lookupErr) {
+    console.error('[order-confirmed] Lookup error:', lookupErr.message, lookupErr.code);
+  }
+
+  if (existing) {
+    console.log('[order-confirmed] Order already exists for session', session_id, '— webhook beat us, all good');
+    return { props: { status: 'ok' } };
+  }
+
+  // Webhook hasn't fired yet (or failed) — create the order now
+  console.log('[order-confirmed] Creating order for session', session_id);
+
+  const meta     = session.metadata || {};
+  const shipping = session.shipping_details;
+  const email    = session.customer_details?.email || '';
+  const name     = session.customer_details?.name  || '';
+  const phone    = session.customer_details?.phone || meta.customer_phone || '';
+
+  // Fetch line items from Stripe
+  let lineItems = [];
+  try {
+    const expanded = await stripe.checkout.sessions.listLineItems(session_id, {
+      limit: 50,
+      expand: ['data.price.product'],
+    });
+    lineItems = expanded.data.map(li => ({
+      name:  li.description || li.price?.product?.name || 'Item',
+      qty:   li.quantity,
+      price: (li.price?.unit_amount ?? 0) / 100,
+    }));
+  } catch (e) {
+    console.error('[order-confirmed] Could not fetch line items:', e.message);
+    // Fall back to metadata
+    try {
+      lineItems = JSON.parse(meta.items || '[]').map(i => ({ name: i.n, qty: i.q, price: i.p }));
+    } catch (e2) {
+      console.error('[order-confirmed] Metadata items parse also failed:', e2.message);
+    }
+  }
+
+  const shippingAddress = shipping
+    ? [shipping.address?.line1, shipping.address?.line2, shipping.address?.city, shipping.address?.postal_code]
+        .filter(Boolean).join(', ')
+    : meta.shipping_address || '';
+
+  const orderRow = {
+    customer_name:      name,
+    customer_email:     email,
+    customer_phone:     phone,
+    delivery_method:    meta.delivery_method || 'pickup',
+    shipping_address:   shippingAddress,
+    postcode:           shipping?.address?.postal_code || '',
+    items:              lineItems,
+    total_amount:       (session.amount_total ?? 0) / 100,
+    payment_status:     'paid',
+    fulfillment_status: 'processing',
+    stripe_session_id:  session_id,
+  };
+
+  console.log('[order-confirmed] Inserting:', JSON.stringify({
+    email:  orderRow.customer_email,
+    total:  orderRow.total_amount,
+    items:  lineItems.length,
+    method: orderRow.delivery_method,
+  }));
+
+  const { error: insertErr } = await supabaseAdmin.from('orders').insert(orderRow);
+
+  if (insertErr) {
+    console.error('[order-confirmed] INSERT FAILED — message:', insertErr.message);
+    console.error('[order-confirmed] INSERT FAILED — code:', insertErr.code);
+    console.error('[order-confirmed] INSERT FAILED — details:', insertErr.details);
+    console.error('[order-confirmed] INSERT FAILED — hint:', insertErr.hint);
+  } else {
+    console.log('[order-confirmed] Order inserted successfully for session', session_id);
+
+    // Send confirmation email (webhook would do this too, but it hasn't fired)
+    if (email) {
+      sendOrderConfirmation(email, {
+        name,
+        orderId:         session_id,
+        items:           lineItems,
+        deliveryMethod:  meta.delivery_method || 'pickup',
+        shippingAddress,
+        totalPence:      session.amount_total ?? 0,
+        discountPence:   0,
+      }).catch(e => console.error('[order-confirmed] Confirmation email failed:', e.message));
+    }
+  }
+
+  return { props: { status: insertErr ? 'insert_error' : 'ok' } };
+}
+
+// ── Page ─────────────────────────────────────────────────────────────
 export default function OrderConfirmed() {
   return (
     <>
@@ -26,7 +153,6 @@ export default function OrderConfirmed() {
           overflow: 'hidden',
         }}>
 
-          {/* Green header bar */}
           <div style={{
             backgroundColor: '#1d6c00',
             padding: '32px 40px 28px',
@@ -49,10 +175,7 @@ export default function OrderConfirmed() {
             </p>
           </div>
 
-          {/* Body */}
           <div style={{ padding: '44px 48px 40px', textAlign: 'center' }}>
-
-            {/* Tick circle */}
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -63,7 +186,7 @@ export default function OrderConfirmed() {
               backgroundColor: '#f0fdf4',
               marginBottom: '24px',
             }}>
-              <span style={{ fontSize: '34px', lineHeight: 1, color: '#1d6c00' }}>✓</span>
+              <span style={{ fontSize: '34px', lineHeight: 1, color: '#1d6c00' }}>&#10003;</span>
             </div>
 
             <h1 style={{
@@ -100,10 +223,8 @@ export default function OrderConfirmed() {
             }}>
               Return to Home
             </Link>
-
           </div>
 
-          {/* Footer */}
           <div style={{
             backgroundColor: '#f4f1ec',
             borderTop: '1px solid #e5e7eb',
