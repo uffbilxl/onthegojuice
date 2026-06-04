@@ -72,6 +72,7 @@ function cartItemCount() {
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
 function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
   const grid = document.getElementById('products-grid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   let filtered = categoryFilter === 'all'
@@ -375,7 +376,9 @@ function handleNavScroll() {
 
 /* ─── FILTER TABS ────────────────────────────────────────────────── */
 function initFilterTabs() {
-  document.getElementById('filter-tabs').addEventListener('click', e => {
+  const tabs = document.getElementById('filter-tabs');
+  if (!tabs) return;
+  tabs.addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -433,7 +436,9 @@ function initSortControls() {
 
 /* ─── DIETARY FILTERS ────────────────────────────────────────────── */
 function initDietaryFilters() {
-  document.getElementById('dietary-filters').addEventListener('click', e => {
+  const df = document.getElementById('dietary-filters');
+  if (!df) return;
+  df.addEventListener('click', e => {
     const btn = e.target.closest('.dietary-btn');
     if (!btn) return;
     const tag = btn.dataset.tag;
