@@ -37,6 +37,19 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Cart is empty' });
   }
 
+  // ── Validate contact information ───────────────────────────────────
+  const name  = customer?.name?.trim()  || '';
+  const email = customer?.email?.trim() || '';
+  const phone = customer?.phone?.trim() || '';
+  const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+
+  if (!name || !email || !phone) {
+    return res.status(400).json({ error: 'Name, email, and phone number are required.' });
+  }
+  if (!phoneRegex.test(phone)) {
+    return res.status(400).json({ error: 'Invalid phone number format.' });
+  }
+
   // ── 1. Fetch server-authoritative product prices from DB ───────────
   let PRODUCT_PRICES;
   try {
@@ -114,8 +127,7 @@ export default async function handler(req, res) {
   let runningTotal = subtotal + deliveryFee - discountPence;
 
   // ── 6. Student discount — server-side .ac.uk check ────────────────
-  const email      = (customer?.email || '').trim().toLowerCase();
-  const isStudent  = email.endsWith('.ac.uk');
+  const isStudent  = email.toLowerCase().endsWith('.ac.uk');
   const studentDiscountPence = isStudent ? Math.round(runningTotal * STUDENT_DISCOUNT_RATE) : 0;
 
   runningTotal -= studentDiscountPence;

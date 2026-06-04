@@ -49,9 +49,10 @@ async function loadProducts() {
 }
 
 
-/* ─── FILTER STATE ──────────────────────────────────────────────── */
+/* ─── FILTER & SORT STATE ────────────────────────────────────────── */
 let activeCategoryFilter = 'all';
 const activeDietaryFilters = new Set();
+let activeSortType = 'alphabetical'; // 'alphabetical' | 'price-low' | 'price-high'
 
 /* ─── CART STATE ────────────────────────────────────────────────── */
 let cart = JSON.parse(localStorage.getItem('otgj_cart') || '[]');
@@ -69,15 +70,24 @@ function cartItemCount() {
 }
 
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
-const TYPE_ORDER = { juice: 0, milk: 1, shot: 2 };
-
-function renderProducts(categoryFilter = 'all', dietaryFilters = new Set()) {
+function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
   const grid = document.getElementById('products-grid');
   grid.innerHTML = '';
 
   let filtered = categoryFilter === 'all'
-    ? [...PRODUCTS].sort((a, b) => TYPE_ORDER[a.type] - TYPE_ORDER[b.type])
+    ? [...PRODUCTS]
     : PRODUCTS.filter(p => p.type === categoryFilter);
+
+  // Weighted sort: shots always pinned to the bottom, then apply user's sort within each group
+  filtered.sort((a, b) => {
+    const aIsShot = a.type === 'shot';
+    const bIsShot = b.type === 'shot';
+    if (aIsShot && !bIsShot) return 1;
+    if (!aIsShot && bIsShot) return -1;
+    if (sortType === 'price-high') return b.price - a.price;
+    if (sortType === 'price-low')  return a.price - b.price;
+    return a.name.localeCompare(b.name); // default: alphabetical
+  });
 
   if (dietaryFilters.size > 0) {
     filtered = filtered.filter(p =>
@@ -372,6 +382,20 @@ function initFilterTabs() {
     btn.classList.add('active');
     activeCategoryFilter = btn.dataset.filter;
     renderProducts(activeCategoryFilter, activeDietaryFilters);
+  });
+}
+
+/* ─── SORT CONTROLS ──────────────────────────────────────────────── */
+function initSortControls() {
+  const container = document.getElementById('sort-controls');
+  if (!container) return;
+  container.addEventListener('click', e => {
+    const btn = e.target.closest('.sort-btn');
+    if (!btn) return;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeSortType = btn.dataset.sort;
+    renderProducts(activeCategoryFilter, activeDietaryFilters, activeSortType);
   });
 }
 
@@ -773,6 +797,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
   initFilterTabs();
+  initSortControls();
   initDietaryFilters();
   initAnchorLinks();
   initMobileMenu();
