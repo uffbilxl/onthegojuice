@@ -28,8 +28,15 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const { interval, quantity, flavors } = req.body;
-  const flavorsJson = Array.isArray(flavors) && flavors.length
-    ? JSON.stringify(flavors).slice(0, 490)
+
+  // Build human-readable string: "3x Mango Ginger, 4x Sorrel, 2x Carrot Lemon"
+  // flavors is an array of { name, count } objects from the /subscribe page
+  const flavorsStr = Array.isArray(flavors) && flavors.length
+    ? flavors
+        .filter(f => f.count > 0)
+        .map(f => `${f.count}x ${f.name.replace(' Juice Drink', '').replace(' Juice', '')}`)
+        .join(', ')
+        .slice(0, 490)
     : '';
 
   if (!interval || !['week', 'month'].includes(interval)) {
@@ -93,7 +100,7 @@ export default async function handler(req, res) {
         bundle_applied:   bundleDesc.slice(0, 200),
         standard_pence:   String(qty * singlePricePence),
         total_pence:      String(totalUnitAmount),
-        flavors_selected: flavorsJson,
+        flavors_selected: flavorsStr,
       },
 
       subscription_data: {
@@ -101,7 +108,7 @@ export default async function handler(req, res) {
           interval,
           quantity:         String(qty),
           bundle_applied:   bundleDesc.slice(0, 200),
-          flavors_selected: flavorsJson,
+          flavors_selected: flavorsStr,
         },
       },
     });

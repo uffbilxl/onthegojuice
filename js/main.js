@@ -748,81 +748,15 @@ function initSubscriptions() {
     }
   }
 
-  function showFlavorPicker(stripeInterval, qtyId, btn) {
-    // Use the already-loaded products list (juice + milk only — no shots for subs)
-    const flavorList = products.filter(p => p.type !== 'shot');
-    const selected   = new Set();
-
-    const overlay = document.createElement('div');
-    overlay.id = 'flavor-modal';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
-
-    overlay.innerHTML = `
-      <div style="background:#fff;border-radius:20px;max-width:620px;width:100%;max-height:85vh;overflow-y:auto;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,0.25);">
-        <h2 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.35rem;color:#0a2800;margin:0 0 6px;letter-spacing:-0.03em;">Choose Your Flavours</h2>
-        <p style="color:#6b7280;font-size:0.88rem;margin:0 0 22px;line-height:1.6;">Select the flavours you want in your subscription box. Mix and match as many as you like.</p>
-        <div id="flavor-pills" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;">
-          ${flavorList.map(p => `
-            <button class="fpill" data-name="${p.name.replace(/"/g, '&quot;')}" style="
-              padding:9px 18px;border-radius:999px;border:2px solid #e5e7eb;
-              background:#fff;cursor:pointer;font-family:'Poppins',sans-serif;
-              font-size:0.8rem;font-weight:600;color:#374151;transition:all 0.15s;
-              white-space:nowrap;
-            ">${p.name.replace(' Juice Drink', '').replace(' Juice', '')}</button>
-          `).join('')}
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-          <span id="fpill-count" style="color:#6b7280;font-size:0.85rem;font-weight:600;min-width:80px;"></span>
-          <div style="display:flex;gap:10px;">
-            <button id="flavor-skip" style="padding:12px 22px;border-radius:10px;border:1.5px solid #e5e7eb;background:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.88rem;color:#374151;">No preference</button>
-            <button id="flavor-confirm" style="padding:12px 28px;border-radius:10px;border:none;background:#1d6c00;color:#fff;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.88rem;">Confirm &amp; Subscribe</button>
-          </div>
-        </div>
-      </div>`;
-
-    document.body.appendChild(overlay);
-    document.body.style.overflow = 'hidden';
-
-    const close = () => {
-      overlay.remove();
-      document.body.style.overflow = '';
-    };
-
-    overlay.querySelectorAll('.fpill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        const name = pill.dataset.name;
-        if (selected.has(name)) {
-          selected.delete(name);
-          pill.style.background   = '#fff';
-          pill.style.borderColor  = '#e5e7eb';
-          pill.style.color        = '#374151';
-        } else {
-          selected.add(name);
-          pill.style.background   = '#1d6c00';
-          pill.style.borderColor  = '#1d6c00';
-          pill.style.color        = '#fff';
-        }
-        const count = document.getElementById('fpill-count');
-        if (count) count.textContent = selected.size ? `${selected.size} selected` : '';
-      });
-    });
-
-    document.getElementById('flavor-skip').addEventListener('click', () => {
-      close(); subscribe(stripeInterval, qtyId, btn, []);
-    });
-    document.getElementById('flavor-confirm').addEventListener('click', () => {
-      close(); subscribe(stripeInterval, qtyId, btn, Array.from(selected));
-    });
-    overlay.addEventListener('click', e => { if (e.target === overlay) { close(); } });
-  }
-
+  // Subscribe buttons redirect to the dedicated /subscribe page (React)
+  // which handles flavor selection before creating the Stripe session.
   document.getElementById('btn-subscribe-weekly')?.addEventListener('click', function() {
-    if (products.length) showFlavorPicker('week', 'sub-weekly-qty', this);
-    else subscribe('week', 'sub-weekly-qty', this, []);
+    const qty = parseInt(document.getElementById('sub-weekly-qty')?.textContent) || 3;
+    window.location.href = `/subscribe?interval=week&qty=${qty}`;
   });
   document.getElementById('btn-subscribe-monthly')?.addEventListener('click', function() {
-    if (products.length) showFlavorPicker('month', 'sub-monthly-qty', this);
-    else subscribe('month', 'sub-monthly-qty', this, []);
+    const qty = parseInt(document.getElementById('sub-monthly-qty')?.textContent) || 10;
+    window.location.href = `/subscribe?interval=month&qty=${qty}`;
   });
 }
 
