@@ -225,7 +225,8 @@
 
   <script>
     /* ── Load event from API ── */
-    let EVENT_DATE = null;
+    let EVENT_DATE    = null;
+    let currentEvent  = null;
     let countdownInterval = null;
 
     function pad(n) { return String(n).padStart(2, '0'); }
@@ -258,6 +259,7 @@
           return;
         }
         const ev = await res.json();
+        currentEvent = ev;
         EVENT_DATE = new Date(ev.event_date);
 
         // Populate hero
@@ -307,7 +309,11 @@
         const res = await fetch('/api/event-rsvp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, attendees, message }),
+          body: JSON.stringify({
+            name, email, attendees, message,
+            event_id:   currentEvent?.id   || null,
+            event_name: currentEvent?.name || null,
+          }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Something went wrong.');
