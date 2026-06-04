@@ -90,7 +90,7 @@ export default async function handler(req, res) {
 
       allow_promotion_codes: true,
 
-      success_url: `${base}/thank-you?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
+      success_url: `${base}/order-confirmed?session_id={CHECKOUT_SESSION_ID}&type=subscription`,
       cancel_url:  `${base}/#subscribe-save`,
 
       metadata: {

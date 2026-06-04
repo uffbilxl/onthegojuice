@@ -340,5 +340,78 @@ export default async function handler(req, res) {
     });
   }
 
+  // ── invoice.paid (recurring subscription payments after the first) ───
+  // The checkout.session.completed event handles the first payment.
+  // Every subsequent renewal fires invoice.paid instead.
+  if (event.type === 'invoice.paid') {
+    const invoice      = event.data.object;
+    const subscription = invoice.subscription;
+    const email        = invoice.customer_email || '';
+    const amountPaid   = invoice.amount_paid ?? 0;
+
+    // Skip the first invoice — that is already handled by checkout.session.completed
+    if (invoice.billing_reason === 'subscription_create') {
+      console.log(`[webhook] invoice.paid (first payment) — skipping, handled by checkout.session.completed`);
+      return res.status(200).json({ received: true });
+    }
+
+    console.log(`[webhook] invoice.paid (renewal) — sub ${subscription} — £${(amountPaid / 100).toFixed(2)} — ${email}`);
+
+    // Pull flavors and quantity from the subscription's metadata
+    let subMeta = {};
+    try {
+      const sub = await stripe.subscriptions.retrieve(subscription);
+      subMeta   = sub.metadata || {};
+    } catch (e) {
+      console.error(`[webhook] Could not retrieve subscription ${subscription}:`, e.message);
+    }
+
+    const flavorsStr = subMeta.flavors_selected || '';
+    const quantity   = subMeta.quantity || '?';
+    const interval   = subMeta.interval || 'month';
+
+    // Build a summary line item for the order
+    const lineItems = [{
+      name:  `Subscription Renewal — ${quantity} bottle${quantity !== '1' ? 's' : ''} (${interval}ly)${flavorsStr ? ': ' + flavorsStr : ''}`,
+      qty:   parseInt(quantity) || 1,
+      price: amountPaid / 100,
+    }];
+
+    const invoiceRef = `inv_${invoice.id}`;
+
+    // Dedup — don't insert twice if webhook fires multiple times
+    const { data: existing } = await supabaseAdmin
+      .from('orders')
+      .select('id')
+      .eq('stripe_session_id', invoiceRef)
+      .maybeSingle();
+
+    if (existing) {
+      console.log(`[webhook] Renewal order already exists for invoice ${invoice.id}`);
+      return res.status(200).json({ received: true });
+    }
+
+    const { error: invoiceOrderErr } = await supabaseAdmin.from('orders').insert({
+      customer_name:      invoice.customer_name || '',
+      customer_email:     email,
+      customer_phone:     '',
+      delivery_method:    'pickup',
+      shipping_address:   '',
+      postcode:           '',
+      items:              lineItems,
+      total_amount:       amountPaid / 100,
+      payment_status:     'paid',
+      fulfillment_status: 'processing',
+      stripe_session_id:  invoiceRef,
+      admin_note:         `Subscription renewal${flavorsStr ? ' — ' + flavorsStr : ''}`,
+    });
+
+    if (invoiceOrderErr) {
+      console.error(`[webhook] Renewal order INSERT FAILED for invoice ${invoice.id}:`, invoiceOrderErr.message, invoiceOrderErr.code);
+    } else {
+      console.log(`[webhook] Renewal order created for invoice ${invoice.id}`);
+    }
+  }
+
   return res.status(200).json({ received: true });
 }
