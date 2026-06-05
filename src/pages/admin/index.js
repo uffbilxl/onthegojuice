@@ -199,7 +199,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                               {isDelivery && order.postcode   && <div className="adm-postcode">{order.postcode}</div>}
                               {isDelivery && order.shipping_address && <div className="adm-address">{order.shipping_address}</div>}
                             </td>
-                            <td><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
+                            <td><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? item.quantity ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
                             <td className="adm-cell-total">£{Number(order.total_amount).toFixed(2)}</td>
                             <td>
                               <span className="adm-payment-badge" style={{ background: order.payment_status === 'paid' ? '#dcfce7' : '#fee2e2', color: order.payment_status === 'paid' ? '#15803d' : '#b91c1c' }}>
