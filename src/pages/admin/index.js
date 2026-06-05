@@ -199,7 +199,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                               {isDelivery && order.postcode   && <div className="adm-postcode">{order.postcode}</div>}
                               {isDelivery && order.shipping_address && <div className="adm-address">{order.shipping_address}</div>}
                             </td>
-                            <td><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}>{item.qty}× {item.name || item.n}</li>)}</ul></td>
+                            <td><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
                             <td className="adm-cell-total">£{Number(order.total_amount).toFixed(2)}</td>
                             <td>
                               <span className="adm-payment-badge" style={{ background: order.payment_status === 'paid' ? '#dcfce7' : '#fee2e2', color: order.payment_status === 'paid' ? '#15803d' : '#b91c1c' }}>
@@ -1126,6 +1126,7 @@ function AdminStyles() {
       .adm-address { font-size: 0.72rem; color: var(--grey); margin-top: 2px; max-width: 160px; }
       .adm-items { list-style: none; font-size: 0.8rem; color: var(--grey); }
       .adm-items li { margin-bottom: 2px; }
+      .adm-item-qty { display: inline-block; background: #f3f4f6; color: var(--black); font-weight: 700; font-size: 0.72rem; border-radius: 4px; padding: 1px 5px; margin-right: 3px; }
       .adm-cell-total { font-weight: 700; font-family: var(--font-accent); color: var(--green); white-space: nowrap; }
       .adm-payment-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: capitalize; }
       .adm-status-select { padding: 6px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-family: var(--font-main); font-size: 0.78rem; font-weight: 600; cursor: pointer; width: 100%; min-width: 160px; outline: none; transition: border-color 0.2s; }
