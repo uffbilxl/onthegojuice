@@ -40,7 +40,7 @@ const nextConfig = {
       // API calls: Stripe, Supabase, postcode lookup
       "connect-src 'self' https://api.stripe.com https://yzhfphcypahajeriztqk.supabase.co https://api.postcodes.io",
       // Stripe Payment Element renders inside an iframe
-      "frame-src https://js.stripe.com https://hooks.stripe.com",
+      "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self' https://checkout.stripe.com",
