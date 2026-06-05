@@ -72,6 +72,7 @@ function cartItemCount() {
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
 function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
   const grid = document.getElementById('products-grid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   let filtered = categoryFilter === 'all'
@@ -375,13 +376,47 @@ function handleNavScroll() {
 
 /* ─── FILTER TABS ────────────────────────────────────────────────── */
 function initFilterTabs() {
-  document.getElementById('filter-tabs').addEventListener('click', e => {
+  const tabs = document.getElementById('filter-tabs');
+  if (!tabs) return;
+  tabs.addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeCategoryFilter = btn.dataset.filter;
     renderProducts(activeCategoryFilter, activeDietaryFilters);
+  });
+}
+
+/* ─── SIGN-IN DROPDOWN ───────────────────────────────────────────── */
+function initSignInDropdown() {
+  const btn     = document.getElementById('nav-signin-btn');
+  const menu    = document.getElementById('nav-signin-dropdown');
+  const chevron = document.getElementById('nav-signin-chevron');
+  if (!btn || !menu) return;
+
+  function openMenu() {
+    menu.style.display = 'block';
+    btn.setAttribute('aria-expanded', 'true');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+  function closeMenu() {
+    menu.style.display = 'none';
+    btn.setAttribute('aria-expanded', 'false');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.style.display === 'none' ? openMenu() : closeMenu();
+  });
+
+  document.addEventListener('click', e => {
+    if (!btn.parentElement.contains(e.target)) closeMenu();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenu();
   });
 }
 
@@ -401,7 +436,9 @@ function initSortControls() {
 
 /* ─── DIETARY FILTERS ────────────────────────────────────────────── */
 function initDietaryFilters() {
-  document.getElementById('dietary-filters').addEventListener('click', e => {
+  const df = document.getElementById('dietary-filters');
+  if (!df) return;
+  df.addEventListener('click', e => {
     const btn = e.target.closest('.dietary-btn');
     if (!btn) return;
     const tag = btn.dataset.tag;
@@ -489,13 +526,14 @@ function initNewsletter() {
   });
 }
 
+
 /* ─── WELCOME POPUP ──────────────────────────────────────────────── */
 function initPopup() {
   const popup = document.getElementById('welcome-popup');
   if (!popup) return;
   if (sessionStorage.getItem('otgj_popup_shown')) return;
 
-  setTimeout(() => popup.classList.add('visible'), 2000);
+  setTimeout(() => popup.classList.add('visible'), 3000);
 
   function closePopup() {
     popup.classList.remove('visible');
@@ -509,7 +547,7 @@ function initPopup() {
   document.getElementById('popup-form').addEventListener('submit', e => {
     e.preventDefault();
     closePopup();
-    window.location.href = '/register';
+    window.location.href = '/account';
   });
 
   popup.addEventListener('click', e => {
@@ -747,7 +785,7 @@ function initSubscriptions() {
   makeQtyControl('sub-weekly-minus',  'sub-weekly-qty',  'sub-weekly-plus',  1, 10);
   makeQtyControl('sub-monthly-minus', 'sub-monthly-qty', 'sub-monthly-plus', 1, 20);
 
-  async function subscribe(stripeInterval, qtyId, btn) {
+  async function subscribe(stripeInterval, qtyId, btn, flavors) {
     const qty      = parseInt(document.getElementById(qtyId)?.textContent) || 1;
     const original = btn.textContent;
     btn.disabled    = true;
@@ -756,8 +794,7 @@ function initSubscriptions() {
       const res = await fetch('/api/create-checkout-session', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        // interval must be 'week' or 'month' for Stripe recurring price_data
-        body: JSON.stringify({ interval: stripeInterval, quantity: qty }),
+        body: JSON.stringify({ interval: stripeInterval, quantity: qty, flavors: flavors || [] }),
       });
       const data = await res.json();
       if (data.url) {
@@ -774,12 +811,15 @@ function initSubscriptions() {
     }
   }
 
-  // Stripe interval values: 'week' | 'month'
+  // Subscribe buttons redirect to the dedicated /subscribe page (React)
+  // which handles flavor selection before creating the Stripe session.
   document.getElementById('btn-subscribe-weekly')?.addEventListener('click', function() {
-    subscribe('week', 'sub-weekly-qty', this);
+    const qty = parseInt(document.getElementById('sub-weekly-qty')?.textContent) || 3;
+    window.location.href = `/subscribe?interval=week&qty=${qty}`;
   });
   document.getElementById('btn-subscribe-monthly')?.addEventListener('click', function() {
-    subscribe('month', 'sub-monthly-qty', this);
+    const qty = parseInt(document.getElementById('sub-monthly-qty')?.textContent) || 10;
+    window.location.href = `/subscribe?interval=month&qty=${qty}`;
   });
 }
 
@@ -793,6 +833,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([loadProducts(), loadActivePromos()]);
   renderProducts(activeCategoryFilter, activeDietaryFilters);
   updateCartUI();
+  initSignInDropdown();
   initFilterTabs();
   initSortControls();
   initDietaryFilters();

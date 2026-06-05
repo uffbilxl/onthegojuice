@@ -28,10 +28,12 @@ const nextConfig = {
   },
 
   async headers() {
+    const isDev = process.env.NODE_ENV !== 'production';
     const csp = [
       "default-src 'self'",
       // Stripe.js + AOS from unpkg; 'unsafe-inline' required for existing inline handlers
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com",
+      // 'unsafe-eval' is required in dev mode for webpack hot-module replacement
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://js.stripe.com https://unpkg.com`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
