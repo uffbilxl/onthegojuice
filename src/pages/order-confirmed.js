@@ -268,7 +268,7 @@ export default function OrderConfirmed() {
           <div style={{ backgroundColor: '#f4f1ec', borderTop: '1px solid #e5e7eb',
             padding: '22px 40px', textAlign: 'center' }}>
             <p style={{ margin: '0 0 4px', fontSize: '12px', color: '#9ca3af' }}>
-              On The Go Juice &bull; Birmingham, UK
+              On The Go Juice &bull; Solihull, UK
             </p>
             <p style={{ margin: 0, fontSize: '12px' }}>
               <a href="mailto:info@onthego-juice.co.uk"

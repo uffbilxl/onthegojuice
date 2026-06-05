@@ -218,17 +218,12 @@ function updateCartQty(productId, delta) {
 function updateCartUI() {
   const count = cartItemCount();
   const countEl = document.getElementById('cart-count');
-  if (countEl) { countEl.textContent = count; countEl.classList.toggle('visible', count > 0); }
+  countEl.textContent = count;
+  countEl.classList.toggle('visible', count > 0);
 
   const cartItemsEl = document.getElementById('cart-items');
   const cartEmptyEl = document.getElementById('cart-empty');
   const cartFooterEl = document.getElementById('cart-footer');
-
-  // Pages without the full cart sidebar (events, order-status, etc.) only have the mini-cart
-  if (!cartItemsEl || !cartEmptyEl || !cartFooterEl) {
-    updateMiniCartUI();
-    return;
-  }
 
   if (cart.length === 0) {
     cartItemsEl.innerHTML = '';
@@ -262,8 +257,7 @@ function updateCartUI() {
     </li>
   `).join('');
 
-  const cartTotalEl = document.getElementById('cart-total');
-  if (cartTotalEl) cartTotalEl.textContent = `£${cartTotal().toFixed(2)}`;
+  document.getElementById('cart-total').textContent = `£${cartTotal().toFixed(2)}`;
   updateBundleUI();
 
   cartItemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {

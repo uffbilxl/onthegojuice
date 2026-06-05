@@ -38,7 +38,7 @@ function wrap(body) {
       <tr><td style="padding:36px 36px 28px">${body}</td></tr>
       <tr>
         <td style="background:#f9f6f1;border-top:1px solid #e5e7eb;padding:20px 32px;text-align:center">
-          <p style="margin:0;font-size:12px;color:#9ca3af">${FROM_NAME} &bull; Birmingham, UK</p>
+          <p style="margin:0;font-size:12px;color:#9ca3af">${FROM_NAME} &bull; Solihull, UK</p>
           <p style="margin:5px 0 0;font-size:12px">
             <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE};text-decoration:none">onthegojuiceadmin@gmail.com</a>
           </p>
@@ -83,7 +83,7 @@ export async function sendWelcomeDiscount(to, code) {
     </a>
   `);
 
-  const text = `Here's your 20% off code: ${code}\n\nUse it at checkout on orders over £10.\nShop now: https://onthegojuice.vercel.app/#products\n\nSingle use. On The Go Juice, Birmingham.`;
+  const text = `Here's your 20% off code: ${code}\n\nUse it at checkout on orders over £10.\nShop now: https://onthegojuice.vercel.app/#products\n\nSingle use. On The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Your discount code from ${FROM_NAME}`, html, text });
 }
@@ -117,7 +117,7 @@ export async function sendFreeBottleReward(to, code) {
     </a>
   `);
 
-  const text = `Your free bottle code: ${code}\n\nYou've bought 7 bottles so your next one is free. No minimum spend.\nShop now: https://onthegojuice.vercel.app/#products\n\nOn The Go Juice, Birmingham.`;
+  const text = `Your free bottle code: ${code}\n\nYou've bought 7 bottles so your next one is free. No minimum spend.\nShop now: https://onthegojuice.vercel.app/#products\n\nOn The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Your free bottle from ${FROM_NAME}`, html, text });
 }
@@ -167,7 +167,7 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
         We'll confirm your delivery slot by email shortly.
        </p>`
     : `<p style="margin:0;font-size:0.88rem;color:#374151;line-height:1.7">
-        Your order is ready for <strong>local pickup</strong> from our Birmingham pickup point.<br/>
+        Your order is ready for <strong>local pickup</strong> from our Solihull pickup point.<br/>
         We'll email you to confirm the exact location and available times.
        </p>`;
 
@@ -223,7 +223,7 @@ export async function sendOrderConfirmation(to, { name, orderId, items, delivery
   `);
 
   const itemsText = items.map(i => `  ${i.n} x${i.q} — £${((i.p || 0) * (i.q || 0) / 100).toFixed(2)}`).join('\n');
-  const text = `Order confirmed ${orderRef}\n\nThanks ${firstName}!\n\nOrder summary:\n${itemsText}\nTotal: £${(totalPence / 100).toFixed(2)}\n\n${isDelivery ? `Delivering to: ${shippingAddress}` : 'Pickup from Birmingham — we\'ll confirm location by email.'}\n\nQuestions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+  const text = `Order confirmed ${orderRef}\n\nThanks ${firstName}!\n\nOrder summary:\n${itemsText}\nTotal: £${(totalPence / 100).toFixed(2)}\n\n${isDelivery ? `Delivering to: ${shippingAddress}` : 'Pickup from Solihull — we\'ll confirm location by email.'}\n\nQuestions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Order confirmed ${orderRef} — ${FROM_NAME}`, html, text });
 }
@@ -268,7 +268,7 @@ export async function sendPartnerAccepted(to, { businessName, contactName }) {
     </a>
   `);
 
-  const text = `Hi ${firstName},\n\nGreat news — ${businessName} has been approved as an On The Go Juice stockist!\n\nWhat happens next:\n- Our team will contact you within 48 hours to confirm delivery schedule\n- We'll agree on your first order and pricing\n- Your first delivery will be arranged at a time that suits you\n\nAny questions? Email info@onthego-juice.co.uk\n\nOn The Go Juice, Birmingham.`;
+  const text = `Hi ${firstName},\n\nGreat news — ${businessName} has been approved as an On The Go Juice stockist!\n\nWhat happens next:\n- Our team will contact you within 48 hours to confirm delivery schedule\n- We'll agree on your first order and pricing\n- Your first delivery will be arranged at a time that suits you\n\nAny questions? Email info@onthego-juice.co.uk\n\nOn The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Welcome to On The Go Juice — Partnership Approved`, html, text });
 }
@@ -304,7 +304,7 @@ export async function sendPartnerDeclined(to, { businessName, contactName }) {
     </a>
   `);
 
-  const text = `Hi ${firstName},\n\nThank you for your interest in stocking On The Go Juice at ${businessName}.\n\nUnfortunately, we're unable to move forward with a partnership at this time. As a small independent business, we're carefully managing our growth to maintain quality.\n\nThis isn't permanent — we'll keep your details on file and may reach out when we're ready to expand.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+  const text = `Hi ${firstName},\n\nThank you for your interest in stocking On The Go Juice at ${businessName}.\n\nUnfortunately, we're unable to move forward with a partnership at this time. As a small independent business, we're carefully managing our growth to maintain quality.\n\nThis isn't permanent — we'll keep your details on file and may reach out when we're ready to expand.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Your On The Go Juice Partnership Enquiry`, html, text });
 }
@@ -339,7 +339,7 @@ export async function sendOrderCancelled(to, { name, orderId }) {
     </a>
   `);
 
-  const text = `Hi ${firstName},\n\nYour order ${orderRef} has been cancelled.\n\nIf you paid, your refund will arrive within 3–5 working days.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Birmingham.`;
+  const text = `Hi ${firstName},\n\nYour order ${orderRef} has been cancelled.\n\nIf you paid, your refund will arrive within 3–5 working days.\n\nAny questions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Solihull.`;
 
   await sendMail({ to, subject: `Your order ${orderRef} has been cancelled`, html, text });
 }
