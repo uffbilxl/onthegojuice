@@ -452,12 +452,12 @@ function initPostcodeChecker() {
       const miles = await validatePostcode(postcode);
       if (miles <= MAX_MILES) {
         resultEl.className   = 'postcode-result valid';
-        resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Birmingham)`;
+        resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Solihull)`;
         const addrPostcode = document.getElementById('postcode-addr');
         if (addrPostcode && !addrPostcode.value) addrPostcode.value = postcode.trim().toUpperCase();
       } else {
         resultEl.className   = 'postcode-result invalid';
-        resultEl.textContent = `Sorry, we only deliver within 10 miles of Birmingham (your postcode is ${miles.toFixed(1)} miles away).`;
+        resultEl.textContent = `Sorry, we only deliver within 10 miles of Solihull (your postcode is ${miles.toFixed(1)} miles away).`;
       }
     } catch {
       resultEl.className   = 'postcode-result invalid';
@@ -609,7 +609,7 @@ async function initStripePayment() {
   const address = {
     line1:    document.getElementById('address1')?.value?.trim() || '',
     line2:    document.getElementById('address2')?.value?.trim() || '',
-    city:     document.getElementById('city')?.value?.trim() || 'Birmingham',
+    city:     document.getElementById('city')?.value?.trim() || 'Solihull',
     postcode: document.getElementById('postcode-addr')?.value?.trim()
               || document.getElementById('postcode-input')?.value?.trim() || '',
   };

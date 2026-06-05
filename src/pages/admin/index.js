@@ -579,7 +579,7 @@ function EventsTab({ events, setEvents }) {
             <div className="adm-form-row">
               <div className="adm-form-group">
                 <label>Event Name *</label>
-                <input className="adm-input" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} placeholder="Birmingham City Centre Soft Launch" required />
+                <input className="adm-input" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} placeholder="Solihull Soft Launch" required />
               </div>
               <div className="adm-form-group">
                 <label>Event Date &amp; Time *</label>
@@ -589,7 +589,7 @@ function EventsTab({ events, setEvents }) {
             <div className="adm-form-row">
               <div className="adm-form-group">
                 <label>Location Name *</label>
-                <input className="adm-input" value={form.location_name} onChange={e => setForm(f => ({...f, location_name: e.target.value}))} placeholder="Birmingham City Centre" required />
+                <input className="adm-input" value={form.location_name} onChange={e => setForm(f => ({...f, location_name: e.target.value}))} placeholder="Solihull Town Centre" required />
               </div>
               <div className="adm-form-group">
                 <label>Address</label>

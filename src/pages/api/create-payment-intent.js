@@ -212,7 +212,7 @@ export default async function handler(req, res) {
       address: {
         line1:       address.line1    || '',
         line2:       address.line2    || '',
-        city:        address.city     || 'Birmingham',
+        city:        address.city     || 'Solihull',
         postal_code: address.postcode || '',
         country:     'GB',
       },
