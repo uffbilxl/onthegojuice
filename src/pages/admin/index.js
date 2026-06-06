@@ -185,33 +185,33 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                         const col = STATUS_COLOURS[order.fulfillment_status] || STATUS_COLOURS.processing;
                         return (
                           <tr key={order.id} className={isDelivery ? 'adm-row-delivery' : 'adm-row-pickup'}>
-                            <td className="adm-cell-date">
+                            <td className="adm-cell-date" data-label="Date">
                               {new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                               <br /><span className="adm-time">{new Date(order.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                             </td>
-                            <td>
+                            <td data-label="Customer">
                               <strong>{order.customer_name}</strong><br />
                               <a href={`mailto:${order.customer_email}`} className="adm-email">{order.customer_email}</a>
                               {order.customer_phone && <><br /><span className="adm-phone">{order.customer_phone}</span></>}
                             </td>
-                            <td>
+                            <td data-label="Delivery">
                               <span className={`adm-method-badge adm-method-${isDelivery ? 'delivery' : 'pickup'}`}>{isDelivery ? '🚗 Delivery' : '📍 Pickup'}</span>
                               {isDelivery && order.postcode   && <div className="adm-postcode">{order.postcode}</div>}
                               {isDelivery && order.shipping_address && <div className="adm-address">{order.shipping_address}</div>}
                             </td>
-                            <td><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? item.quantity ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
-                            <td className="adm-cell-total">£{Number(order.total_amount).toFixed(2)}</td>
-                            <td>
+                            <td data-label="Items"><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? item.quantity ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
+                            <td className="adm-cell-total" data-label="Total">£{Number(order.total_amount).toFixed(2)}</td>
+                            <td data-label="Payment">
                               <span className="adm-payment-badge" style={{ background: order.payment_status === 'paid' ? '#dcfce7' : '#fee2e2', color: order.payment_status === 'paid' ? '#15803d' : '#b91c1c' }}>
                                 {order.payment_status}
                               </span>
                             </td>
-                            <td>
+                            <td data-label="Status">
                               <select value={order.fulfillment_status} onChange={e => updateFulfillment(order.id, e.target.value)} style={{ background: col.bg, color: col.text }} className="adm-status-select">
                                 {Object.entries(FULFILLMENT_LABELS).map(([val, label]) => <option key={val} value={val}>{label}</option>)}
                               </select>
                             </td>
-                            <td><NoteCell order={order} onSave={saveNote} /></td>
+                            <td data-label="Note"><NoteCell order={order} onSave={saveNote} /></td>
                           </tr>
                         );
                       })}
@@ -280,11 +280,11 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                           <tbody>
                             {rows.map(r => (
                               <tr key={r.id}>
-                                <td className="adm-cell-date">{new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                                <td><strong>{r.name}</strong></td>
-                                <td><a href={`mailto:${r.email}`} className="adm-email">{r.email}</a></td>
-                                <td style={{ textAlign: 'center', fontWeight: 700 }}>{r.attendees}</td>
-                                <td style={{ color: '#6b7280', fontSize: '0.8rem' }}>{r.message || '—'}</td>
+                                <td className="adm-cell-date" data-label="Registered">{new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                                <td data-label="Name"><strong>{r.name}</strong></td>
+                                <td data-label="Email"><a href={`mailto:${r.email}`} className="adm-email">{r.email}</a></td>
+                                <td data-label="Attendees" style={{ fontWeight: 700 }}>{r.attendees}</td>
+                                <td data-label="Message" style={{ color: '#6b7280', fontSize: '0.8rem' }}>{r.message || '—'}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -317,17 +317,17 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                         const sentLabel = p._sent === 'accepted' ? '✓ Acceptance sent' : p._sent === 'declined' ? '✓ Rejection sent' : null;
                         return (
                           <tr key={p.id}>
-                            <td className="adm-cell-date">{new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                            <td><strong>{p.business_name}</strong></td>
-                            <td>
+                            <td className="adm-cell-date" data-label="Date">{new Date(p.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                            <td data-label="Business"><strong>{p.business_name}</strong></td>
+                            <td data-label="Contact">
                               {p.contact_name}<br />
                               <a href={`mailto:${p.email}`} className="adm-email">{p.email}</a><br />
                               <span className="adm-phone">{p.phone}</span>
                             </td>
-                            <td style={{ textTransform: 'capitalize' }}>{p.org_type}</td>
-                            <td>{p.weekly_volume}</td>
-                            <td style={{ color: '#6b7280', fontSize: '0.8rem', maxWidth: 200 }}>{p.message || '—'}</td>
-                            <td>
+                            <td data-label="Type" style={{ textTransform: 'capitalize' }}>{p.org_type}</td>
+                            <td data-label="Volume / Week">{p.weekly_volume}</td>
+                            <td data-label="Message" style={{ color: '#6b7280', fontSize: '0.8rem', maxWidth: 200 }}>{p.message || '—'}</td>
+                            <td data-label="Status">
                               <select
                                 value={p.status}
                                 onChange={e => updatePartnerStatus(p.id, e.target.value)}
@@ -337,7 +337,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                                 {['new', 'contacted', 'active', 'declined'].map(s => <option key={s} value={s} style={{ textTransform: 'capitalize' }}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                               </select>
                             </td>
-                            <td>
+                            <td data-label="Email Action">
                               {sentLabel ? (
                                 <span className="adm-email-sent">{sentLabel}</span>
                               ) : (
@@ -447,14 +447,14 @@ function ProductsTab({ products, setProducts }) {
                   const isEditing = editing === p.id;
                   return (
                     <tr key={p.id} style={{ opacity: p.active ? 1 : 0.5 }}>
-                      <td style={{ fontWeight: 700, color: '#9ca3af', width: 40 }}>{p.id}</td>
-                      <td style={{ fontWeight: 500, maxWidth: 280 }}>{p.name}</td>
-                      <td>
+                      <td data-label="ID" style={{ fontWeight: 700, color: '#9ca3af', width: 40 }}>{p.id}</td>
+                      <td data-label="Name" style={{ fontWeight: 500, maxWidth: 280 }}>{p.name}</td>
+                      <td data-label="Category">
                         <span className="adm-payment-badge" style={{ background: catCol.bg, color: catCol.text }}>
                           {CATEGORY_LABELS[p.category] || p.category}
                         </span>
                       </td>
-                      <td style={{ fontWeight: 700, fontFamily: 'var(--font-accent)', whiteSpace: 'nowrap' }}>
+                      <td data-label="Price" style={{ fontWeight: 700, fontFamily: 'var(--font-accent)', whiteSpace: 'nowrap' }}>
                         {isEditing ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <span style={{ color: '#6b7280' }}>£</span>
@@ -471,12 +471,12 @@ function ProductsTab({ products, setProducts }) {
                           `£${(p.price_pence / 100).toFixed(2)}`
                         )}
                       </td>
-                      <td>
+                      <td data-label="Status">
                         <span className="adm-payment-badge" style={{ background: p.active ? '#dcfce7' : '#f3f4f6', color: p.active ? '#15803d' : '#6b7280' }}>
                           {p.active ? 'Active' : 'Hidden'}
                         </span>
                       </td>
-                      <td>
+                      <td data-label="Actions">
                         <div style={{ display: 'flex', gap: 6 }}>
                           {isEditing ? (
                             <>
@@ -953,7 +953,7 @@ function UsersTab({ users, setUsers }) {
 
                 return (
                   <tr key={user.id}>
-                    <td>
+                    <td data-label="User">
                       <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>
                         {user.first_name || user.last_name
                           ? `${user.first_name} ${user.last_name}`.trim()
@@ -965,10 +965,10 @@ function UsersTab({ users, setUsers }) {
                         <div style={{ fontSize: '0.7rem', color: '#f97316', marginTop: 2 }}>⚠ Unverified</div>
                       )}
                     </td>
-                    <td className="adm-cell-date">
+                    <td className="adm-cell-date" data-label="Joined">
                       {new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
-                    <td>
+                    <td data-label="Role">
                       <select
                         className="adm-status-select"
                         style={{ background: roleCol.bg, color: roleCol.text, minWidth: 120 }}
@@ -980,7 +980,7 @@ function UsersTab({ users, setUsers }) {
                         <option value="admin">Admin</option>
                       </select>
                     </td>
-                    <td>
+                    <td data-label="Company Name">
                       <input
                         className="adm-input"
                         style={{ fontSize: '0.82rem', padding: '7px 10px', minWidth: 180 }}
@@ -990,11 +990,11 @@ function UsersTab({ users, setUsers }) {
                         onChange={e => setDraft(user.id, { company_name: e.target.value })}
                       />
                     </td>
-                    <td style={{ fontSize: '0.78rem', color: '#6b7280', whiteSpace: 'nowrap' }}>
+                    <td data-label="Loyalty" style={{ fontSize: '0.78rem', color: '#6b7280' }}>
                       <div>{user.bottle_progress}/7 bottles</div>
                       <div style={{ color: '#9ca3af' }}>{user.lifetime_bottles_bought} lifetime</div>
                     </td>
-                    <td>
+                    <td data-label="Action">
                       {wasSaved ? (
                         <span style={{ color: '#15803d', fontSize: '0.78rem', fontWeight: 700 }}>✓ Saved</span>
                       ) : (
@@ -1087,8 +1087,9 @@ function AdminStyles() {
       .adm-back-btn:hover { background: rgba(255,255,255,0.2); }
 
       /* Tabs */
-      .adm-tabs { max-width: 1400px; margin: 0 auto; display: flex; gap: 4px; }
-      .adm-tab { padding: 10px 22px; background: transparent; color: rgba(255,255,255,0.5); border: none; border-bottom: 3px solid transparent; font-family: var(--font-accent); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: color 0.2s, border-color 0.2s; display: flex; align-items: center; gap: 8px; }
+      .adm-tabs { max-width: 1400px; margin: 0 auto; display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .adm-tabs::-webkit-scrollbar { display: none; }
+      .adm-tab { padding: 10px 22px; background: transparent; color: rgba(255,255,255,0.5); border: none; border-bottom: 3px solid transparent; font-family: var(--font-accent); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: color 0.2s, border-color 0.2s; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
       .adm-tab:hover { color: rgba(255,255,255,0.85); }
       .adm-tab-active { color: #fff !important; border-bottom-color: var(--orange); }
       .adm-tab-badge { background: var(--orange); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
@@ -1218,10 +1219,34 @@ function AdminStyles() {
         .adm-qr-layout { grid-template-columns: 1fr; }
         .adm-promo-card { flex-direction: column; align-items: flex-start; }
       }
+      @media (max-width: 768px) {
+        .adm-inner { padding: 20px 16px 48px; }
+        .adm-section-header { flex-wrap: wrap; }
+        /* Tables → cards */
+        .adm-table-wrap { overflow-x: visible; background: transparent; box-shadow: none; border-radius: 0; }
+        .adm-table { display: block; }
+        .adm-table thead { display: none; }
+        .adm-table tbody { display: block; }
+        .adm-table tr { display: block; background: #fff; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1.5px solid #e5e7eb; overflow: hidden; }
+        .adm-table tr:hover td { background: transparent; }
+        .adm-table td { display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; border-top: none; border-bottom: 1px solid #f3f4f6; }
+        .adm-table td:last-child { border-bottom: none; }
+        .adm-table td[data-label]::before { content: attr(data-label); font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey); }
+        .adm-row-delivery { border-left: 3px solid var(--orange) !important; }
+        .adm-row-pickup { border-left: 3px solid var(--green) !important; }
+        .adm-row-delivery td:first-child { border-left: none; }
+        .adm-row-pickup td:first-child { border-left: none; }
+        .adm-note-cell { min-width: unset; }
+        .adm-status-select { min-width: unset; }
+        .adm-promo-meta { flex-direction: column; gap: 6px; }
+        .adm-event-card-actions { justify-content: flex-start; }
+      }
       @media (max-width: 560px) {
         .adm-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+        .adm-stat-num { font-size: 1.5rem; }
         .adm-login-card { padding: 36px 24px; }
-        .adm-tab { padding: 10px 14px; font-size: 0.72rem; }
+        .adm-tab { padding: 8px 12px; font-size: 0.7rem; }
+        .adm-header h1 { font-size: 1.15rem; }
       }
     `}</style>
   );
