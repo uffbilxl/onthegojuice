@@ -24,6 +24,7 @@ const nextConfig = {
       { source: '/events',          destination: '/events.html' },
       { source: '/partners',        destination: '/partners.html' },
       { source: '/our-story',       destination: '/our-story.html' },
+      { source: '/reviews',         destination: '/reviews.html' },
     ];
   },
 
