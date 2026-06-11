@@ -426,35 +426,36 @@ export default function Connect() {
           display: flex !important;
           align-items: center !important;
           gap: 10px !important;
-          padding: 14px 16px !important;
+          padding: 30px 14px 14px !important;
           border-radius: 16px !important;
-          background: #1a1a1a !important;
+          background: #1c1c1e !important;
           color: #ffffff !important;
           text-decoration: none !important;
           cursor: not-allowed !important;
-          opacity: 0.55 !important;
+          opacity: 0.6 !important;
           pointer-events: none !important;
-          border: 1px solid rgba(255,255,255,0.06) !important;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+          border: 1px solid rgba(255,255,255,0.07) !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.22) !important;
           overflow: hidden !important;
-          filter: grayscale(0.3) !important;
         }
 
-        /* Coming Soon badge */
+        /* Coming Soon ribbon across top */
         .cx-app-coming {
           position: absolute !important;
-          top: 7px !important;
-          right: 8px !important;
-          background: #ff6b00 !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          background: linear-gradient(90deg, #e05e00, #ff6b00) !important;
           color: #fff !important;
           font-family: 'Montserrat', sans-serif !important;
-          font-size: 0.5rem !important;
+          font-size: 0.52rem !important;
           font-weight: 800 !important;
-          letter-spacing: 0.1em !important;
+          letter-spacing: 0.16em !important;
           text-transform: uppercase !important;
-          padding: 2px 6px !important;
-          border-radius: 6px !important;
-          line-height: 1.4 !important;
+          text-align: center !important;
+          padding: 5px 0 !important;
+          line-height: 1 !important;
+          border-radius: 16px 16px 0 0 !important;
         }
 
         .cx-app-btn-inner {
