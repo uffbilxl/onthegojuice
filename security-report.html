@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Assessment Report — On The Go Juice</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #1a1a2e;
+      background: #f4f6fb;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      padding: 48px 48px 36px;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .brand {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .header h1 span { color: #60a5fa; }
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .badge {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+    }
+    .badge strong { color: #fff; }
+    .status-chip {
+      background: #16a34a;
+      color: #fff;
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Body ── */
+    .body { padding: 44px 48px 56px; }
+
+    /* ── Executive Summary ── */
+    .exec-summary {
+      background: #f0f7ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    .exec-summary p {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    /* ── Scorecard ── */
+    .scorecard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 44px;
+    }
+    .score-card {
+      border-radius: 10px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .score-card .count { font-size: 36px; font-weight: 900; line-height: 1; }
+    .score-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.10em; margin-top: 6px; }
+    .score-critical { background: #fff1f2; color: #be123c; }
+    .score-critical .label { color: #9f1239; }
+    .score-high { background: #fff7ed; color: #c2410c; }
+    .score-high .label { color: #9a3412; }
+    .score-medium { background: #fefce8; color: #a16207; }
+    .score-medium .label { color: #92400e; }
+    .score-low { background: #f0fdf4; color: #15803d; }
+    .score-low .label { color: #166534; }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* ── Finding cards ── */
+    .finding {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .finding-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+    }
+    .severity-pill {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 3px 12px;
+      flex-shrink: 0;
+    }
+    .pill-critical { background: #fecdd3; color: #9f1239; }
+    .pill-high     { background: #fed7aa; color: #9a3412; }
+    .pill-medium   { background: #fef08a; color: #854d0e; }
+    .pill-low      { background: #bbf7d0; color: #166534; }
+    .pill-info     { background: #bfdbfe; color: #1e40af; }
+
+    .finding-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      flex: 1;
+    }
+    .finding-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .status-fixed    { background: #dcfce7; color: #166534; }
+    .status-manual   { background: #fef9c3; color: #854d0e; }
+
+    .finding-body {
+      padding: 0 20px 20px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .finding-body p {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+    .finding-body strong { color: #0f172a; }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 14px;
+    }
+    .meta-item {
+      font-size: 12px;
+      color: #64748b;
+    }
+    .meta-item strong { color: #334155; }
+
+    .code-block {
+      background: #0f172a;
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 14px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .del { color: #f87171; }
+    .code-block .add { color: #86efac; }
+    .code-block .cmt { color: #64748b; }
+
+    /* ── Changes table ── */
+    .changes-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+    .changes-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .changes-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+    .changes-table tr:last-child td { border-bottom: none; }
+    .changes-table td:first-child {
+      font-family: 'Cascadia Code', 'Courier New', monospace;
+      font-size: 12px;
+      color: #3b82f6;
+    }
+    .new-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    /* ── Action items ── */
+    .action-list {
+      list-style: none;
+      margin-top: 14px;
+    }
+    .action-list li {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+    }
+    .action-list li:last-child { border-bottom: none; }
+    .action-num {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: #1e3a5f;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 22px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .footer strong { color: #475569; }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; }
+      .page { box-shadow: none; border-radius: 0; margin: 0; }
+      .no-print { display: none; }
+    }
+
+    /* ── Download button ── */
+    .dl-bar {
+      text-align: center;
+      padding: 24px;
+      background: #f4f6fb;
+    }
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e3a5f;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .dl-btn:hover { background: #0f172a; }
+  </style>
+</head>
+<body>
+
+<div class="dl-bar no-print">
+  <button class="dl-btn" onclick="window.print()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Save / Print as PDF
+  </button>
+</div>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="brand">Security Assessment Report</div>
+        <h1>On The Go <span>Juice</span></h1>
+      </div>
+      <div class="status-chip">✓ Patched</div>
+    </div>
+    <div class="badge-grid">
+      <div class="badge"><strong>Date:</strong> 4 June 2026</div>
+      <div class="badge"><strong>Scope:</strong> Full codebase audit</div>
+      <div class="badge"><strong>Stack:</strong> Next.js 14 · Supabase · Stripe</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Executive Summary -->
+    <div class="exec-summary">
+      <p>A full static code analysis was performed on the On The Go Juice web application. <strong>9 vulnerabilities were identified</strong> across authentication, session management, input handling, and HTTP configuration. <strong>5 were patched in code</strong>; 4 require manual operational action (credential rotation, one flow redesign). No evidence of active exploitation was found.</p>
+    </div>
+
+    <!-- Scorecard -->
+    <div class="scorecard">
+      <div class="score-card score-critical">
+        <div class="count">3</div>
+        <div class="label">Critical</div>
+      </div>
+      <div class="score-card score-high">
+        <div class="count">2</div>
+        <div class="label">High</div>
+      </div>
+      <div class="score-card score-medium">
+        <div class="count">2</div>
+        <div class="label">Medium</div>
+      </div>
+      <div class="score-card score-low">
+        <div class="count">2</div>
+        <div class="label">Low</div>
+      </div>
+    </div>
+
+    <!-- ── CRITICAL ── -->
+    <div class="section-title">Critical Findings</div>
+
+    <!-- Finding 1 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-critical">Critical</span>
+        <span class="finding-title">Admin Password Stored as Plaintext Cookie Value</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A01 Broken Access Control · A02 Sensitive Data Exposure</div>
+          <div class="meta-item"><strong>Files:</strong> src/pages/api/admin/login.js (+ 8 admin routes)</div>
+        </div>
+        <p>Every admin API route set the HTTP-only cookie value to <strong>the literal plaintext admin password</strong>, and verified requests by comparing the cookie to <code>process.env.ADMIN_PASSWORD</code>. Any party who could read the cookie — through XSS, network interception, or server log leakage — obtained the admin password directly. The comparison was also a plain <code>===</code> string check, vulnerable to a timing oracle attack.</p>
+        <div class="code-block"><span class="del">// BEFORE — cookie contains the actual password
+serialize('otgj_admin', process.env.ADMIN_PASSWORD, ...)
+req.cookies?.otgj_admin === process.env.ADMIN_PASSWORD</span>
+
+<span class="add">// AFTER — cookie contains an HMAC-signed stateless token
+// token = "<timestamp>.<HMAC-SHA256(ADMIN_PASSWORD, timestamp)>"
+// verified with crypto.timingSafeEqual()</span></div>
+        <p><strong>Fix:</strong> Created <code>src/lib/adminAuth.js</code> with HMAC-SHA256 stateless token generation and constant-time verification. Tokens self-expire after 8 hours and cannot be forged without the server secret. All 9 admin routes updated.</p>
+      </div>
+    </div>
+
+    <!-- Finding 2 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-critical">Critical</span>
+        <span class="finding-title">No HTTP Security Headers (CSP, HSTS, X-Frame-Options)</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A05 Security Misconfiguration</div>
+          <div class="meta-item"><strong>File:</strong> next.config.js</div>
+        </div>
+        <p>No HTTP security headers were present on any response. The site also broadcast its framework via <code>X-Powered-By: Next.js</code>, aiding attacker reconnaissance. Without these headers: XSS payloads are uncontained, the site is embeddable in iframes (clickjacking), browsers allow MIME-sniffing attacks, and HTTPS is not enforced by the browser.</p>
+        <div class="code-block"><span class="add">// ADDED to next.config.js
+X-Frame-Options:          DENY
+X-Content-Type-Options:   nosniff
+Referrer-Policy:          strict-origin-when-cross-origin
+Permissions-Policy:       camera=(), microphone=(), geolocation=(), payment=(self)
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+Content-Security-Policy:  default-src 'self'; script-src 'self' 'unsafe-inline'
+                           https://js.stripe.com https://unpkg.com; ...
+poweredByHeader:          false</span></div>
+      </div>
+    </div>
+
+    <!-- Finding 3 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-critical">Critical</span>
+        <span class="finding-title">Reflected XSS via Unsanitized LocalStorage Cart Data</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A03 Injection (XSS)</div>
+          <div class="meta-item"><strong>File:</strong> js/checkout.js · public/js/checkout.js</div>
+        </div>
+        <p>The checkout page's <code>renderSummary()</code> function built HTML via template literals using raw, unescaped values from <code>localStorage</code> (<code>item.name</code>, <code>item.image</code>). An attacker who can write to localStorage — via a related subdomain, a malicious browser extension, or physical access — can inject arbitrary HTML and execute JavaScript in the victim's browser session, with access to all cookies and session data.</p>
+        <div class="code-block"><span class="del">// BEFORE — XSS: item.name = '&lt;img src=x onerror=alert(1)&gt;'
+&lt;p class="co-summary-item-name"&gt;${item.name}&lt;/p&gt;
+&lt;img src="${item.image}" alt="${item.name}" /&gt;</span>
+
+<span class="add">// AFTER — all untrusted values HTML-escaped
+function esc(s) {
+  return String(s).replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;')
+    .replace(/&gt;/g,'&amp;gt;').replace(/"/g,'&amp;quot;').replace(/'/g,'&amp;#39;');
+}
+&lt;p class="co-summary-item-name"&gt;${esc(item.name)}&lt;/p&gt;
+&lt;img src="${esc(item.image)}" alt="${esc(item.name)}" /&gt;</span></div>
+      </div>
+    </div>
+
+    <!-- ── HIGH ── -->
+    <div class="section-title" style="margin-top:36px">High Findings</div>
+
+    <!-- Finding 4 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-high">High</span>
+        <span class="finding-title">No Rate Limiting on Admin Login Endpoint</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A07 Identification &amp; Authentication Failures</div>
+          <div class="meta-item"><strong>File:</strong> src/pages/api/admin/login.js</div>
+        </div>
+        <p>The <code>/api/admin/login</code> endpoint accepted unlimited password guesses. Combined with the weak password (<code>onthegojuice123</code>), an automated brute-force attack could break into the admin panel within seconds.</p>
+        <p><strong>Fix:</strong> Rate limiter added to <code>adminAuth.js</code> — maximum 10 attempts per IP per 15-minute window. Exceeds limit → HTTP 429. Note: serverless cold-starts reset in-memory state; for hardened production use, replace with a Redis-backed limiter (e.g., Upstash).</p>
+      </div>
+    </div>
+
+    <!-- Finding 5 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-high">High</span>
+        <span class="finding-title">Raw Database Error Messages Exposed to HTTP Clients</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A09 Security Logging &amp; Monitoring Failures</div>
+          <div class="meta-item"><strong>Files:</strong> src/pages/api/admin/*.js</div>
+        </div>
+        <p>Multiple admin API handlers returned the raw Supabase/PostgreSQL error message in the HTTP response body (e.g., <em>"relation 'products' does not exist"</em>, <em>"column 'foo' does not exist"</em>). This reveals internal schema structure, table names, and query logic to an attacker who triggers a server error.</p>
+        <div class="code-block"><span class="del">// BEFORE
+return res.status(500).json({ error: error.message });</span>
+
+<span class="add">// AFTER — log server-side, return generic message
+console.error('[admin/products GET]', error.message);
+return res.status(500).json({ error: 'Internal server error' });</span></div>
+      </div>
+    </div>
+
+    <!-- ── MEDIUM ── -->
+    <div class="section-title" style="margin-top:36px">Medium Findings</div>
+
+    <!-- Finding 6 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-medium">Medium</span>
+        <span class="finding-title">IDOR — Unauthenticated Order Cancellation</span>
+        <span class="finding-status status-manual">⚠ Manual Action Required</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A01 Broken Access Control (IDOR)</div>
+          <div class="meta-item"><strong>File:</strong> src/pages/api/cancel-order.js</div>
+        </div>
+        <p>The cancel-order endpoint only requires a customer's <strong>order reference</strong> and <strong>email address</strong> — no session token or authentication. Any attacker who obtains or guesses these values can cancel another customer's active order. Email addresses are often publicly accessible (LinkedIn, business directories), and order references follow a predictable format.</p>
+        <p><strong>Recommended fix:</strong> Issue a single-use signed cancellation token (HMAC or UUID) per order, sent inside the confirmation email. The cancel endpoint should verify this token rather than just matching email + order ref. Alternatively, require the user to be logged in.</p>
+      </div>
+    </div>
+
+    <!-- Finding 7 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-medium">Medium</span>
+        <span class="finding-title">Weak Admin Password in Plaintext</span>
+        <span class="finding-status status-manual">⚠ Manual Action Required</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A07 Identification &amp; Authentication Failures</div>
+          <div class="meta-item"><strong>File:</strong> .env.local</div>
+        </div>
+        <p>The admin password is <code>onthegojuice123</code> — a predictable pattern that appears in common wordlists and would be cracked in seconds by a dictionary attack. It also serves double duty as the HMAC signing secret for admin tokens after the patch, so its strength directly determines the security of the entire admin session system.</p>
+        <p><strong>Action required:</strong> Rotate to a cryptographically random password of 24+ characters (e.g., <code>openssl rand -base64 32</code>). After rotating, all existing admin sessions automatically invalidate since the HMAC tokens are keyed to the password value.</p>
+      </div>
+    </div>
+
+    <!-- ── LOW ── -->
+    <div class="section-title" style="margin-top:36px">Low / Informational Findings</div>
+
+    <!-- Finding 8 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-low">Low</span>
+        <span class="finding-title">Framework Version Disclosure via X-Powered-By Header</span>
+        <span class="finding-status status-fixed">✓ Fixed</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A05 Security Misconfiguration</div>
+        </div>
+        <p>Next.js sets <code>X-Powered-By: Next.js</code> by default. While not directly exploitable, this aids attackers in targeting known framework-specific vulnerabilities. Fixed by setting <code>poweredByHeader: false</code> in <code>next.config.js</code>.</p>
+      </div>
+    </div>
+
+    <!-- Finding 9 -->
+    <div class="finding">
+      <div class="finding-header">
+        <span class="severity-pill pill-info">Info</span>
+        <span class="finding-title">All .env.local Secrets Should Be Treated as Potentially Compromised</span>
+        <span class="finding-status status-manual">⚠ Manual Action Required</span>
+      </div>
+      <div class="finding-body">
+        <div class="meta-row">
+          <div class="meta-item"><strong>OWASP:</strong> A02 Cryptographic Failures</div>
+          <div class="meta-item"><strong>File:</strong> .env.local</div>
+        </div>
+        <p>The <code>.env.local</code> file contains live Stripe secret keys, the Supabase service role JWT (which has full database bypass permissions), and a Gmail app password. If this file was ever committed to git history, shared via a code review tool, or readable via a misconfigured deployment, all credentials are compromised. Confirm <code>.env.local</code> is in <code>.gitignore</code> and audit git history to ensure it was never committed.</p>
+        <p><strong>Action required:</strong> Rotate all secrets in <code>.env.local</code> from each respective service dashboard (Stripe, Supabase, Google). Treat current keys as compromised until rotated.</p>
+      </div>
+    </div>
+
+    <!-- ── Files Changed ── -->
+    <div class="section-title" style="margin-top:44px">Files Changed</div>
+    <table class="changes-table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>src/lib/adminAuth.js <span class="new-badge">NEW</span></td>
+          <td>HMAC token generation &amp; verification · rate limiter</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/login.js</td>
+          <td>HMAC token issuance · constant-time password check · rate limit enforcement</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/users.js</td>
+          <td>Replaced plaintext cookie check with <code>verifyAdminToken()</code></td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/products.js</td>
+          <td><code>verifyAdminToken()</code> · sanitized 500 error responses</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/promotions.js</td>
+          <td><code>verifyAdminToken()</code> · sanitized 500 error responses</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/update-fulfillment.js</td>
+          <td><code>verifyAdminToken()</code></td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/partner-email.js</td>
+          <td><code>verifyAdminToken()</code></td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/list-partners.js</td>
+          <td><code>verifyAdminToken()</code> · sanitized 500 error responses</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/list-rsvps.js</td>
+          <td><code>verifyAdminToken()</code> · sanitized 500 error responses</td>
+        </tr>
+        <tr>
+          <td>src/pages/api/admin/event-config.js</td>
+          <td><code>verifyAdminToken()</code> · sanitized 500 error responses (all 4 methods)</td>
+        </tr>
+        <tr>
+          <td>next.config.js</td>
+          <td>Added 6 security headers · <code>poweredByHeader: false</code></td>
+        </tr>
+        <tr>
+          <td>js/checkout.js</td>
+          <td>Added <code>esc()</code> HTML-escape helper · secured <code>renderSummary()</code></td>
+        </tr>
+        <tr>
+          <td>public/js/checkout.js</td>
+          <td>Synced with patched source</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ── Manual Actions ── -->
+    <div class="section-title" style="margin-top:44px">Required Manual Actions</div>
+    <ul class="action-list">
+      <li>
+        <div class="action-num">1</div>
+        <div><strong>Rotate ADMIN_PASSWORD.</strong> Replace <code>onthegojuice123</code> with a random 24+ character password. Generate one with <code>openssl rand -base64 32</code>. All existing admin sessions auto-expire because HMAC tokens are keyed to the password value.</div>
+      </li>
+      <li>
+        <div class="action-num">2</div>
+        <div><strong>Rotate all .env.local secrets.</strong> Regenerate Stripe secret + webhook keys (Stripe dashboard → API keys), Supabase service role key (Supabase dashboard → Settings → API), and Gmail app password (Google account → Security → App passwords). Treat current keys as compromised.</div>
+      </li>
+      <li>
+        <div class="action-num">3</div>
+        <div><strong>Audit git history for committed secrets.</strong> Run <code>git log --all --full-history -- .env.local</code> to check if the file was ever committed. If found in history, all secrets in that commit are compromised even after deletion, as git history is permanent.</div>
+      </li>
+      <li>
+        <div class="action-num">4</div>
+        <div><strong>Fix order cancellation IDOR.</strong> Add a single-use signed token (HMAC or UUID) to each order confirmation email. The <code>/api/cancel-order</code> endpoint should verify this token rather than just matching email + order reference. This prevents one customer cancelling another's order.</div>
+      </li>
+    </ul>
+
+  </div><!-- /body -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>
+      <strong>On The Go Juice</strong> — Confidential Security Assessment
+    </div>
+    <div>Generated 4 June 2026</div>
+  </div>
+
+</div><!-- /page -->
+
+</body>
+</html>
