@@ -79,6 +79,39 @@ export default function Connect() {
 
           </div>
 
+          {/* App Download */}
+          <div className="cx-app-section">
+            <div className="cx-app-divider">
+              <span className="cx-app-divider-line" />
+              <span className="cx-app-divider-label">
+                <PhoneIcon /> Get the app
+              </span>
+              <span className="cx-app-divider-line" />
+            </div>
+
+            <div className="cx-app-row">
+
+              <a href="#" aria-disabled="true" className="cx-app-btn" tabIndex={-1}>
+                <span className="cx-app-coming">Coming Soon</span>
+                <AppleIcon />
+                <span className="cx-app-btn-inner">
+                  <span className="cx-app-store-line">Download on the</span>
+                  <span className="cx-app-store-name">App Store</span>
+                </span>
+              </a>
+
+              <a href="#" aria-disabled="true" className="cx-app-btn" tabIndex={-1}>
+                <span className="cx-app-coming">Coming Soon</span>
+                <GooglePlayIcon />
+                <span className="cx-app-btn-inner">
+                  <span className="cx-app-store-line">Get it on</span>
+                  <span className="cx-app-store-name">Google Play</span>
+                </span>
+              </a>
+
+            </div>
+          </div>
+
           <p className="cx-footer">
             <Link href="/privacy-policy.html" className="cx-footer-link">Privacy Policy</Link>
             &nbsp;·&nbsp;
@@ -349,6 +382,102 @@ export default function Connect() {
         }
         .cx-footer-link:hover { color: #7a8068 !important; }
 
+        /* ── APP SECTION ───────────────────────────────────── */
+        .cx-app-section {
+          width: 100%;
+          max-width: 440px;
+          margin-top: 28px;
+          animation: cx-fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.62s both;
+        }
+        .cx-app-divider {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 16px;
+        }
+        .cx-app-divider-line {
+          flex: 1;
+          height: 1px;
+          background: rgba(0,0,0,0.08);
+          display: block;
+        }
+        .cx-app-divider-label {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.68rem;
+          font-weight: 600;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #a8a097;
+          white-space: nowrap;
+        }
+
+        /* ── APP BUTTONS ROW ───────────────────────────────── */
+        .cx-app-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+
+        /* ── INDIVIDUAL APP BUTTON ─────────────────────────── */
+        .cx-app-btn {
+          position: relative !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+          padding: 14px 16px !important;
+          border-radius: 16px !important;
+          background: #1a1a1a !important;
+          color: #ffffff !important;
+          text-decoration: none !important;
+          cursor: not-allowed !important;
+          opacity: 0.55 !important;
+          pointer-events: none !important;
+          border: 1px solid rgba(255,255,255,0.06) !important;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+          overflow: hidden !important;
+          filter: grayscale(0.3) !important;
+        }
+
+        /* Coming Soon badge */
+        .cx-app-coming {
+          position: absolute !important;
+          top: 7px !important;
+          right: 8px !important;
+          background: #ff6b00 !important;
+          color: #fff !important;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.5rem !important;
+          font-weight: 800 !important;
+          letter-spacing: 0.1em !important;
+          text-transform: uppercase !important;
+          padding: 2px 6px !important;
+          border-radius: 6px !important;
+          line-height: 1.4 !important;
+        }
+
+        .cx-app-btn-inner {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 1px !important;
+        }
+        .cx-app-store-line {
+          font-family: 'Poppins', sans-serif !important;
+          font-size: 0.6rem !important;
+          font-weight: 400 !important;
+          opacity: 0.7 !important;
+          line-height: 1 !important;
+        }
+        .cx-app-store-name {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.85rem !important;
+          font-weight: 800 !important;
+          line-height: 1 !important;
+          letter-spacing: -0.01em !important;
+        }
+
         /* ── MOBILE ────────────────────────────────────────── */
         @media (max-width: 390px) {
           .cx-hub  { padding: 36px 18px 52px; }
@@ -363,6 +492,34 @@ export default function Connect() {
         }
       `}</style>
     </>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+      <line x1="12" y1="18" x2="12.01" y2="18" />
+    </svg>
+  );
+}
+
+function AppleIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  );
+}
+
+function GooglePlayIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M3.18 23.76c.3.17.64.24.99.2l12.6-11.47-2.68-2.68L3.18 23.76z" opacity=".8" />
+      <path d="M22.14 10.53l-3.06-1.76-3.06 2.78 3.06 3.06 3.09-1.78c.88-.51.88-1.79-.03-2.3z" opacity=".9" />
+      <path d="M3.18.24C2.88.07 2.54 0 2.19.04L14.09 12 11.41 14.69.81 4.14 3.18.24z" opacity=".7" />
+      <path d="M2.19.04C1.33.17.75.96.75 1.98v20.04c0 1.02.58 1.81 1.44 1.94L14.09 12 2.19.04z" opacity=".6" />
+    </svg>
   );
 }
 
