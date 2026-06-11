@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>On The Go Juice</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1d6c00;
+      --green-dark: #154f00;
+      --orange: #ff6b00;
+      --orange-light: #ff8c33;
+      --off-white: #f9f6f1;
+      --black: #111111;
+      --grey: #6b7280;
+      --font-main: 'Poppins', sans-serif;
+      --font-accent: 'Montserrat', sans-serif;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+      background: var(--off-white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* ─── PAGE WRAPPER ─────────────────────────────────────────── */
+    .hub {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 60px;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(29,108,0,0.10) 0%, transparent 70%),
+        var(--off-white);
+    }
+
+    /* ─── LOGO ─────────────────────────────────────────────────── */
+    .hub-logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 24px;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(29,108,0,0.12);
+    }
+
+    /* ─── HEADLINE ─────────────────────────────────────────────── */
+    .hub-eyebrow {
+      font-family: var(--font-accent);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .hub-headline {
+      font-family: var(--font-accent);
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      font-weight: 900;
+      text-align: center;
+      color: var(--black);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .hub-sub {
+      font-size: 0.92rem;
+      color: var(--grey);
+      text-align: center;
+      margin-bottom: 44px;
+      max-width: 300px;
+    }
+
+    /* ─── BUTTON STACK ─────────────────────────────────────────── */
+    .hub-actions {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* shared button base */
+    .hub-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 20px 28px;
+      border-radius: 16px;
+      font-family: var(--font-accent);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition:
+        transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.18s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .hub-btn:hover  { transform: translateY(-3px) scale(1.02); }
+    .hub-btn:active { transform: scale(0.96); }
+
+    /* Primary — Leave a Review */
+    .hub-btn--primary {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 8px 28px rgba(255,107,0,0.35);
+    }
+    .hub-btn--primary:hover {
+      background: var(--orange-light);
+      box-shadow: 0 14px 36px rgba(255,107,0,0.40);
+    }
+
+    .hub-btn-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .hub-btn-label { line-height: 1; }
+
+    .hub-btn-hint {
+      font-family: var(--font-main);
+      font-size: 0.72rem;
+      font-weight: 400;
+      opacity: 0.80;
+      letter-spacing: 0;
+    }
+
+    /* Secondary — Shop Our Juices */
+    .hub-btn--secondary {
+      background: #fff;
+      color: var(--green);
+      border: 2.5px solid var(--green);
+      box-shadow: 0 4px 16px rgba(29,108,0,0.10);
+    }
+    .hub-btn--secondary:hover {
+      background: var(--green);
+      color: #fff;
+      box-shadow: 0 12px 32px rgba(29,108,0,0.22);
+    }
+
+    /* ─── DIVIDER ──────────────────────────────────────────────── */
+    .hub-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+      color: #ccc;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .hub-divider::before,
+    .hub-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+
+    /* ─── FOOTER NOTE ──────────────────────────────────────────── */
+    .hub-footer {
+      margin-top: 48px;
+      font-size: 0.7rem;
+      color: #bbb;
+      text-align: center;
+    }
+    .hub-footer a {
+      color: #bbb;
+      text-decoration: none;
+    }
+    .hub-footer a:hover { color: var(--grey); }
+
+    /* ─── ICON SVGs ────────────────────────────────────────────── */
+    .btn-icon {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+    }
+  </style>
+</head>
+<body>
+
+<main class="hub">
+
+  <!-- Logo -->
+  <img
+    src="images/logo.png"
+    alt="On The Go Juice"
+    class="hub-logo"
+    width="120"
+    height="120"
+  />
+
+  <!-- Headline -->
+  <p class="hub-eyebrow">Welcome</p>
+  <h1 class="hub-headline">Thanks for choosing<br>On The Go Juice!</h1>
+  <p class="hub-sub">What would you like to do next?</p>
+
+  <!-- CTA Buttons -->
+  <div class="hub-actions">
+
+    <!-- Button 1: Leave a Review -->
+    <a
+      href="https://forms.cloud.microsoft/r/LN4Hcc3zp1"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="hub-btn hub-btn--primary"
+      aria-label="Leave a review — opens in a new tab"
+    >
+      <!-- Star icon -->
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      <div class="hub-btn-inner">
+        <span class="hub-btn-label">Leave a Review</span>
+        <span class="hub-btn-hint">Takes less than 60 seconds</span>
+      </div>
+    </a>
+
+    <!-- Divider -->
+    <div class="hub-divider">or</div>
+
+    <!-- Button 2: Shop Our Juices -->
+    <a
+      href="/"
+      class="hub-btn hub-btn--secondary"
+      aria-label="Shop our juices — go to homepage"
+    >
+      <!-- Shopping bag icon -->
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <div class="hub-btn-inner">
+        <span class="hub-btn-label">Shop Our Juices</span>
+        <span class="hub-btn-hint">Browse our full range</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Footer -->
+  <p class="hub-footer">
+    <a href="/privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="/terms-conditions.html">Terms</a>
+  </p>
+
+</main>
+
+</body>
+</html>
