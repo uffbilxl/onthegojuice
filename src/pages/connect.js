@@ -278,7 +278,7 @@ export default function Connect() {
                       </label>
                       <textarea
                         className="cx-input cx-textarea"
-                        placeholder="e.g. "This is genuinely the best thing I've ever tasted…""
+                        placeholder="e.g. This is genuinely the best thing I've ever tasted..."
                         value={formCaption}
                         onChange={e => setFormCaption(e.target.value)}
                         rows={3}
