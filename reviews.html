@@ -1189,12 +1189,14 @@
         card.appendChild(fsBtn);
         card.appendChild(info);
 
-        var playing = false;
+        video.addEventListener('play',  function() { overlay.classList.add('playing'); });
+        video.addEventListener('pause', function() { overlay.classList.remove('playing'); });
+        video.addEventListener('ended', function() { overlay.classList.remove('playing'); });
+
         card.addEventListener('click', function(e) {
           if (e.target === fsBtn || fsBtn.contains(e.target)) return;
-          if (video.paused) { video.play(); playing = true; }
-          else              { video.pause(); playing = false; }
-          overlay.classList.toggle('playing', playing);
+          if (video.paused) { video.play().catch(function() {}); }
+          else              { video.pause(); }
         });
 
         fsBtn.addEventListener('click', function(e) {

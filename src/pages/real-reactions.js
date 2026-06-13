@@ -281,12 +281,28 @@ function VideoCard({ testimonial }) {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
-  function toggle(e) {
-    if (e.target.closest('.rr-fs-btn')) return;
+  useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (v.paused) { v.play(); setPlaying(true); }
-    else          { v.pause(); setPlaying(false); }
+    const onPlay  = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    const onEnded = () => setPlaying(false);
+    v.addEventListener('play',  onPlay);
+    v.addEventListener('pause', onPause);
+    v.addEventListener('ended', onEnded);
+    return () => {
+      v.removeEventListener('play',  onPlay);
+      v.removeEventListener('pause', onPause);
+      v.removeEventListener('ended', onEnded);
+    };
+  }, []);
+
+  function toggle(e) {
+    if (e.target.closest?.('.rr-fs-btn')) return;
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) { v.play().catch(() => {}); }
+    else          { v.pause(); }
   }
 
   function requestFs(e) {
