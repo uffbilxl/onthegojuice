@@ -176,16 +176,12 @@ export default function Connect() {
               <span className="cx-arrow">→</span>
             </Link>
 
-          </div>
-
-          {/* Divider */}
             <div className="cx-divider">
               <span className="cx-divider-line" />
               <span className="cx-divider-text">or</span>
               <span className="cx-divider-line" />
             </div>
 
-            {/* Upload a Real Reaction */}
             <button
               type="button"
               className={`cx-btn cx-btn-video${vidPressed ? ' cx-pressed' : ''}`}
