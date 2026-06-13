@@ -20,13 +20,17 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PATCH') {
-    const { id, status } = req.body;
+    const { id, status, customer_name, caption } = req.body;
     if (!id) return res.status(400).json({ error: 'id is required.' });
-    if (!['approved', 'rejected'].includes(status)) return res.status(400).json({ error: 'status must be approved or rejected.' });
+    if (!['approved', 'rejected', 'pending'].includes(status)) return res.status(400).json({ error: 'Invalid status.' });
+
+    const updateData = { status };
+    if (typeof customer_name === 'string' && customer_name.trim()) updateData.customer_name = customer_name.trim();
+    if (typeof caption       === 'string') updateData.caption = caption.trim() || null;
 
     const { data, error } = await supabaseAdmin
       .from('testimonials')
-      .update({ status })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();

@@ -34,6 +34,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [products,   setProducts]   = useState(null);
   const [users,         setUsers]         = useState(null);
   const [testimonials,  setTestimonials]  = useState(null);
+  const [testimonialsEdits, setTestimonialsEdits] = useState({});
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
@@ -48,12 +49,25 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (tab === 'testimonials'  && testimonials   === null) fetch('/api/admin/testimonials').then(r=>r.json()).then(setTestimonials).catch(()=>setTestimonials([]));
   }, [tab]);
 
-  async function reviewTestimonial(id, status) {
+  function getEdit(id, field, fallback) {
+    return testimonialsEdits[id]?.[field] ?? fallback;
+  }
+  function setEdit(id, field, value) {
+    setTestimonialsEdits(prev => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
+  }
+
+  async function reviewTestimonial(id, status, edits) {
+    const body = { id, status };
+    if (edits) { body.customer_name = edits.name; body.caption = edits.caption; }
     const res = await fetch('/api/admin/testimonials', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
+      body: JSON.stringify(body),
     });
-    if (res.ok) setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+    if (res.ok) {
+      const updated = await res.json();
+      setTestimonials(prev => prev.map(t => t.id === id ? updated : t));
+      setTestimonialsEdits(prev => { const n = { ...prev }; delete n[id]; return n; });
+    }
   }
 
   async function deleteTestimonial(id, name) {
@@ -308,13 +322,34 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                             style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', maxHeight: 320, background: '#111', display: 'block' }}
                           />
                           <div style={{ padding: '14px 16px' }}>
-                            <p style={{ fontFamily: 'var(--font-accent)', fontWeight: 800, fontSize: '0.9rem', color: '#111', marginBottom: 4 }}>{t.customer_name}</p>
-                            {t.caption && <p style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: 10, lineHeight: 1.5 }}>"{t.caption}"</p>}
+                            {t.status === 'pending' ? (
+                              <>
+                                <label style={{ display: 'block', fontFamily: 'var(--font-accent)', fontSize: '0.68rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Name</label>
+                                <input
+                                  value={getEdit(t.id, 'name', t.customer_name)}
+                                  onChange={e => setEdit(t.id, 'name', e.target.value)}
+                                  style={{ width: '100%', padding: '8px 10px', border: '1.5px solid #e5e7eb', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.85rem', color: '#111', marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
+                                />
+                                <label style={{ display: 'block', fontFamily: 'var(--font-accent)', fontSize: '0.68rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Caption</label>
+                                <textarea
+                                  value={getEdit(t.id, 'caption', t.caption ?? '')}
+                                  onChange={e => setEdit(t.id, 'caption', e.target.value)}
+                                  rows={3}
+                                  placeholder="No caption"
+                                  style={{ width: '100%', padding: '8px 10px', border: '1.5px solid #e5e7eb', borderRadius: 8, fontFamily: 'inherit', fontSize: '0.78rem', color: '#374151', resize: 'vertical', outline: 'none', boxSizing: 'border-box', marginBottom: 10 }}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <p style={{ fontFamily: 'var(--font-accent)', fontWeight: 800, fontSize: '0.9rem', color: '#111', marginBottom: 4 }}>{t.customer_name}</p>
+                                {t.caption && <p style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: 10, lineHeight: 1.5 }}>"{t.caption}"</p>}
+                              </>
+                            )}
                             <p style={{ fontSize: '0.68rem', color: '#d1d5db', marginBottom: 12 }}>{new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
                             {t.status === 'pending' && (
                               <div style={{ display: 'flex', gap: 8 }}>
                                 <button
-                                  onClick={() => reviewTestimonial(t.id, 'approved')}
+                                  onClick={() => reviewTestimonial(t.id, 'approved', { name: getEdit(t.id, 'name', t.customer_name), caption: getEdit(t.id, 'caption', t.caption ?? '') })}
                                   style={{ flex: 1, padding: '9px 0', background: '#1d6c00', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
                                 >✓ Approve</button>
                                 <button
