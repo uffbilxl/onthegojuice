@@ -151,6 +151,233 @@
     }
 
     .page-hero { padding-top: 110px; }
+
+    /* ── TABS BAR ───────────────────────────────────────────── */
+    .rv-tabs-bar {
+      background: var(--off-white);
+      padding: 0 6vw;
+      border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 50;
+    }
+    .rv-tabs-inner {
+      display: flex;
+      gap: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .rv-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 28px;
+      font-family: var(--font-accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .rv-tab:hover { color: var(--green); }
+    .rv-tab--active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+    @media (max-width: 480px) {
+      .rv-tab { padding: 16px 18px; font-size: 0.75rem; gap: 6px; }
+    }
+
+    /* ── TAB PANELS ─────────────────────────────────────────── */
+    .rv-tab-panel--hidden { display: none; }
+
+    /* ── REAL REACTIONS PANEL ───────────────────────────────── */
+    .rv-reactions-section {
+      background: #0d1a0a;
+      padding: 56px 6vw 80px;
+      min-height: 40vh;
+    }
+    .rv-reactions-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .rv-reactions-eyebrow {
+      font-family: var(--font-accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: #ff6b00;
+      margin-bottom: 12px;
+    }
+    .rv-reactions-headline {
+      font-family: var(--font-accent);
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      background: linear-gradient(135deg, #ffffff 30%, #a3e635 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .rv-reactions-tagline {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+    .rv-reactions-share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ff6b00, #ff8c33);
+      color: #fff;
+      text-decoration: none;
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 13px 28px;
+      border-radius: 50px;
+      box-shadow: 0 8px 28px rgba(255,107,0,0.32);
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+      border: none;
+      cursor: pointer;
+    }
+    .rv-reactions-share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(255,107,0,0.42);
+    }
+
+    /* video grid */
+    .rv-reactions-grid {
+      columns: 1;
+      column-gap: 14px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    @media (min-width: 540px)  { .rv-reactions-grid { columns: 2; } }
+    @media (min-width: 860px)  { .rv-reactions-grid { columns: 3; } }
+    @media (min-width: 1180px) { .rv-reactions-grid { columns: 4; } }
+
+    .rv-vcard {
+      break-inside: avoid;
+      margin-bottom: 14px;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #1a2a14;
+      cursor: pointer;
+    }
+    .rv-vcard video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9/16;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+    .rv-vcard-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.32);
+      border-radius: 16px;
+      transition: opacity 0.2s;
+    }
+    .rv-vcard-overlay.playing { opacity: 0; pointer-events: none; }
+    .rv-vcard:hover .rv-vcard-overlay.playing { opacity: 1; pointer-events: auto; }
+    .rv-vcard-play {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      flex-shrink: 0;
+    }
+    .rv-vcard-fullscreen {
+      position: absolute;
+      bottom: 52px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0;
+      transition: opacity 0.2s;
+      backdrop-filter: blur(4px);
+      z-index: 2;
+    }
+    .rv-vcard:hover .rv-vcard-fullscreen { opacity: 1; }
+    .rv-vcard-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 36px 14px 12px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      border-radius: 0 0 16px 16px;
+      pointer-events: none;
+    }
+    .rv-vcard-name {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .rv-vcard-caption {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 3px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .rv-reactions-loading,
+    .rv-reactions-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 80px 24px;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .rv-reactions-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: #ff6b00;
+      border-radius: 50%;
+      animation: rv-spin 0.8s linear infinite;
+    }
+    @keyframes rv-spin { to { transform: rotate(360deg); } }
+    .rv-reactions-empty-icon { font-size: 2.5rem; }
   </style>
 </head>
 <body>
@@ -241,6 +468,23 @@
       </div>
     </div>
   </section>
+
+  <!-- ── Tab Bar ──────────────────────────────────────────────────── -->
+  <div class="rv-tabs-bar">
+    <div class="rv-tabs-inner">
+      <button class="rv-tab rv-tab--active" data-tab="written" id="tab-written">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Written Reviews
+      </button>
+      <button class="rv-tab" data-tab="reactions" id="tab-reactions">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.888L15 14"/><rect x="1" y="6" width="15" height="12" rx="2" ry="2"/></svg>
+        Real Reactions
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Written Reviews Panel ─────────────────────────────────────── -->
+  <div id="panel-written" class="rv-tab-panel">
 
   <!-- ── Reviews Grid ──────────────────────────────────────────────── -->
   <section class="rv-section">
@@ -845,8 +1089,129 @@
 
   </div>
 
+  </section><!-- /.rv-section -->
+  </div><!-- /#panel-written -->
+
+  <!-- ── Real Reactions Panel ──────────────────────────────────────── -->
+  <div id="panel-reactions" class="rv-tab-panel rv-tab-panel--hidden">
+    <section class="rv-reactions-section">
+      <div class="rv-reactions-header">
+        <p class="rv-reactions-eyebrow">Unfiltered. Unscripted.</p>
+        <h2 class="rv-reactions-headline">Real Reactions</h2>
+        <p class="rv-reactions-tagline">Watch real people experience On The Go Juice for the very first time.</p>
+        <a href="/connect" class="rv-reactions-share-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.888L15 14"/><rect x="1" y="6" width="15" height="12" rx="2" ry="2"/></svg>
+          Share Your Reaction
+        </a>
+      </div>
+      <div id="rr-container"></div>
+    </section>
+  </div>
+
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="js/main.js"></script>
   <script>AOS.init({ once: true, duration: 550, offset: 60 });</script>
+  <script>
+    /* ── Tab switching ─────────────────────────────────────── */
+    (function () {
+      var tabs    = document.querySelectorAll('.rv-tab');
+      var panels  = { written: document.getElementById('panel-written'), reactions: document.getElementById('panel-reactions') };
+      var loaded  = false;
+
+      function activateTab(name) {
+        tabs.forEach(function(t) {
+          t.classList.toggle('rv-tab--active', t.dataset.tab === name);
+        });
+        Object.keys(panels).forEach(function(k) {
+          panels[k].classList.toggle('rv-tab-panel--hidden', k !== name);
+        });
+        if (name === 'reactions' && !loaded) { loadReactions(); }
+        history.replaceState(null, '', name === 'reactions' ? '#reactions' : '#');
+      }
+
+      tabs.forEach(function(t) {
+        t.addEventListener('click', function() { activateTab(t.dataset.tab); });
+      });
+
+      if (location.hash === '#reactions') { activateTab('reactions'); }
+
+      /* ── Video grid loader ─────────────────────────────── */
+      function loadReactions() {
+        loaded = true;
+        var container = document.getElementById('rr-container');
+        container.innerHTML = '<div class="rv-reactions-loading"><div class="rv-reactions-spinner"></div><p>Loading reactions…</p></div>';
+
+        fetch('/api/testimonials/public')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (!Array.isArray(data) || data.length === 0) {
+              container.innerHTML = '<div class="rv-reactions-empty"><span class="rv-reactions-empty-icon">&#127916;</span><p>No reactions yet — be the first to share yours!</p></div>';
+              return;
+            }
+            var grid = document.createElement('div');
+            grid.className = 'rv-reactions-grid';
+            data.forEach(function(v) { grid.appendChild(makeCard(v)); });
+            container.innerHTML = '';
+            container.appendChild(grid);
+          })
+          .catch(function() {
+            container.innerHTML = '<div class="rv-reactions-empty"><span class="rv-reactions-empty-icon">&#9888;&#65039;</span><p>Could not load videos. Please try refreshing.</p></div>';
+          });
+      }
+
+      function makeCard(v) {
+        var card = document.createElement('div');
+        card.className = 'rv-vcard';
+
+        var video = document.createElement('video');
+        video.src = v.video_url;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+
+        var overlay = document.createElement('div');
+        overlay.className = 'rv-vcard-overlay';
+        overlay.innerHTML = '<div class="rv-vcard-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>';
+
+        var fsBtn = document.createElement('button');
+        fsBtn.className = 'rv-vcard-fullscreen';
+        fsBtn.setAttribute('aria-label', 'Fullscreen');
+        fsBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+
+        var info = document.createElement('div');
+        info.className = 'rv-vcard-info';
+        info.innerHTML = '<p class="rv-vcard-name">' + escHtml(v.customer_name) + '</p>' +
+          (v.caption ? '<p class="rv-vcard-caption">“' + escHtml(v.caption) + '”</p>' : '');
+
+        card.appendChild(video);
+        card.appendChild(overlay);
+        card.appendChild(fsBtn);
+        card.appendChild(info);
+
+        var playing = false;
+        card.addEventListener('click', function(e) {
+          if (e.target === fsBtn || fsBtn.contains(e.target)) return;
+          if (video.paused) { video.play(); playing = true; }
+          else              { video.pause(); playing = false; }
+          overlay.classList.toggle('playing', playing);
+        });
+
+        fsBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var el = video;
+          if (el.requestFullscreen)       el.requestFullscreen();
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+          else if (el.webkitEnterFullscreen)   el.webkitEnterFullscreen();
+        });
+
+        return card;
+      }
+
+      function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+    })();
+  </script>
 </body>
 </html>

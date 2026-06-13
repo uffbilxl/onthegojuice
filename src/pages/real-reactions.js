@@ -7,10 +7,8 @@ export default function RealReactions() {
   const [error,  setError]    = useState(false);
 
   useEffect(() => {
-    fetch('/api/testimonials/public')
-      .then(r => r.json())
-      .then(data => setVideos(Array.isArray(data) ? data : []))
-      .catch(() => setError(true));
+    // Redirect to the Reviews page with the Real Reactions tab active
+    window.location.replace('/reviews#reactions');
   }, []);
 
   return (
@@ -283,11 +281,21 @@ function VideoCard({ testimonial }) {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
-  function toggle() {
+  function toggle(e) {
+    if (e.target.closest('.rr-fs-btn')) return;
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) { v.play(); setPlaying(true); }
     else          { v.pause(); setPlaying(false); }
+  }
+
+  function requestFs(e) {
+    e.stopPropagation();
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.requestFullscreen)            v.requestFullscreen();
+    else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+    else if (v.webkitEnterFullscreen)   v.webkitEnterFullscreen();
   }
 
   return (
@@ -306,6 +314,11 @@ function VideoCard({ testimonial }) {
           <polygon points="5,3 19,12 5,21" />
         </svg>
       </div>
+      <button className="rr-fs-btn" onClick={requestFs} aria-label="Fullscreen">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+        </svg>
+      </button>
       <div className="rr-card-info">
         <p className="rr-card-name">{testimonial.customer_name}</p>
         {testimonial.caption && <p className="rr-card-caption">"{testimonial.caption}"</p>}
@@ -345,6 +358,26 @@ function VideoCard({ testimonial }) {
           filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
         }
         .rr-hidden { opacity: 0 !important; }
+        .rr-fs-btn {
+          position: absolute;
+          bottom: 52px;
+          right: 10px;
+          background: rgba(0,0,0,0.5);
+          border: none;
+          border-radius: 8px;
+          width: 34px;
+          height: 34px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #fff;
+          opacity: 0;
+          transition: opacity 0.2s;
+          backdrop-filter: blur(4px);
+          z-index: 2;
+        }
+        .rr-card:hover .rr-fs-btn { opacity: 1; }
         .rr-card-info {
           position: absolute;
           bottom: 0;
@@ -353,6 +386,7 @@ function VideoCard({ testimonial }) {
           padding: 36px 14px 14px;
           background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
           border-radius: 0 0 16px 16px;
+          pointer-events: none;
         }
         .rr-card-name {
           font-family: 'Montserrat', sans-serif;

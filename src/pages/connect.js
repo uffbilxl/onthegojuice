@@ -212,7 +212,7 @@ export default function Connect() {
                   <div className="cx-modal-success">
                     <div className="cx-success-icon">🎬</div>
                     <h2 className="cx-modal-title">Reaction Received!</h2>
-                    <p className="cx-modal-sub">Thanks {formName.split(' ')[0]}! Your video is with our team for a quick review. Once approved, it&apos;ll appear on our Real Reactions page.</p>
+                    <p className="cx-modal-sub">Thanks {formName.split(' ')[0]}! Your video is with our team for a quick review. Once approved, it&apos;ll appear on our <a href="/reviews#reactions" style={{color:'#1d6c00',fontWeight:600}}>Real Reactions</a> tab.</p>
                     <button className="cx-modal-submit" onClick={closeModal}>Done</button>
                   </div>
                 ) : (
