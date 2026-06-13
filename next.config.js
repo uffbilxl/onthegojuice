@@ -38,8 +38,10 @@ const nextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
-      // API calls: Stripe, Supabase, postcode lookup
-      "connect-src 'self' https://api.stripe.com https://yzhfphcypahajeriztqk.supabase.co https://api.postcodes.io",
+      // API calls: Stripe, Supabase, postcode lookup, Cloudinary uploads
+      "connect-src 'self' https://api.stripe.com https://yzhfphcypahajeriztqk.supabase.co https://api.postcodes.io https://api.cloudinary.com",
+      // Video/audio from Cloudinary
+      "media-src 'self' https://res.cloudinary.com blob:",
       // Stripe Payment Element renders inside an iframe
       "frame-src https://js.stripe.com https://hooks.stripe.com https://www.youtube.com",
       "object-src 'none'",
