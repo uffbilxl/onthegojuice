@@ -56,6 +56,16 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (res.ok) setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
   }
 
+  async function deleteTestimonial(id, name) {
+    if (!window.confirm(`Permanently delete the video from ${name}? This cannot be undone.`)) return;
+    const res = await fetch('/api/admin/testimonials', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) setTestimonials(prev => prev.filter(t => t.id !== id));
+    else alert('Failed to delete. Please try again.');
+  }
+
   if (!authorized) {
     return (
       <>
@@ -324,6 +334,12 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                                 >Undo</button>
                               </div>
                             )}
+                            <button
+                              onClick={() => deleteTestimonial(t.id, t.customer_name)}
+                              style={{ marginTop: 10, width: '100%', padding: '8px 0', background: 'none', color: '#b91c1c', border: '1.5px solid #fecaca', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer', transition: 'background 0.15s' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            >Delete Permanently</button>
                           </div>
                         </div>
                       ))}
