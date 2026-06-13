@@ -32,19 +32,29 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [partners,   setPartners]   = useState(null);
   const [promotions, setPromotions] = useState(null);
   const [products,   setProducts]   = useState(null);
-  const [users,      setUsers]      = useState(null);
+  const [users,         setUsers]         = useState(null);
+  const [testimonials,  setTestimonials]  = useState(null);
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
-    if (tab === 'rsvps'      && rsvps      === null) fetch('/api/admin/list-rsvps').then(r=>r.json()).then(setRsvps).catch(()=>setRsvps([]));
-    if (tab === 'partners'   && partners   === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
-    if (tab === 'promotions' && promotions === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
-    if (tab === 'products'   && products   === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
-    if (tab === 'users'      && users      === null) fetch('/api/admin/users').then(r=>r.json()).then(setUsers).catch(()=>setUsers([]));
+    if (tab === 'rsvps'         && rsvps         === null) fetch('/api/admin/list-rsvps').then(r=>r.json()).then(setRsvps).catch(()=>setRsvps([]));
+    if (tab === 'partners'      && partners       === null) fetch('/api/admin/list-partners').then(r=>r.json()).then(setPartners).catch(()=>setPartners([]));
+    if (tab === 'promotions'    && promotions     === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
+    if (tab === 'products'      && products       === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
+    if (tab === 'users'         && users          === null) fetch('/api/admin/users').then(r=>r.json()).then(setUsers).catch(()=>setUsers([]));
+    if (tab === 'testimonials'  && testimonials   === null) fetch('/api/admin/testimonials').then(r=>r.json()).then(setTestimonials).catch(()=>setTestimonials([]));
   }, [tab]);
+
+  async function reviewTestimonial(id, status) {
+    const res = await fetch('/api/admin/testimonials', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    });
+    if (res.ok) setTestimonials(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+  }
 
   if (!authorized) {
     return (
@@ -146,14 +156,15 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes'], ['testimonials','🎬 Reactions']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
-                {id === 'orders'     && <span className="adm-tab-badge">{orders.length}</span>}
-                {id === 'rsvps'      && Array.isArray(rsvps)      && <span className="adm-tab-badge">{rsvps.length}</span>}
-                {id === 'partners'   && Array.isArray(partners)   && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
-                {id === 'promotions' && Array.isArray(promotions) && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
-                {id === 'users'      && Array.isArray(users)      && <span className="adm-tab-badge">{users.length}</span>}
+                {id === 'orders'        && <span className="adm-tab-badge">{orders.length}</span>}
+                {id === 'rsvps'         && Array.isArray(rsvps)         && <span className="adm-tab-badge">{rsvps.length}</span>}
+                {id === 'partners'      && Array.isArray(partners)      && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
+                {id === 'promotions'    && Array.isArray(promotions)    && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
+                {id === 'users'         && Array.isArray(users)         && <span className="adm-tab-badge">{users.length}</span>}
+                {id === 'testimonials'  && Array.isArray(testimonials)  && testimonials.filter(t => t.status === 'pending').length > 0 && <span className="adm-tab-badge" style={{background:'#ff6b00'}}>{testimonials.filter(t => t.status === 'pending').length}</span>}
               </button>
             ))}
           </nav>
@@ -246,6 +257,89 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
           {/* ── QR CODES TAB ───────────────────────────────────────── */}
           {tab === 'qrcodes' && (
             <QRCodesTab />
+          )}
+
+          {/* ── TESTIMONIALS TAB ───────────────────────────────────── */}
+          {tab === 'testimonials' && (
+            <div>
+              <div className="adm-section-header">
+                <h2>Real Reactions — Video Testimonials</h2>
+                {Array.isArray(testimonials) && (
+                  <span className="adm-section-count">
+                    {testimonials.filter(t => t.status === 'pending').length} pending review
+                  </span>
+                )}
+              </div>
+
+              {testimonials === null && <div className="adm-empty">Loading…</div>}
+              {Array.isArray(testimonials) && testimonials.length === 0 && (
+                <div className="adm-empty">No video submissions yet.</div>
+              )}
+
+              {Array.isArray(testimonials) && testimonials.length > 0 && (() => {
+                const pending  = testimonials.filter(t => t.status === 'pending');
+                const approved = testimonials.filter(t => t.status === 'approved');
+                const rejected = testimonials.filter(t => t.status === 'rejected');
+
+                const Section = ({ title, colour, items }) => items.length === 0 ? null : (
+                  <div style={{ marginBottom: 40 }}>
+                    <h3 style={{ fontFamily: 'var(--font-accent)', fontWeight: 800, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: colour, marginBottom: 16 }}>
+                      {title} <span style={{ color: '#9ca3af', fontWeight: 600 }}>({items.length})</span>
+                    </h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+                      {items.map(t => (
+                        <div key={t.id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.07)', border: '1.5px solid #f3f4f6' }}>
+                          <video
+                            src={t.video_url}
+                            controls
+                            muted
+                            playsInline
+                            preload="metadata"
+                            style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', maxHeight: 320, background: '#111', display: 'block' }}
+                          />
+                          <div style={{ padding: '14px 16px' }}>
+                            <p style={{ fontFamily: 'var(--font-accent)', fontWeight: 800, fontSize: '0.9rem', color: '#111', marginBottom: 4 }}>{t.customer_name}</p>
+                            {t.caption && <p style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: 10, lineHeight: 1.5 }}>"{t.caption}"</p>}
+                            <p style={{ fontSize: '0.68rem', color: '#d1d5db', marginBottom: 12 }}>{new Date(t.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                            {t.status === 'pending' && (
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button
+                                  onClick={() => reviewTestimonial(t.id, 'approved')}
+                                  style={{ flex: 1, padding: '9px 0', background: '#1d6c00', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+                                >✓ Approve</button>
+                                <button
+                                  onClick={() => reviewTestimonial(t.id, 'rejected')}
+                                  style={{ flex: 1, padding: '9px 0', background: '#fee2e2', color: '#b91c1c', border: 'none', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
+                                >✕ Reject</button>
+                              </div>
+                            )}
+                            {t.status !== 'pending' && (
+                              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px', borderRadius: 6, background: t.status === 'approved' ? '#dcfce7' : '#fee2e2', color: t.status === 'approved' ? '#15803d' : '#b91c1c' }}>
+                                  {t.status === 'approved' ? '✓ Approved' : '✕ Rejected'}
+                                </span>
+                                <button
+                                  onClick={() => reviewTestimonial(t.id, 'pending')}
+                                  style={{ fontSize: '0.68rem', color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                                >Undo</button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+
+                return (
+                  <>
+                    <Section title="⏳ Pending Review" colour="#f59e0b" items={pending} />
+                    <Section title="✓ Approved" colour="#15803d" items={approved} />
+                    <Section title="✕ Rejected" colour="#b91c1c" items={rejected} />
+                  </>
+                );
+              })()}
+            </div>
           )}
 
           {/* ── RSVPs TAB ──────────────────────────────────────────── */}

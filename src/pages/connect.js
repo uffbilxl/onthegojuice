@@ -1,10 +1,109 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+
+const CLOUD_NAME    = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME    || 'root';
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'OnTheGoJuice';
 
 export default function Connect() {
   const [reviewPressed, setReviewPressed] = useState(false);
   const [shopPressed,   setShopPressed]   = useState(false);
+  const [vidPressed,    setVidPressed]    = useState(false);
+  const [showModal,     setShowModal]     = useState(false);
+
+  // Upload form state
+  const [formName,    setFormName]    = useState('');
+  const [formCaption, setFormCaption] = useState('');
+  const [formFile,    setFormFile]    = useState(null);
+  const [fileError,   setFileError]   = useState('');
+  const [uploadState, setUploadState] = useState('idle'); // idle|uploading|saving|success|error
+  const [uploadPct,   setUploadPct]   = useState(0);
+  const [errMsg,      setErrMsg]      = useState('');
+  const fileInputRef = useRef(null);
+
+  function openModal()  { setShowModal(true);  document.body.style.overflow = 'hidden'; }
+  function closeModal() {
+    if (uploadState === 'uploading' || uploadState === 'saving') return;
+    setShowModal(false);
+    document.body.style.overflow = '';
+    setFormName(''); setFormCaption(''); setFormFile(null); setFileError('');
+    setUploadState('idle'); setUploadPct(0); setErrMsg('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleFileChange(e) {
+    setFileError('');
+    const file = e.target.files?.[0];
+    if (!file) { setFormFile(null); return; }
+    if (!file.type.startsWith('video/')) { setFileError('Please select a video file (.mp4, .mov, etc.)'); setFormFile(null); return; }
+    if (file.size > 20 * 1024 * 1024)   { setFileError('Video must be under 20 MB.'); setFormFile(null); return; }
+    setFormFile(file);
+  }
+
+  async function handleUploadSubmit(e) {
+    e.preventDefault();
+    if (!formName.trim()) return;
+    if (!formFile)        return;
+
+    setUploadState('uploading');
+    setUploadPct(0);
+    setErrMsg('');
+
+    try {
+      // 1. Upload to Cloudinary via XHR for progress tracking
+      const fd = new FormData();
+      fd.append('file',          formFile);
+      fd.append('upload_preset', UPLOAD_PRESET);
+
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`;
+
+      const cloudRes = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener('progress', ev => {
+          if (ev.lengthComputable) setUploadPct(Math.round((ev.loaded / ev.total) * 90));
+        });
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+          else reject(new Error(`Cloudinary error: ${xhr.status}`));
+        });
+        xhr.addEventListener('error', () => reject(new Error('Network error during upload.')));
+        xhr.open('POST', cloudinaryUrl);
+        xhr.send(fd);
+      });
+
+      if (!cloudRes.secure_url) throw new Error('Upload failed — no URL returned.');
+
+      // Insert q_auto,f_auto into delivery URL
+      const optimisedUrl = cloudRes.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+
+      setUploadPct(95);
+      setUploadState('saving');
+
+      // 2. Save to our DB
+      const saveRes = await fetch('/api/testimonials/save', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          customer_name:        formName.trim(),
+          video_url:            optimisedUrl,
+          cloudinary_public_id: cloudRes.public_id,
+          caption:              formCaption.trim() || null,
+        }),
+      });
+
+      if (!saveRes.ok) {
+        const d = await saveRes.json().catch(() => ({}));
+        throw new Error(d.error || 'Failed to save your submission.');
+      }
+
+      setUploadPct(100);
+      setUploadState('success');
+    } catch (err) {
+      console.error(err);
+      setErrMsg(err.message || 'Something went wrong. Please try again.');
+      setUploadState('error');
+    }
+  }
 
   return (
     <>
@@ -78,6 +177,144 @@ export default function Connect() {
             </Link>
 
           </div>
+
+          {/* Divider */}
+            <div className="cx-divider">
+              <span className="cx-divider-line" />
+              <span className="cx-divider-text">or</span>
+              <span className="cx-divider-line" />
+            </div>
+
+            {/* Upload a Real Reaction */}
+            <button
+              type="button"
+              className={`cx-btn cx-btn-video${vidPressed ? ' cx-pressed' : ''}`}
+              onClick={openModal}
+              onMouseDown={() => setVidPressed(true)}
+              onMouseUp={() => setVidPressed(false)}
+              onMouseLeave={() => setVidPressed(false)}
+              onTouchStart={() => setVidPressed(true)}
+              onTouchEnd={() => setVidPressed(false)}
+            >
+              <span className="cx-icon-wrap"><CamIcon /></span>
+              <span className="cx-btn-inner">
+                <span className="cx-btn-label">Upload a Real Reaction</span>
+                <span className="cx-btn-hint">Share your first-taste moment</span>
+              </span>
+              <span className="cx-arrow">→</span>
+            </button>
+
+          </div>
+
+          {/* ── UPLOAD MODAL ────────────────────────────────── */}
+          {showModal && (
+            <div className="cx-modal-overlay" onClick={e => { if (e.target === e.currentTarget) closeModal(); }}>
+              <div className="cx-modal">
+                <div className="cx-modal-handle" />
+
+                {uploadState === 'success' ? (
+                  <div className="cx-modal-success">
+                    <div className="cx-success-icon">🎬</div>
+                    <h2 className="cx-modal-title">Reaction Received!</h2>
+                    <p className="cx-modal-sub">Thanks {formName.split(' ')[0]}! Your video is with our team for a quick review. Once approved, it&apos;ll appear on our Real Reactions page.</p>
+                    <button className="cx-modal-submit" onClick={closeModal}>Done</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="cx-modal-header">
+                      <div>
+                        <h2 className="cx-modal-title">Share Your Reaction 🎬</h2>
+                        <p className="cx-modal-sub">First-taste moments only. We&apos;ll review and post it.</p>
+                      </div>
+                      <button className="cx-modal-close" onClick={closeModal} aria-label="Close">✕</button>
+                    </div>
+
+                    <form onSubmit={handleUploadSubmit} className="cx-modal-form">
+
+                      <label className="cx-field-label">Your Name <span className="cx-required">*</span></label>
+                      <input
+                        className="cx-input"
+                        type="text"
+                        placeholder="e.g. Sarah K."
+                        value={formName}
+                        onChange={e => setFormName(e.target.value)}
+                        required
+                        disabled={uploadState !== 'idle' && uploadState !== 'error'}
+                      />
+
+                      <label className="cx-field-label" style={{ marginTop: 18 }}>
+                        Your Reaction Video <span className="cx-required">*</span>
+                        <span className="cx-field-hint"> · MP4 or MOV, max 20 MB</span>
+                      </label>
+                      <div
+                        className={`cx-file-drop${formFile ? ' cx-file-has' : ''}`}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="video/mp4,video/quicktime,video/mov,video/*"
+                          onChange={handleFileChange}
+                          style={{ display: 'none' }}
+                          disabled={uploadState !== 'idle' && uploadState !== 'error'}
+                        />
+                        {formFile ? (
+                          <>
+                            <span className="cx-file-icon">🎥</span>
+                            <span className="cx-file-name">{formFile.name}</span>
+                            <span className="cx-file-size">{(formFile.size / 1024 / 1024).toFixed(1)} MB</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="cx-file-icon">📱</span>
+                            <span className="cx-file-prompt">Tap to choose a video</span>
+                          </>
+                        )}
+                      </div>
+                      {fileError && <p className="cx-field-error">{fileError}</p>}
+
+                      <label className="cx-field-label" style={{ marginTop: 18 }}>
+                        Caption / Quote <span className="cx-field-hint"> · Optional</span>
+                      </label>
+                      <textarea
+                        className="cx-input cx-textarea"
+                        placeholder="e.g. "This is genuinely the best thing I've ever tasted…""
+                        value={formCaption}
+                        onChange={e => setFormCaption(e.target.value)}
+                        rows={3}
+                        disabled={uploadState !== 'idle' && uploadState !== 'error'}
+                      />
+
+                      {(uploadState === 'uploading' || uploadState === 'saving') && (
+                        <div className="cx-progress-wrap">
+                          <div className="cx-progress-bar" style={{ width: `${uploadPct}%` }} />
+                          <p className="cx-progress-label">
+                            {uploadState === 'uploading' ? `Uploading… ${uploadPct}%` : 'Saving your submission…'}
+                          </p>
+                        </div>
+                      )}
+
+                      {uploadState === 'error' && (
+                        <p className="cx-field-error" style={{ marginTop: 12 }}>⚠️ {errMsg}</p>
+                      )}
+
+                      <button
+                        type="submit"
+                        className="cx-modal-submit"
+                        disabled={!formName.trim() || !formFile || uploadState === 'uploading' || uploadState === 'saving'}
+                      >
+                        {uploadState === 'uploading' ? 'Uploading…'
+                          : uploadState === 'saving'   ? 'Saving…'
+                          : 'Submit My Reaction 🎬'}
+                      </button>
+
+                      <p className="cx-modal-note">Your video goes through a quick review before appearing publicly.</p>
+                    </form>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* App Download */}
           <div className="cx-app-section">
@@ -382,6 +619,211 @@ export default function Connect() {
         }
         .cx-footer-link:hover { color: #7a8068 !important; }
 
+        /* ── VIDEO BUTTON ──────────────────────────────────── */
+        .cx-btn-video {
+          background: #1c1c1e !important;
+          color: #ffffff !important;
+          border: 2px solid rgba(255,255,255,0.12) !important;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+          animation: cx-fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.60s both;
+        }
+        .cx-btn-video:hover {
+          background: #2a2a2e !important;
+          border-color: rgba(255,255,255,0.22) !important;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.28) !important;
+        }
+        .cx-btn-video .cx-icon-wrap {
+          background: rgba(255,255,255,0.08) !important;
+        }
+        .cx-btn-video:hover .cx-icon-wrap {
+          background: rgba(255,255,255,0.14) !important;
+        }
+
+        /* ── MODAL OVERLAY ──────────────────────────────────── */
+        .cx-modal-overlay {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 1000 !important;
+          background: rgba(0,0,0,0.60) !important;
+          backdrop-filter: blur(4px) !important;
+          display: flex !important;
+          align-items: flex-end !important;
+          justify-content: center !important;
+          animation: cx-fadeUp 0.2s ease both !important;
+        }
+
+        /* ── MODAL SHEET ────────────────────────────────────── */
+        .cx-modal {
+          width: 100% !important;
+          max-width: 520px !important;
+          max-height: 92svh !important;
+          background: #ffffff !important;
+          border-radius: 28px 28px 0 0 !important;
+          padding: 8px 24px 40px !important;
+          overflow-y: auto !important;
+          animation: cx-slideUp 0.35s cubic-bezier(0.22,1,0.36,1) both !important;
+        }
+        @keyframes cx-slideUp {
+          from { transform: translateY(100%); }
+          to   { transform: translateY(0); }
+        }
+
+        .cx-modal-handle {
+          width: 40px !important;
+          height: 4px !important;
+          background: #e5e7eb !important;
+          border-radius: 2px !important;
+          margin: 12px auto 20px !important;
+        }
+        .cx-modal-header {
+          display: flex !important;
+          align-items: flex-start !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+          margin-bottom: 24px !important;
+        }
+        .cx-modal-title {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 1.25rem !important;
+          font-weight: 900 !important;
+          color: #0f1f0a !important;
+          line-height: 1.2 !important;
+        }
+        .cx-modal-sub {
+          font-size: 0.82rem !important;
+          color: #6b7280 !important;
+          margin-top: 5px !important;
+          line-height: 1.5 !important;
+        }
+        .cx-modal-close {
+          background: #f3f4f6 !important;
+          border: none !important;
+          border-radius: 50% !important;
+          width: 36px !important;
+          height: 36px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          cursor: pointer !important;
+          font-size: 0.85rem !important;
+          color: #6b7280 !important;
+          flex-shrink: 0 !important;
+          transition: background 0.2s !important;
+        }
+        .cx-modal-close:hover { background: #e5e7eb !important; }
+
+        /* ── FORM ───────────────────────────────────────────── */
+        .cx-modal-form { display: flex !important; flex-direction: column !important; }
+        .cx-field-label {
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.75rem !important;
+          font-weight: 700 !important;
+          color: #374151 !important;
+          margin-bottom: 7px !important;
+          display: block !important;
+        }
+        .cx-field-hint {
+          font-family: 'Poppins', sans-serif !important;
+          font-weight: 400 !important;
+          color: #9ca3af !important;
+          font-size: 0.68rem !important;
+        }
+        .cx-required { color: #ff6b00 !important; }
+        .cx-input {
+          width: 100% !important;
+          padding: 13px 16px !important;
+          border: 1.5px solid #e5e7eb !important;
+          border-radius: 12px !important;
+          font-family: 'Poppins', sans-serif !important;
+          font-size: 0.9rem !important;
+          color: #111 !important;
+          background: #fafafa !important;
+          outline: none !important;
+          transition: border-color 0.2s !important;
+        }
+        .cx-input:focus { border-color: #1d6c00 !important; background: #fff !important; }
+        .cx-input:disabled { opacity: 0.5 !important; }
+        .cx-textarea { resize: vertical !important; min-height: 80px !important; }
+
+        /* ── FILE DROP ──────────────────────────────────────── */
+        .cx-file-drop {
+          border: 2px dashed #d1d5db !important;
+          border-radius: 14px !important;
+          padding: 24px 16px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          gap: 6px !important;
+          cursor: pointer !important;
+          transition: border-color 0.2s, background 0.2s !important;
+          background: #fafafa !important;
+          text-align: center !important;
+        }
+        .cx-file-drop:hover { border-color: #1d6c00 !important; background: #f0fdf4 !important; }
+        .cx-file-has { border-color: #1d6c00 !important; background: #f0fdf4 !important; }
+        .cx-file-icon { font-size: 1.8rem !important; }
+        .cx-file-prompt { font-size: 0.85rem !important; color: #6b7280 !important; }
+        .cx-file-name { font-size: 0.82rem !important; font-weight: 600 !important; color: #1d6c00 !important; word-break: break-all !important; }
+        .cx-file-size { font-size: 0.7rem !important; color: #9ca3af !important; }
+        .cx-field-error { font-size: 0.75rem !important; color: #dc2626 !important; margin-top: 6px !important; }
+
+        /* ── PROGRESS ───────────────────────────────────────── */
+        .cx-progress-wrap {
+          margin-top: 16px !important;
+          background: #f3f4f6 !important;
+          border-radius: 8px !important;
+          overflow: hidden !important;
+          position: relative !important;
+        }
+        .cx-progress-bar {
+          height: 6px !important;
+          background: linear-gradient(90deg, #1d6c00, #4ade80) !important;
+          border-radius: 8px !important;
+          transition: width 0.3s ease !important;
+        }
+        .cx-progress-label {
+          font-size: 0.72rem !important;
+          color: #6b7280 !important;
+          text-align: center !important;
+          padding: 6px 0 2px !important;
+        }
+
+        /* ── SUBMIT BUTTON ──────────────────────────────────── */
+        .cx-modal-submit {
+          margin-top: 24px !important;
+          width: 100% !important;
+          padding: 16px !important;
+          background: linear-gradient(135deg, #1d6c00, #2d9e00) !important;
+          color: #fff !important;
+          border: none !important;
+          border-radius: 14px !important;
+          font-family: 'Montserrat', sans-serif !important;
+          font-size: 0.95rem !important;
+          font-weight: 800 !important;
+          cursor: pointer !important;
+          transition: opacity 0.2s, transform 0.2s !important;
+          box-shadow: 0 4px 20px rgba(29,108,0,0.25) !important;
+        }
+        .cx-modal-submit:hover:not(:disabled) { opacity: 0.92 !important; transform: translateY(-2px) !important; }
+        .cx-modal-submit:disabled { opacity: 0.45 !important; cursor: not-allowed !important; }
+        .cx-modal-note {
+          font-size: 0.68rem !important;
+          color: #9ca3af !important;
+          text-align: center !important;
+          margin-top: 10px !important;
+        }
+
+        /* ── SUCCESS STATE ──────────────────────────────────── */
+        .cx-modal-success {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          text-align: center !important;
+          padding: 24px 8px 8px !important;
+          gap: 12px !important;
+        }
+        .cx-success-icon { font-size: 3rem !important; }
+
         /* ── APP SECTION ───────────────────────────────────── */
         .cx-app-section {
           width: 100%;
@@ -493,6 +935,15 @@ export default function Connect() {
         }
       `}</style>
     </>
+  );
+}
+
+function CamIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.82v6.36a1 1 0 0 1-1.447.888L15 14" />
+      <rect x="1" y="6" width="15" height="12" rx="2" ry="2" />
+    </svg>
   );
 }
 
