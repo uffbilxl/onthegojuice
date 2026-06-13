@@ -54,7 +54,16 @@
         <li><a href="/our-story">Our Story</a></li>
         <li><a href="/events">Events</a></li>
         <li><a href="/partners">Partners</a></li>
-        <li><a href="/reviews">Reviews</a></li>
+        <li class="nav-reviews-wrap">
+          <button class="nav-reviews-trigger" aria-haspopup="true">
+            Reviews
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="nav-reviews-dropdown" role="menu">
+            <a href="/reviews" role="menuitem"><span class="nrd-icon">⭐</span> Customer Reviews</a>
+            <a href="/real-reactions" role="menuitem"><span class="nrd-icon">🎬</span> Real Reactions</a>
+          </div>
+        </li>
         <li><button class="nav-rewards-btn" id="rewards-widget">Rewards</button></li>
       </ul>
       <div class="nav-actions">
