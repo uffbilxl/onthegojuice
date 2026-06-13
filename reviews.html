@@ -286,30 +286,40 @@
       object-fit: cover;
       border-radius: 16px;
     }
-    .rv-vcard-overlay {
+    .rv-vcard-dimmer {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.32);
+      background: rgba(0,0,0,0.30);
       border-radius: 16px;
+      pointer-events: none;
       transition: opacity 0.2s;
+      z-index: 1;
     }
-    .rv-vcard-overlay.playing { opacity: 0; pointer-events: none; }
-    .rv-vcard:hover .rv-vcard-overlay.playing { opacity: 1; pointer-events: auto; }
-    .rv-vcard-play {
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.5);
+    .rv-vcard.rv-playing .rv-vcard-dimmer { opacity: 0; }
+    .rv-vcard-playbtn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.45);
+      border: 2px solid rgba(255,255,255,0.65);
       border-radius: 50%;
-      width: 56px;
-      height: 56px;
+      width: 58px;
+      height: 58px;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      z-index: 2;
+      transition: background 0.18s, opacity 0.18s;
       backdrop-filter: blur(4px);
-      flex-shrink: 0;
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0;
     }
+    .rv-vcard-playbtn:hover { background: rgba(0,0,0,0.65); }
+    .rv-vcard.rv-playing .rv-vcard-playbtn { opacity: 0; pointer-events: none; }
+    .rv-vcard:hover.rv-playing .rv-vcard-playbtn { opacity: 1; pointer-events: auto; }
     .rv-vcard-fullscreen {
       position: absolute;
       bottom: 52px;
@@ -1167,44 +1177,50 @@
         video.src = v.video_url;
         video.muted = true;
         video.loop = true;
-        video.playsInline = true;
+        video.setAttribute('playsinline', '');
         video.preload = 'metadata';
 
-        var overlay = document.createElement('div');
-        overlay.className = 'rv-vcard-overlay';
-        overlay.innerHTML = '<div class="rv-vcard-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>';
+        var dimmer = document.createElement('div');
+        dimmer.className = 'rv-vcard-dimmer';
+
+        var playBtn = document.createElement('button');
+        playBtn.className = 'rv-vcard-playbtn';
+        playBtn.setAttribute('aria-label', 'Play');
+        playBtn.innerHTML = '<svg width=”22” height=”22” viewBox=”0 0 24 24” fill=”white” aria-hidden=”true”><polygon points=”6,3 20,12 6,21”/></svg>';
 
         var fsBtn = document.createElement('button');
         fsBtn.className = 'rv-vcard-fullscreen';
         fsBtn.setAttribute('aria-label', 'Fullscreen');
-        fsBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+        fsBtn.innerHTML = '<svg width=”16” height=”16” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2”><path d=”M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3”/></svg>';
 
         var info = document.createElement('div');
         info.className = 'rv-vcard-info';
-        info.innerHTML = '<p class="rv-vcard-name">' + escHtml(v.customer_name) + '</p>' +
-          (v.caption ? '<p class="rv-vcard-caption">“' + escHtml(v.caption) + '”</p>' : '');
+        info.innerHTML = '<p class=”rv-vcard-name”>' + escHtml(v.customer_name) + '</p>' +
+          (v.caption ? '<p class=”rv-vcard-caption”>”' + escHtml(v.caption) + '”</p>' : '');
 
         card.appendChild(video);
-        card.appendChild(overlay);
+        card.appendChild(dimmer);
+        card.appendChild(playBtn);
         card.appendChild(fsBtn);
         card.appendChild(info);
 
-        video.addEventListener('play',  function() { overlay.classList.add('playing'); });
-        video.addEventListener('pause', function() { overlay.classList.remove('playing'); });
-        video.addEventListener('ended', function() { overlay.classList.remove('playing'); });
+        video.addEventListener('play',  function() { card.classList.add('rv-playing'); });
+        video.addEventListener('pause', function() { card.classList.remove('rv-playing'); });
+        video.addEventListener('ended', function() { card.classList.remove('rv-playing'); });
 
-        card.addEventListener('click', function(e) {
-          if (e.target === fsBtn || fsBtn.contains(e.target)) return;
-          if (video.paused) { video.play().catch(function() {}); }
-          else              { video.pause(); }
+        playBtn.addEventListener('click', function() {
+          video.play().catch(function() {});
+        });
+
+        video.addEventListener('click', function() {
+          if (!video.paused) { video.pause(); }
         });
 
         fsBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          var el = video;
-          if (el.requestFullscreen)       el.requestFullscreen();
-          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-          else if (el.webkitEnterFullscreen)   el.webkitEnterFullscreen();
+          if (video.requestFullscreen)            video.requestFullscreen();
+          else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+          else if (video.webkitEnterFullscreen)   video.webkitEnterFullscreen();
         });
 
         return card;

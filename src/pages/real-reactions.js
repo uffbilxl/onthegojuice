@@ -297,12 +297,13 @@ function VideoCard({ testimonial }) {
     };
   }, []);
 
-  function toggle(e) {
-    if (e.target.closest?.('.rr-fs-btn')) return;
+  function playVideo() {
+    videoRef.current?.play().catch(() => {});
+  }
+
+  function pauseVideo() {
     const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) { v.play().catch(() => {}); }
-    else          { v.pause(); }
+    if (v && !v.paused) v.pause();
   }
 
   function requestFs(e) {
@@ -315,7 +316,7 @@ function VideoCard({ testimonial }) {
   }
 
   return (
-    <div className="rr-card" onClick={toggle}>
+    <div className="rr-card">
       <video
         ref={videoRef}
         src={testimonial.video_url}
@@ -324,12 +325,18 @@ function VideoCard({ testimonial }) {
         playsInline
         preload="metadata"
         className="rr-video"
+        onClick={pauseVideo}
       />
-      <div className={`rr-play-btn${playing ? ' rr-hidden' : ''}`} aria-hidden="true">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-          <polygon points="5,3 19,12 5,21" />
+      <div className="rr-vcard-dimmer" style={playing ? { opacity: 0 } : {}} aria-hidden="true" />
+      <button
+        className={`rr-play-btn${playing ? ' rr-hidden' : ''}`}
+        onClick={playVideo}
+        aria-label="Play"
+      >
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+          <polygon points="6,3 20,12 6,21" />
         </svg>
-      </div>
+      </button>
       <button className="rr-fs-btn" onClick={requestFs} aria-label="Fullscreen">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
@@ -347,33 +354,47 @@ function VideoCard({ testimonial }) {
           position: relative;
           border-radius: 16px;
           overflow: hidden;
-          cursor: pointer;
           background: #1a2a14;
           animation: rr-fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
         }
-        .rr-card:hover .rr-play-btn { opacity: 1; }
         .rr-video {
           display: block;
           width: 100%;
           aspect-ratio: 9/16;
           object-fit: cover;
           border-radius: 16px;
+          cursor: pointer;
+        }
+        .rr-vcard-dimmer {
+          position: absolute;
+          inset: 0;
+          background: rgba(0,0,0,0.30);
+          border-radius: 16px;
+          pointer-events: none;
+          transition: opacity 0.2s;
         }
         .rr-play-btn {
           position: absolute;
-          inset: 0;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0,0,0,0.45);
+          border: 2px solid rgba(255,255,255,0.65);
+          border-radius: 50%;
+          width: 58px;
+          height: 58px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.35);
-          border-radius: 16px;
-          opacity: 1;
-          transition: opacity 0.25s ease;
+          cursor: pointer;
+          color: #fff;
+          padding: 0;
+          transition: background 0.18s, opacity 0.18s;
+          backdrop-filter: blur(4px);
+          z-index: 2;
         }
-        .rr-play-btn svg {
-          filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-        }
-        .rr-hidden { opacity: 0 !important; }
+        .rr-play-btn:hover { background: rgba(0,0,0,0.65); }
+        .rr-hidden { opacity: 0 !important; pointer-events: none !important; }
         .rr-fs-btn {
           position: absolute;
           bottom: 52px;
