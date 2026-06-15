@@ -425,14 +425,10 @@ function initSignInDropdown() {
 
 /* ─── SORT CONTROLS ──────────────────────────────────────────────── */
 function initSortControls() {
-  const container = document.getElementById('sort-controls');
-  if (!container) return;
-  container.addEventListener('click', e => {
-    const btn = e.target.closest('.sort-btn');
-    if (!btn) return;
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeSortType = btn.dataset.sort;
+  const select = document.getElementById('sort-select');
+  if (!select) return;
+  select.addEventListener('change', () => {
+    activeSortType = select.value;
     renderProducts(activeCategoryFilter, activeDietaryFilters, activeSortType);
   });
 }

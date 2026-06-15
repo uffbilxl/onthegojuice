@@ -550,6 +550,33 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-right: 4px;
 }
 
+.sort-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--white);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 32px 6px 12px;
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--black);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 160px;
+}
+.sort-select:hover {
+  border-color: var(--green);
+}
+.sort-select:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29,108,0,0.12);
+}
+
 .dietary-btn {
   display: inline-flex;
   align-items: center;

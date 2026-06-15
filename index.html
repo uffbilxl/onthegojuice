@@ -170,11 +170,13 @@
       <button class="dietary-btn" data-tag="noSugar">No Added Sugar</button>
       <button class="dietary-btn" data-tag="lactoseFree">Lactose Free</button>
     </div>
-    <div id="sort-controls" data-aos="fade-up" data-aos-delay="140" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:0 2px;">
-      <span style="font-size:0.75rem;font-weight:600;color:#9ca3af;letter-spacing:0.06em;text-transform:uppercase;margin-right:4px;">Sort:</span>
-      <button class="sort-btn active" data-sort="alphabetical">A → Z</button>
-      <button class="sort-btn" data-sort="price-low">Price ↑</button>
-      <button class="sort-btn" data-sort="price-high">Price ↓</button>
+    <div id="sort-controls" data-aos="fade-up" data-aos-delay="140" style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:0 2px;">
+      <label for="sort-select" style="font-size:0.75rem;font-weight:600;color:#9ca3af;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;">Sort:</label>
+      <select id="sort-select" class="sort-select">
+        <option value="alphabetical">A → Z</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+      </select>
     </div>
     <div class="products-grid" id="products-grid"></div>
     <p class="products-disclaimer">Larger size bottles (1 litre) can be produced on request.</p>
