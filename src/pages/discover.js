@@ -180,8 +180,8 @@ export default function Discover() {
               <h1 className="fm-result-name">{result}</h1>
               <p className="fm-result-sub">Crafted fresh for a reason — this one&apos;s yours.</p>
               <div className="fm-result-actions">
-                <Link href={productUrl} className="fm-btn-primary">
-                  View This Drink →
+                <Link href="/#products" className="fm-btn-primary">
+                  Purchase from Shop →
                 </Link>
                 <button className="fm-btn-outline" onClick={retakeQuiz}>
                   Retake Quiz
