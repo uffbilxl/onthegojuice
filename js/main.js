@@ -26,6 +26,9 @@ const PRODUCT_STATIC = {
   17: { ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-pineapple-ginger.webp' },
   18: { ingredients: 'Ginger, Turmeric, Lemon',                                    size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-turmeric.webp' },
   19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-milk.webp' },
+  20: { ingredients: 'Water, Carrot, Mango, Sugar',                               size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-mango.png' },
+  21: { ingredients: 'Carrot, Mango, Grapefruit, Pineapple, Watermelon',         size: '330ml', type: 'juice', tags: [],                         image: 'images/products/tropical-fruit-punch.png' },
+  22: { ingredients: 'Water, Carrot, Watermelon, Sugar',                          size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-watermelon.png' },
 };
 
 async function loadProducts() {

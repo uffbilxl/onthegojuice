@@ -74,6 +74,18 @@ VALUES
        'Lime, Sugar, Water',
        399, 279, 'images/products/carrot-lime.png',                 'juice', true),
 
+  (20, 'Carrot & Mango Juice Drink',
+       'Water, Carrot, Mango, Sugar',
+       399, 279, 'images/products/carrot-mango.png',                'juice', true),
+
+  (21, 'Tropical Fruit Punch',
+       'Carrot, Mango, Grapefruit, Pineapple, Watermelon',
+       399, 279, 'images/products/tropical-fruit-punch.png',        'juice', true),
+
+  (22, 'Carrot & Watermelon Juice Drink',
+       'Water, Carrot, Watermelon, Sugar',
+       399, 279, 'images/products/carrot-watermelon.png',           'juice', true),
+
   -- ── Go Shots (£2.99) ───────────────────────────────────────
   (9,  'GO Shot Apple Ginger',
        'Apple, Lemon, Ginger',
@@ -89,5 +101,5 @@ VALUES
 
 ON CONFLICT (id) DO NOTHING;
 
--- Reset the sequence so future SERIAL inserts start after 19
-SELECT setval('public.products_id_seq', 19);
+-- Reset the sequence so future SERIAL inserts start after 22
+SELECT setval('public.products_id_seq', 22);
