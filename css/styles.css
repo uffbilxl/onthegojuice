@@ -688,11 +688,18 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .card-image-wrap img {
   width: 100%;
   height: 100%;
-  object-fit: contain;  /* object-fit now uses the full content-box area */
+  object-fit: contain;
   object-position: center;
   transition: opacity var(--transition), transform var(--transition);
   display: block;
   mix-blend-mode: multiply;
+}
+
+/* Landscape source files — cover fills the portrait container by height,
+   clipping only the transparent side margins; bottle stays fully visible */
+.card-image-wrap img[src*="carrot-watermelon"],
+.card-image-wrap img[src*="tropical-fruit-punch"] {
+  object-fit: cover;
 }
 
 .product-card:hover .card-image-wrap img {
