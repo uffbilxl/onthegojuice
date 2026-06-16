@@ -695,12 +695,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   mix-blend-mode: multiply;
 }
 
-/* Landscape source files — cover fills the portrait container by height,
-   clipping only the transparent side margins; bottle stays fully visible */
-.card-image-wrap img[src*="carrot-watermelon"],
-.card-image-wrap img[src*="tropical-fruit-punch"] {
-  object-fit: cover;
-}
 
 .product-card:hover .card-image-wrap img {
   opacity: 0;
