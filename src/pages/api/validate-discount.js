@@ -10,10 +10,15 @@ export default async function handler(req, res) {
     .from('discount_codes')
     .select('*')
     .eq('code', code.toUpperCase().trim())
-    .eq('used', false)
     .maybeSingle();
 
   if (error || !data) {
+    return res.status(400).json({ error: 'Invalid or already used code.' });
+  }
+
+  // Single-use codes (welcome, referral, etc.) are blocked once marked used.
+  // Promo codes (type = 'promo') are multi-use and skip this check.
+  if (data.type !== 'promo' && data.used) {
     return res.status(400).json({ error: 'Invalid or already used code.' });
   }
 

@@ -91,11 +91,14 @@ async function handleRewardsAndLoyalty({ customerEmail, bottlesOrdered, amountPe
       .maybeSingle();
 
     await Promise.all([
-      supabaseAdmin
-        .from('discount_codes')
-        .update({ used: true, used_at: new Date().toISOString(), used_by_order: orderId })
-        .eq('code', discountCode)
-        .eq('used', false),
+      // Only mark single-use codes as used; promo codes (type='promo') are multi-use
+      dc?.type !== 'promo'
+        ? supabaseAdmin
+            .from('discount_codes')
+            .update({ used: true, used_at: new Date().toISOString(), used_by_order: orderId })
+            .eq('code', discountCode)
+            .eq('used', false)
+        : Promise.resolve(),
       supabaseAdmin
         .from('user_rewards')
         .update({ redeemed: true })

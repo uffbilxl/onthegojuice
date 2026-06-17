@@ -33,6 +33,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [promotions, setPromotions] = useState(null);
   const [products,   setProducts]   = useState(null);
   const [users,         setUsers]         = useState(null);
+  const [discountCodes, setDiscountCodes] = useState(null);
   const [testimonials,  setTestimonials]  = useState(null);
   const [testimonialsEdits, setTestimonialsEdits] = useState({});
 
@@ -46,6 +47,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (tab === 'promotions'    && promotions     === null) fetch('/api/admin/promotions').then(r=>r.json()).then(setPromotions).catch(()=>setPromotions([]));
     if (tab === 'products'      && products       === null) fetch('/api/admin/products').then(r=>r.json()).then(setProducts).catch(()=>setProducts([]));
     if (tab === 'users'         && users          === null) fetch('/api/admin/users').then(r=>r.json()).then(setUsers).catch(()=>setUsers([]));
+    if (tab === 'discounts'     && discountCodes  === null) fetch('/api/admin/discount-codes').then(r=>r.json()).then(setDiscountCodes).catch(()=>setDiscountCodes([]));
     if (tab === 'testimonials'  && testimonials   === null) fetch('/api/admin/testimonials').then(r=>r.json()).then(setTestimonials).catch(()=>setTestimonials([]));
   }, [tab]);
 
@@ -180,7 +182,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes'], ['testimonials','Reactions']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['discounts','Discounts'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes'], ['testimonials','Reactions']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
                 {id === 'orders'        && <span className="adm-tab-badge">{orders.length}</span>}
@@ -188,6 +190,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                 {id === 'partners'      && Array.isArray(partners)      && <span className="adm-tab-badge">{partners.filter(p => p.status === 'new').length}</span>}
                 {id === 'promotions'    && Array.isArray(promotions)    && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
                 {id === 'users'         && Array.isArray(users)         && <span className="adm-tab-badge">{users.length}</span>}
+                {id === 'discounts'     && Array.isArray(discountCodes) && discountCodes.length > 0 && <span className="adm-tab-badge">{discountCodes.length}</span>}
                 {id === 'testimonials'  && Array.isArray(testimonials)  && testimonials.filter(t => t.status === 'pending').length > 0 && <span className="adm-tab-badge" style={{background:'#ff6b00'}}>{testimonials.filter(t => t.status === 'pending').length}</span>}
               </button>
             ))}
@@ -282,6 +285,11 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
           {/* ── PROMOTIONS TAB ─────────────────────────────────────── */}
           {tab === 'promotions' && (
             <PromotionsTab promotions={promotions} setPromotions={setPromotions} />
+          )}
+
+          {/* ── DISCOUNTS TAB ──────────────────────────────────────── */}
+          {tab === 'discounts' && (
+            <DiscountCodesTab discountCodes={discountCodes} setDiscountCodes={setDiscountCodes} />
           )}
 
           {/* ── PRODUCTS TAB ───────────────────────────────────────── */}
@@ -863,6 +871,130 @@ function PromotionsTab({ promotions, setPromotions }) {
                 </button>
                 <span className="adm-toggle-status">{saving === p.id ? 'Saving…' : p.is_active ? 'Active' : 'Inactive'}</span>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Discount Codes sub-component ────────────────────────────── */
+function DiscountCodesTab({ discountCodes, setDiscountCodes }) {
+  const [form, setForm] = useState({ code: '', type: 'percent', value: '', minOrder: '' });
+  const [saving, setSaving] = useState(false);
+  const [formErr, setFormErr] = useState('');
+
+  async function createCode(e) {
+    e.preventDefault();
+    setFormErr('');
+    const valueNum = parseFloat(form.value);
+    if (!form.code.trim()) { setFormErr('Code name is required.'); return; }
+    if (!valueNum || valueNum <= 0) { setFormErr('Enter a valid discount value.'); return; }
+    if (form.type === 'percent' && valueNum > 100) { setFormErr('Percentage cannot exceed 100.'); return; }
+
+    setSaving(true);
+    const body = {
+      code: form.code.trim(),
+      min_order_pence: form.minOrder ? Math.round(parseFloat(form.minOrder) * 100) : 0,
+    };
+    if (form.type === 'percent') body.discount_percent = valueNum;
+    else body.discount_fixed_pence = Math.round(valueNum * 100);
+
+    const res = await fetch('/api/admin/discount-codes', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) { setFormErr(data.error || 'Failed to create code.'); return; }
+    setDiscountCodes(prev => [data, ...(prev || [])]);
+    setForm({ code: '', type: 'percent', value: '', minOrder: '' });
+  }
+
+  async function deleteCode(id, code) {
+    if (!confirm(`Delete promo code "${code}"? This cannot be undone.`)) return;
+    const res = await fetch('/api/admin/discount-codes', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) setDiscountCodes(prev => prev.filter(c => c.id !== id));
+    else alert('Failed to delete code.');
+  }
+
+  const inputStyle = { width: '100%', padding: '9px 12px', border: '1.5px solid #e5e7eb', borderRadius: 8, fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: '#111', outline: 'none', boxSizing: 'border-box' };
+  const labelStyle = { display: 'block', fontFamily: 'var(--font-accent)', fontSize: '0.68rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 };
+
+  return (
+    <div>
+      <div className="adm-section-header">
+        <h2>Discount Codes</h2>
+        <span className="adm-section-count">{Array.isArray(discountCodes) ? discountCodes.length : 0} codes</span>
+      </div>
+
+      {/* Create form */}
+      <div style={{ background: '#fff', borderRadius: 16, padding: '24px 28px', boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1.5px solid #e5e7eb', marginBottom: 28 }}>
+        <h3 style={{ fontFamily: 'var(--font-accent)', fontWeight: 800, fontSize: '0.95rem', color: '#0a2800', marginBottom: 20 }}>Create New Code</h3>
+        <form onSubmit={createCode}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={labelStyle}>Code</label>
+              <input style={inputStyle} placeholder="e.g. SAVE20" value={form.code}
+                onChange={e => setForm(p => ({ ...p, code: e.target.value.toUpperCase() }))} />
+            </div>
+            <div>
+              <label style={labelStyle}>Type</label>
+              <select style={inputStyle} value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))}>
+                <option value="percent">Percentage off (%)</option>
+                <option value="fixed">Fixed amount off (£)</option>
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>{form.type === 'percent' ? 'Percentage (%)' : 'Amount (£)'}</label>
+              <input style={inputStyle} type="number" min="0.01" step={form.type === 'percent' ? '1' : '0.01'}
+                placeholder={form.type === 'percent' ? '20' : '5.00'} value={form.value}
+                onChange={e => setForm(p => ({ ...p, value: e.target.value }))} />
+            </div>
+            <div>
+              <label style={labelStyle}>Min. order (£, optional)</label>
+              <input style={inputStyle} type="number" min="0" step="0.01" placeholder="0.00" value={form.minOrder}
+                onChange={e => setForm(p => ({ ...p, minOrder: e.target.value }))} />
+            </div>
+          </div>
+          {formErr && <p style={{ color: '#dc2626', fontSize: '0.82rem', fontWeight: 600, marginBottom: 12 }}>{formErr}</p>}
+          <button type="submit" disabled={saving}
+            style={{ padding: '10px 24px', background: '#1d6c00', color: '#fff', border: 'none', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
+            {saving ? 'Creating…' : '+ Create Code'}
+          </button>
+          <p style={{ marginTop: 10, fontSize: '0.78rem', color: '#9ca3af' }}>These are multi-use codes — customers can use them repeatedly. Share them publicly (e.g. social media, events).</p>
+        </form>
+      </div>
+
+      {/* Code list */}
+      {discountCodes === null && <div className="adm-empty">Loading…</div>}
+      {Array.isArray(discountCodes) && discountCodes.length === 0 && (
+        <div className="adm-empty">No promo codes yet. Create one above.</div>
+      )}
+      {Array.isArray(discountCodes) && discountCodes.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {discountCodes.map(c => (
+            <div key={c.id} style={{ background: '#fff', borderRadius: 12, padding: '16px 20px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1.5px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-accent)', fontWeight: 900, fontSize: '1rem', color: '#0a2800', letterSpacing: '0.05em', flex: '1 0 120px' }}>{c.code}</span>
+              <span style={{ background: '#dcfce7', color: '#15803d', fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.78rem', padding: '4px 12px', borderRadius: 6 }}>
+                {c.discount_percent ? `${c.discount_percent}% off` : `£${(c.discount_fixed_pence / 100).toFixed(2)} off`}
+              </span>
+              {c.min_order_pence > 0 && (
+                <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>Min. £{(c.min_order_pence / 100).toFixed(2)}</span>
+              )}
+              <span style={{ fontSize: '0.72rem', color: '#d1d5db', marginLeft: 'auto' }}>
+                {c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''}
+              </span>
+              <button onClick={() => deleteCode(c.id, c.code)}
+                style={{ padding: '7px 14px', background: 'none', color: '#b91c1c', border: '1.5px solid #fecaca', borderRadius: 7, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
+                onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                Delete
+              </button>
             </div>
           ))}
         </div>
