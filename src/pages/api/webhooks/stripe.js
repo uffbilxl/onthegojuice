@@ -260,27 +260,27 @@ export default async function handler(req, res) {
       console.log(`[webhook] Order inserted successfully for PI ${pi.id}`);
     }
 
-    // Confirmation email
-    if (meta.customer_email) {
-      sendOrderConfirmation(meta.customer_email, {
-        name:            meta.customer_name || '',
-        orderId:         pi.id,
-        items,
-        deliveryMethod:  meta.delivery_method || 'pickup',
-        shippingAddress,
-        totalPence:      pi.amount,
-        discountPence:   parseInt(meta.discount_pence || '0', 10),
-      }).catch(e => console.error('[webhook] Order confirmation email failed:', e.message));
-    }
-
     const bottlesOrdered = items.reduce((s, i) => s + (i.q || i.qty || 0), 0);
-    await handleRewardsAndLoyalty({
-      customerEmail: meta.customer_email,
-      bottlesOrdered,
-      amountPence:   pi.amount,
-      discountCode:  meta.discount_code,
-      orderId:       pi.id,
-    });
+    await Promise.all([
+      meta.customer_email
+        ? sendOrderConfirmation(meta.customer_email, {
+            name:            meta.customer_name || '',
+            orderId:         pi.id,
+            items,
+            deliveryMethod:  meta.delivery_method || 'pickup',
+            shippingAddress,
+            totalPence:      pi.amount,
+            discountPence:   parseInt(meta.discount_pence || '0', 10),
+          }).catch(e => console.error('[webhook] Order confirmation email failed:', e.message))
+        : Promise.resolve(),
+      handleRewardsAndLoyalty({
+        customerEmail: meta.customer_email,
+        bottlesOrdered,
+        amountPence:   pi.amount,
+        discountCode:  meta.discount_code,
+        orderId:       pi.id,
+      }),
+    ]);
   }
 
   if (event.type === 'payment_intent.payment_failed') {
@@ -350,27 +350,27 @@ export default async function handler(req, res) {
       console.log(`[webhook] Order inserted successfully for session ${session.id}`);
     }
 
-    // Confirmation email
-    if (email) {
-      sendOrderConfirmation(email, {
-        name,
-        orderId:         session.id,
-        items:           lineItems,
-        deliveryMethod:  meta.delivery_method || 'pickup',
-        shippingAddress,
-        totalPence:      session.amount_total ?? 0,
-        discountPence:   0,
-      }).catch(e => console.error('[webhook] Order confirmation email failed:', e.message));
-    }
-
     const bottlesOrdered = lineItems.reduce((s, i) => s + (i.q || 0), 0);
-    await handleRewardsAndLoyalty({
-      customerEmail: email,
-      bottlesOrdered,
-      amountPence:   session.amount_total ?? 0,
-      discountCode:  meta.discount_code,
-      orderId:       session.id,
-    });
+    await Promise.all([
+      email
+        ? sendOrderConfirmation(email, {
+            name,
+            orderId:         session.id,
+            items:           lineItems,
+            deliveryMethod:  meta.delivery_method || 'pickup',
+            shippingAddress,
+            totalPence:      session.amount_total ?? 0,
+            discountPence:   0,
+          }).catch(e => console.error('[webhook] Order confirmation email failed:', e.message))
+        : Promise.resolve(),
+      handleRewardsAndLoyalty({
+        customerEmail: email,
+        bottlesOrdered,
+        amountPence:   session.amount_total ?? 0,
+        discountCode:  meta.discount_code,
+        orderId:       session.id,
+      }),
+    ]);
   }
 
   // ── invoice.paid (recurring subscription payments after the first) ───

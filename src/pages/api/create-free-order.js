@@ -131,7 +131,7 @@ export default async function handler(req, res) {
       .eq('code', dc.code);
   }
 
-  sendOrderConfirmation(email, {
+  await sendOrderConfirmation(email, {
     name,
     orderId,
     items:          itemsMeta,
