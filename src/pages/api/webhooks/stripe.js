@@ -306,14 +306,14 @@ export default async function handler(req, res) {
         { limit: 50, expand: ['data.price.product'] }
       );
       lineItems = expanded.data.map(li => ({
-        name:  li.description || li.price?.product?.name || 'Item',
-        qty:   li.quantity,
-        price: (li.price?.unit_amount ?? 0) / 100,
+        n: li.description || li.price?.product?.name || 'Item',
+        q: li.quantity,
+        p: li.price?.unit_amount ?? 0,
       }));
     } catch (e) {
       console.error(`[webhook] Could not fetch line items for session ${session.id}:`, e.message);
       try {
-        lineItems = JSON.parse(meta.items || '[]').map(i => ({ name: i.n, qty: i.q, price: i.p }));
+        lineItems = JSON.parse(meta.items || '[]').map(i => ({ n: i.n, q: i.q, p: i.p }));
       } catch (e2) {
         console.error(`[webhook] Fallback items parse also failed for session ${session.id}:`, e2.message);
       }
@@ -363,7 +363,7 @@ export default async function handler(req, res) {
       }).catch(e => console.error('[webhook] Order confirmation email failed:', e.message));
     }
 
-    const bottlesOrdered = lineItems.reduce((s, i) => s + (i.qty || 0), 0);
+    const bottlesOrdered = lineItems.reduce((s, i) => s + (i.q || 0), 0);
     await handleRewardsAndLoyalty({
       customerEmail: email,
       bottlesOrdered,
