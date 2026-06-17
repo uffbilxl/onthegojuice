@@ -1,5 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { sendOrderCancelled } from '@/lib/mailer';
+import { sendOrderStatusUpdate, sendOrderCancelled, sendOrderNote } from '@/lib/mailer';
 import { verifyAdminToken } from '@/lib/adminAuth';
 
 const VALID_STATUSES = ['processing', 'out_for_delivery', 'completed', 'cancelled'];
@@ -30,16 +30,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Nothing to update' });
   }
 
-  // Fetch order before updating so we have customer details for the email
-  let orderData = null;
-  if (fulfillmentStatus === 'cancelled') {
-    const { data } = await supabaseAdmin
-      .from('orders')
-      .select('customer_email, customer_name, stripe_session_id, fulfillment_status')
-      .eq('id', orderId)
-      .maybeSingle();
-    orderData = data;
-  }
+  // Always fetch order so we have customer details for emails
+  const { data: orderData } = await supabaseAdmin
+    .from('orders')
+    .select('customer_email, customer_name, stripe_session_id, fulfillment_status')
+    .eq('id', orderId)
+    .maybeSingle();
 
   const { error } = await supabaseAdmin.from('orders').update(update).eq('id', orderId);
 
@@ -48,15 +44,30 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message });
   }
 
-  // Send cancellation email if status just changed to cancelled
-  if (fulfillmentStatus === 'cancelled' && orderData?.customer_email && orderData.fulfillment_status !== 'cancelled') {
-    try {
-      await sendOrderCancelled(orderData.customer_email, {
-        name: orderData.customer_name || '',
-        orderId: orderData.stripe_session_id || orderId,
-      });
-    } catch (e) {
-      console.error('[update-fulfillment] Failed to send cancellation email:', e.message);
+  if (orderData?.customer_email) {
+    const emailId = orderData.stripe_session_id || orderId;
+    const emailName = orderData.customer_name || '';
+
+    // Status change emails
+    if (fulfillmentStatus && fulfillmentStatus !== orderData.fulfillment_status) {
+      try {
+        if (fulfillmentStatus === 'cancelled') {
+          await sendOrderCancelled(orderData.customer_email, { name: emailName, orderId: emailId });
+        } else {
+          await sendOrderStatusUpdate(orderData.customer_email, { name: emailName, orderId: emailId, status: fulfillmentStatus });
+        }
+      } catch (e) {
+        console.error('[update-fulfillment] Status email failed:', e.message);
+      }
+    }
+
+    // Note email — only when a non-empty note is provided
+    if (adminNote && adminNote.trim()) {
+      try {
+        await sendOrderNote(orderData.customer_email, { name: emailName, orderId: emailId, note: adminNote.trim() });
+      } catch (e) {
+        console.error('[update-fulfillment] Note email failed:', e.message);
+      }
     }
   }
 

@@ -309,6 +309,90 @@ export async function sendPartnerDeclined(to, { businessName, contactName }) {
   await sendMail({ to, subject: `Your On The Go Juice Partnership Enquiry`, html, text });
 }
 
+export async function sendOrderStatusUpdate(to, { name, orderId, status }) {
+  const firstName = (name || 'there').split(' ')[0];
+  const orderRef = `#OTGJ-${orderId.slice(-8).toUpperCase()}`;
+
+  const statusMap = {
+    processing:       { label: 'Processing',        emoji: '🧃', headline: 'We\'re preparing your order!',   body: 'Great news — your order is now being prepared. We\'re getting your fresh juices ready for you.' },
+    out_for_delivery: { label: 'Out for Delivery',  emoji: '🚚', headline: 'Your order is on its way!',      body: 'Your fresh juices are out for delivery. Keep an eye out — they\'ll be with you soon!' },
+    completed:        { label: 'Delivered',          emoji: '✅', headline: 'Your order has been delivered!', body: 'We hope you enjoy your fresh juices! If you have any feedback, we\'d love to hear from you.' },
+  };
+
+  const s = statusMap[status] || { label: status, emoji: '📦', headline: 'Order update', body: `Your order status has been updated to: ${status}.` };
+
+  const html = wrap(`
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:48px;line-height:1;margin-bottom:14px">${s.emoji}</div>
+      <h2 style="margin:0 0 6px;font-size:24px;font-weight:900;color:#111;letter-spacing:-0.03em">${s.headline}</h2>
+      <p style="margin:0;font-size:14px;color:#9ca3af">Hi ${firstName}, here's an update on your order.</p>
+    </div>
+
+    <div style="background:#f9f6f1;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:0.8rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.12em">Order reference</span>
+      <span style="font-size:1rem;font-weight:800;color:${GREEN};font-family:'Courier New',monospace;letter-spacing:0.1em">${orderRef}</span>
+    </div>
+
+    <div style="background:#f0fdf4;border-left:4px solid ${GREEN};border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px">
+      <p style="margin:0 0 4px;font-size:0.75rem;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:0.1em">Status</p>
+      <p style="margin:0;font-size:1.05rem;font-weight:800;color:#111">${s.label}</p>
+    </div>
+
+    <p style="margin:0 0 28px;font-size:15px;color:#374151;line-height:1.7">${s.body}</p>
+
+    <p style="margin:0 0 20px;font-size:0.88rem;color:#6b7280;line-height:1.65">
+      Questions? Contact us at
+      <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE}">onthegojuiceadmin@gmail.com</a>.
+    </p>
+
+    <a href="https://onthego-juice.co.uk"
+       style="display:inline-block;background:${GREEN};color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
+      Visit Our Store &rarr;
+    </a>
+  `);
+
+  const text = `Hi ${firstName},\n\nYour order ${orderRef} has been updated.\n\nStatus: ${s.label}\n\n${s.body}\n\nQuestions? Email onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Solihull.`;
+
+  await sendMail({ to, subject: `Order update ${orderRef} — ${s.label}`, html, text });
+}
+
+export async function sendOrderNote(to, { name, orderId, note }) {
+  const firstName = (name || 'there').split(' ')[0];
+  const orderRef = `#OTGJ-${orderId.slice(-8).toUpperCase()}`;
+
+  const html = wrap(`
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:48px;line-height:1;margin-bottom:14px">💬</div>
+      <h2 style="margin:0 0 6px;font-size:24px;font-weight:900;color:#111;letter-spacing:-0.03em">A note about your order</h2>
+      <p style="margin:0;font-size:14px;color:#9ca3af">Hi ${firstName}, we've left a message regarding order ${orderRef}.</p>
+    </div>
+
+    <div style="background:#f9f6f1;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:0.8rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.12em">Order reference</span>
+      <span style="font-size:1rem;font-weight:800;color:${GREEN};font-family:'Courier New',monospace;letter-spacing:0.1em">${orderRef}</span>
+    </div>
+
+    <div style="background:#fffbeb;border-left:4px solid ${ORANGE};border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:24px">
+      <p style="margin:0 0 6px;font-size:0.75rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.1em">Message from On The Go Juice</p>
+      <p style="margin:0;font-size:15px;color:#374151;line-height:1.7">${note}</p>
+    </div>
+
+    <p style="margin:0 0 20px;font-size:0.88rem;color:#6b7280;line-height:1.65">
+      If you have any questions, just reply to this email or contact us at
+      <a href="mailto:onthegojuiceadmin@gmail.com" style="color:${ORANGE}">onthegojuiceadmin@gmail.com</a>.
+    </p>
+
+    <a href="https://onthego-juice.co.uk"
+       style="display:inline-block;background:${GREEN};color:#fff;padding:13px 28px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none">
+      Visit Our Store &rarr;
+    </a>
+  `);
+
+  const text = `Hi ${firstName},\n\nA note regarding your order ${orderRef}:\n\n"${note}"\n\nQuestions? Reply to this email or contact onthegojuiceadmin@gmail.com\n\nOn The Go Juice, Solihull.`;
+
+  await sendMail({ to, subject: `A note about your order ${orderRef} — ${FROM_NAME}`, html, text });
+}
+
 export async function sendOrderCancelled(to, { name, orderId }) {
   const firstName = (name || 'there').split(' ')[0];
   const orderRef = `#OTGJ-${orderId.slice(-8).toUpperCase()}`;
