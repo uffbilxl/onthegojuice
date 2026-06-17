@@ -164,11 +164,11 @@ function updateDeliveryTotal() {
 
   // Loyalty points: 1 point = £0.01
   const loyaltyAmt = redeemLoyaltyPoints
-    ? Math.min(userLoyaltyPoints / 100, Math.max(0, running - 0.50))
+    ? Math.min(userLoyaltyPoints / 100, Math.max(0, running))
     : 0;
   running -= loyaltyAmt;
 
-  const total = Math.max(0.50, running);
+  const total = Math.max(0, running);
 
   const deliveryCostEl   = document.getElementById('co-delivery-cost');
   const discountRow      = document.getElementById('co-discount-row');
@@ -629,7 +629,51 @@ async function initStripePayment() {
     });
 
     const data = await res.json();
-    if (!res.ok || !data.clientSecret) throw new Error(data.error || 'Unable to initialize payment');
+    if (!res.ok) throw new Error(data.error || 'Unable to initialize payment');
+
+    // 100% discount — no Stripe charge needed
+    if (data.freeOrder) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      paymentEl.innerHTML = `
+        <div style="text-align:center;padding:24px 0">
+          <p style="font-size:1rem;font-weight:700;color:#15803d;margin-bottom:8px">🎉 Your discount covers the full order!</p>
+          <p style="color:#6b7280;font-size:0.85rem;margin-bottom:24px">No payment needed — click below to complete your order.</p>
+          <button id="free-order-btn" style="padding:14px 32px;background:#1d6c00;color:#fff;border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;width:100%">
+            Complete Free Order
+          </button>
+          <p id="free-order-error" style="display:none;color:#dc2626;font-size:0.84rem;font-weight:600;margin-top:12px"></p>
+        </div>`;
+      document.getElementById('free-order-btn').addEventListener('click', async () => {
+        const btn    = document.getElementById('free-order-btn');
+        const errEl  = document.getElementById('free-order-error');
+        btn.disabled = true;
+        btn.textContent = 'Processing…';
+        try {
+          const r = await fetch('/api/create-free-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items:          cart.map(i => ({ id: i.id, name: i.name, qty: i.qty })),
+              deliveryMethod: isDelivery ? 'local_delivery' : 'pickup',
+              customer,
+              address,
+              discountCode:   appliedDiscount?.code || null,
+            }),
+          });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Failed to place order');
+          window.location.href = `${window.location.origin}/order-confirmed?session_id=${d.orderId}`;
+        } catch (err) {
+          errEl.textContent = err.message;
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Complete Free Order';
+        }
+      });
+      return;
+    }
+
+    if (!data.clientSecret) throw new Error('Unable to initialize payment');
 
     stripeInstance = Stripe(STRIPE_PK);
     stripeElements = stripeInstance.elements({ clientSecret: data.clientSecret, appearance: STRIPE_APPEARANCE });

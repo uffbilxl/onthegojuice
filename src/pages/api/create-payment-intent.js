@@ -97,8 +97,10 @@ export default async function handler(req, res) {
       .from('discount_codes')
       .select('*')
       .eq('code', discountCode.toUpperCase().trim())
-      .eq('used', false)
       .maybeSingle();
+
+    // Promo codes (type='promo') are multi-use; all others must not be used yet
+    if (dc && dc.type !== 'promo' && dc.used) dc = null;
 
     if (dc && subtotal >= dc.min_order_pence) {
       // Hard lock: check used_discounts ledger (covers guests + logged-in users)
@@ -174,7 +176,19 @@ export default async function handler(req, res) {
     }
   }
 
-  const totalAmount = Math.max(50, runningTotal - loyaltyDiscountPence);
+  const totalAmount = Math.max(0, runningTotal - loyaltyDiscountPence);
+
+  // When the discount brings the order to £0, skip Stripe entirely
+  if (totalAmount === 0) {
+    return res.status(200).json({
+      freeOrder:           true,
+      totalPence:          0,
+      discountPence,
+      validatedCode,
+      studentDiscountPence,
+      loyaltyDiscountPence,
+    });
+  }
 
   // ── 8. Build Stripe Payment Intent ────────────────────────────────
   const itemsMeta  = JSON.stringify(
