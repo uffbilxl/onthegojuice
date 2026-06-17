@@ -951,7 +951,7 @@ function DiscountCodesTab({ discountCodes, setDiscountCodes }) {
             </div>
             <div>
               <label style={labelStyle}>{form.type === 'percent' ? 'Percentage (%)' : 'Amount (£)'}</label>
-              <input style={inputStyle} type="number" min="0.01" step={form.type === 'percent' ? '1' : '0.01'}
+              <input style={inputStyle} type="number" min={form.type === 'percent' ? '1' : '0.01'} step={form.type === 'percent' ? '1' : '0.01'}
                 placeholder={form.type === 'percent' ? '20' : '5.00'} value={form.value}
                 onChange={e => setForm(p => ({ ...p, value: e.target.value }))} />
             </div>
