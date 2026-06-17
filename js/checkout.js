@@ -11,7 +11,7 @@ function esc(s) {
 }
 
 /* ─── STRIPE CONFIG ─────────────────────────────────────────────── */
-const STRIPE_PK = 'pk_test_51TcXP15I1DB6R6KTaDOYuWcvM71JjTcDXzzXHntIAPjLd5h8xYOuGvuW9YafAaz8TekHxJOvKZNw9p0dd704unCP00g28CzoQe';
+const STRIPE_PK = 'pk_live_51TcXOn9NYsi6nCXJWA1QnH3Ly9Y1M2yXQNCricmIvnIF9TWkKbyGmwHzNl3jwQUbYLMVuCRNF0FxkupRx1OFibn100uHMPOtuP';
 
 const STRIPE_APPEARANCE = {
   theme: 'stripe',
