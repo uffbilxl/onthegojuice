@@ -397,7 +397,22 @@ function initAccordion() {
   document.querySelectorAll('.co-section-head').forEach(head => {
     head.addEventListener('click', () => {
       const section = head.closest('.co-section');
-      if (section.classList.contains('done')) openSection(section.id);
+      // Reopen already-completed sections
+      if (section.classList.contains('done')) {
+        openSection(section.id);
+        if (section.id === 'section-payment') initStripePayment();
+        return;
+      }
+      // Allow opening payment if steps 1 + 2 are done (handles pickup flow
+      // where there is no step 3 and payment never gets marked 'done')
+      if (section.id === 'section-payment') {
+        const contactDone  = document.getElementById('section-contact')?.classList.contains('done');
+        const deliveryDone = document.getElementById('section-delivery')?.classList.contains('done');
+        if (contactDone && deliveryDone) {
+          openSection('section-payment');
+          initStripePayment();
+        }
+      }
     });
   });
 }
@@ -485,11 +500,15 @@ function initDeliveryToggle() {
   const deliveryNextBtn  = document.getElementById('delivery-next-btn');
   const addressSection   = document.getElementById('section-address');
 
+  const paymentNumEl = document.querySelector('#section-payment .co-section-num');
+
   function applyDeliveryMode(isDelivery) {
     if (postcodeWrap)   postcodeWrap.style.display   = isDelivery ? 'block' : 'none';
     if (pickupAddr)     pickupAddr.style.display     = isDelivery ? 'none'  : 'block';
     // Hide the entire address step for pickup — it's not needed
     if (addressSection) addressSection.style.display = isDelivery ? ''      : 'none';
+    // Renumber payment step: 3 for pickup (no address step), 4 for delivery
+    if (paymentNumEl)   paymentNumEl.textContent     = isDelivery ? '4'     : '3';
 
     if (deliveryNextBtn) {
       deliveryNextBtn.dataset.next = isDelivery ? 'section-address' : 'section-payment';
