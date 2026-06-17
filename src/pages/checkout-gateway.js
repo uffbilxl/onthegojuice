@@ -9,13 +9,13 @@ const S = {
   tagline: { color: '#6b7280', fontSize: '0.85rem', marginBottom: '40px' },
   title:   { fontFamily: "'Montserrat', sans-serif", fontWeight: 900, fontSize: '1.5rem', color: '#0a2800', textAlign: 'center', margin: '0 0 8px', letterSpacing: '-0.03em' },
   sub:     { color: '#6b7280', fontSize: '0.875rem', textAlign: 'center', margin: '0 0 36px' },
-  grid:    { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', width: '100%', maxWidth: '700px' },
-  card:    { background: '#fff', borderRadius: '16px', padding: '28px 24px', boxShadow: '0 2px 16px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px', cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.15s', border: '2px solid transparent' },
+  grid:    { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', width: '100%', maxWidth: '700px', alignItems: 'stretch' },
+  card:    { background: '#fff', borderRadius: '16px', padding: '28px 24px', boxShadow: '0 2px 16px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '10px', cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.15s', border: '2px solid transparent', height: '100%', boxSizing: 'border-box' },
   icon:    { fontSize: '2rem', marginBottom: '4px' },
   cName:   { fontFamily: "'Montserrat', sans-serif", fontWeight: 800, fontSize: '1rem', color: '#0a2800' },
   cDesc:   { color: '#6b7280', fontSize: '0.8rem', lineHeight: 1.5 },
   badge:   { background: 'linear-gradient(135deg, #f77f00, #e65c00)', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: '999px', letterSpacing: '0.04em' },
-  cBtn:    { marginTop: '8px', padding: '10px 20px', borderRadius: '10px', border: 'none', fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', width: '100%' },
+  cBtn:    { marginTop: 'auto', padding: '10px 20px', borderRadius: '10px', border: 'none', fontFamily: "'Montserrat', sans-serif", fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', width: '100%' },
   back:    { marginTop: '28px', color: '#9ca3af', fontSize: '0.82rem', textDecoration: 'none' },
 };
 
@@ -87,7 +87,7 @@ export default function CheckoutGateway() {
         <p style={S.sub}>Create an account to unlock exclusive rewards and discounts.</p>
         <div style={S.grid}>
           {OPTIONS.map(opt => (
-            <a key={opt.name} href={opt.href} style={{ textDecoration: 'none' }}>
+            <a key={opt.name} href={opt.href} style={{ textDecoration: 'none', display: 'flex' }}>
               <div
                 style={S.card}
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.13)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}

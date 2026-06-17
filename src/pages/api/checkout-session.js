@@ -54,6 +54,8 @@ export default async function handler(req, res) {
     line_items: lineItems,
     customer_email: email || undefined,
 
+    allow_promotion_codes: true,
+
     automatic_payment_methods: { enabled: true },
 
     phone_number_collection: { enabled: true },
