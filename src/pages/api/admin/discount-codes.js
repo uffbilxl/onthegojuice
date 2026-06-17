@@ -2,8 +2,9 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { verifyAdminToken } from '@/lib/adminAuth';
 
 export default async function handler(req, res) {
-  const authorized = await verifyAdminToken(req);
-  if (!authorized) return res.status(401).json({ error: 'Unauthorized' });
+  if (!verifyAdminToken(req.cookies?.otgj_admin)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   if (req.method === 'GET') {
     const { data, error } = await supabaseAdmin
