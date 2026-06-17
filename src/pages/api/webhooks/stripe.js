@@ -333,6 +333,9 @@ export default async function handler(req, res) {
       payment_status:     'paid',
       fulfillment_status: 'processing',
       stripe_session_id:  session.id,
+      // Subscription bottle selections — populated for subscription checkouts only.
+      // Carried from Stripe session metadata.flavors_selected (set in create-checkout-session.js).
+      bottle_selection:   meta.flavors_selected || null,
     };
 
     console.log(`[webhook] Inserting order for session ${session.id}:`, JSON.stringify({ email: orderRow.customer_email, total: orderRow.total_amount, items: lineItems.length }));
@@ -431,6 +434,8 @@ export default async function handler(req, res) {
       fulfillment_status: 'processing',
       stripe_session_id:  invoiceRef,
       admin_note:         `Subscription renewal${flavorsStr ? ' — ' + flavorsStr : ''}`,
+      // Bottle selections pulled from the subscription's Stripe metadata
+      bottle_selection:   flavorsStr || null,
     });
 
     if (invoiceOrderErr) {

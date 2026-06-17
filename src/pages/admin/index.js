@@ -234,7 +234,23 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                               {isDelivery && order.postcode   && <div className="adm-postcode">{order.postcode}</div>}
                               {isDelivery && order.shipping_address && <div className="adm-address">{order.shipping_address}</div>}
                             </td>
-                            <td data-label="Items"><ul className="adm-items">{(Array.isArray(order.items) ? order.items : []).map((item, i) => <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? item.quantity ?? 1}×</span> {item.name || item.n}</li>)}</ul></td>
+                            <td data-label="Items">
+                              <ul className="adm-items">
+                                {(Array.isArray(order.items) ? order.items : []).map((item, i) => (
+                                  <li key={i}><span className="adm-item-qty">{item.qty ?? item.q ?? item.quantity ?? 1}×</span> {item.name || item.n}</li>
+                                ))}
+                              </ul>
+                              {order.bottle_selection && (
+                                <div className="adm-bottle-selection">
+                                  <span className="adm-bottle-selection-label">📦 Pack:</span>
+                                  <div className="adm-bottle-pills">
+                                    {order.bottle_selection.split(', ').map((bottle, i) => (
+                                      <span key={i} className="adm-bottle-pill">{bottle}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </td>
                             <td className="adm-cell-total" data-label="Total">£{Number(order.total_amount).toFixed(2)}</td>
                             <td data-label="Payment">
                               <span className="adm-payment-badge" style={{ background: order.payment_status === 'paid' ? '#dcfce7' : '#fee2e2', color: order.payment_status === 'paid' ? '#15803d' : '#b91c1c' }}>
@@ -1273,6 +1289,10 @@ function AdminStyles() {
       .adm-items { list-style: none; font-size: 0.8rem; color: var(--grey); }
       .adm-items li { margin-bottom: 2px; }
       .adm-item-qty { display: inline-block; background: #f3f4f6; color: var(--black); font-weight: 700; font-size: 0.72rem; border-radius: 4px; padding: 1px 5px; margin-right: 3px; }
+      .adm-bottle-selection { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e5e7eb; }
+      .adm-bottle-selection-label { display: block; font-size: 0.68rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+      .adm-bottle-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+      .adm-bottle-pill { display: inline-block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 999px; font-size: 0.70rem; font-weight: 600; padding: 2px 9px; white-space: nowrap; }
       .adm-cell-total { font-weight: 700; font-family: var(--font-accent); color: var(--green); white-space: nowrap; }
       .adm-payment-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: capitalize; }
       .adm-status-select { padding: 6px 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-family: var(--font-main); font-size: 0.78rem; font-weight: 600; cursor: pointer; width: 100%; min-width: 160px; outline: none; transition: border-color 0.2s; }
