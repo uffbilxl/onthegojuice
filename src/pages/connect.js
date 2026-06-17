@@ -19,6 +19,8 @@ export default function Connect() {
   const [uploadState, setUploadState] = useState('idle'); // idle|uploading|saving|success|error
   const [uploadPct,   setUploadPct]   = useState(0);
   const [errMsg,      setErrMsg]      = useState('');
+  const [uploadedUrl,          setUploadedUrl]          = useState('');
+  const [uploadedResourceType, setUploadedResourceType] = useState('');
   const fileInputRef = useRef(null);
 
   function openModal()  { setShowModal(true);  document.body.style.overflow = 'hidden'; }
@@ -28,6 +30,7 @@ export default function Connect() {
     document.body.style.overflow = '';
     setFormName(''); setFormCaption(''); setFormFile(null); setFileError('');
     setUploadState('idle'); setUploadPct(0); setErrMsg('');
+    setUploadedUrl(''); setUploadedResourceType('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
@@ -35,8 +38,10 @@ export default function Connect() {
     setFileError('');
     const file = e.target.files?.[0];
     if (!file) { setFormFile(null); return; }
-    if (!file.type.startsWith('video/')) { setFileError('Please select a video file (.mp4, .mov, etc.)'); setFormFile(null); return; }
-    if (file.size > 20 * 1024 * 1024)   { setFileError('Video must be under 20 MB.'); setFormFile(null); return; }
+    const isVideo = file.type.startsWith('video/');
+    const isImage = file.type.startsWith('image/');
+    if (!isVideo && !isImage) { setFileError('Please select a video (.mp4, .mov) or image (.jpg, .png, .webp).'); setFormFile(null); return; }
+    if (file.size > 20 * 1024 * 1024) { setFileError('File must be under 20 MB.'); setFormFile(null); return; }
     setFormFile(file);
   }
 
@@ -55,7 +60,7 @@ export default function Connect() {
       fd.append('file',          formFile);
       fd.append('upload_preset', UPLOAD_PRESET);
 
-      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`;
+      const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`;
 
       const cloudRes = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -75,6 +80,8 @@ export default function Connect() {
 
       // Insert q_auto,f_auto into delivery URL
       const optimisedUrl = cloudRes.secure_url.replace('/upload/', '/upload/q_auto,f_auto/');
+      setUploadedUrl(optimisedUrl);
+      setUploadedResourceType(cloudRes.resource_type || (formFile.type.startsWith('image/') ? 'image' : 'video'));
 
       setUploadPct(95);
       setUploadState('saving');
@@ -210,9 +217,24 @@ export default function Connect() {
 
                 {uploadState === 'success' ? (
                   <div className="cx-modal-success">
-                    <div className="cx-success-icon">🎬</div>
+                    <div className="cx-success-icon">{uploadedResourceType === 'image' ? '📸' : '🎬'}</div>
+                    {uploadedUrl && uploadedResourceType === 'image' && (
+                      <img
+                        src={uploadedUrl}
+                        alt="Your uploaded reaction"
+                        style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 14, marginBottom: 4 }}
+                      />
+                    )}
+                    {uploadedUrl && uploadedResourceType !== 'image' && (
+                      <video
+                        src={uploadedUrl}
+                        controls
+                        playsInline
+                        style={{ width: '100%', maxHeight: 220, borderRadius: 14, marginBottom: 4, background: '#000' }}
+                      />
+                    )}
                     <h2 className="cx-modal-title">Reaction Received!</h2>
-                    <p className="cx-modal-sub">Thanks {formName.split(' ')[0]}! Your video is with our team for a quick review. Once approved, it&apos;ll appear on our <a href="/reviews#reactions" style={{color:'#1d6c00',fontWeight:600}}>Real Reactions</a> tab.</p>
+                    <p className="cx-modal-sub">Thanks {formName.split(' ')[0]}! Your {uploadedResourceType === 'image' ? 'photo' : 'video'} is with our team for a quick review. Once approved, it&apos;ll appear on our <a href="/reviews#reactions" style={{color:'#1d6c00',fontWeight:600}}>Real Reactions</a> tab.</p>
                     <button className="cx-modal-submit" onClick={closeModal}>Done</button>
                   </div>
                 ) : (
@@ -239,8 +261,8 @@ export default function Connect() {
                       />
 
                       <label className="cx-field-label" style={{ marginTop: 18 }}>
-                        Your Reaction Video <span className="cx-required">*</span>
-                        <span className="cx-field-hint"> · MP4 or MOV, max 20 MB</span>
+                        Your Reaction Video or Photo <span className="cx-required">*</span>
+                        <span className="cx-field-hint"> · MP4, MOV, JPG, PNG or WebP · max 20 MB</span>
                       </label>
                       <div
                         className={`cx-file-drop${formFile ? ' cx-file-has' : ''}`}
@@ -249,21 +271,21 @@ export default function Connect() {
                         <input
                           ref={fileInputRef}
                           type="file"
-                          accept="video/mp4,video/quicktime,video/mov,video/*"
+                          accept="video/mp4,video/quicktime,video/mov,video/*,image/jpeg,image/png,image/webp,image/gif"
                           onChange={handleFileChange}
                           style={{ display: 'none' }}
                           disabled={uploadState !== 'idle' && uploadState !== 'error'}
                         />
                         {formFile ? (
                           <>
-                            <span className="cx-file-icon">🎥</span>
+                            <span className="cx-file-icon">{formFile.type.startsWith('image/') ? '🖼️' : '🎥'}</span>
                             <span className="cx-file-name">{formFile.name}</span>
                             <span className="cx-file-size">{(formFile.size / 1024 / 1024).toFixed(1)} MB</span>
                           </>
                         ) : (
                           <>
                             <span className="cx-file-icon">📱</span>
-                            <span className="cx-file-prompt">Tap to choose a video</span>
+                            <span className="cx-file-prompt">Tap to choose a video or photo</span>
                           </>
                         )}
                       </div>
@@ -301,7 +323,7 @@ export default function Connect() {
                       >
                         {uploadState === 'uploading' ? 'Uploading…'
                           : uploadState === 'saving'   ? 'Saving…'
-                          : 'Submit My Reaction 🎬'}
+                          : formFile?.type.startsWith('image/') ? 'Submit My Reaction 📸' : 'Submit My Reaction 🎬'}
                       </button>
 
                       <p className="cx-modal-note">Your video goes through a quick review before appearing publicly.</p>
