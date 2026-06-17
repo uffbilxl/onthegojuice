@@ -683,6 +683,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   cursor: pointer;
   padding: 10px;        /* breathing room lives on wrapper, not the img */
   box-sizing: border-box;
+  transform: translateZ(0); /* force GPU layer so overflow:hidden clips scaled children */
 }
 
 .card-image-wrap img {
@@ -697,7 +698,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 /* PNG product images have more whitespace than WebP — scale up to match visual size */
 .card-image-wrap img[src$=".png"] {
-  transform: scale(1.35);
+  transform: scale(1.08);
 }
 
 
