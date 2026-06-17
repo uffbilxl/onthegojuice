@@ -73,81 +73,95 @@ function cartItemCount() {
 }
 
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
-function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
-  const grid = document.getElementById('products-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
+function buildCard(p, idx) {
+  const card = document.createElement('div');
+  card.className = 'product-card fade-up';
+  card.dataset.type = p.type;
+  card.style.transitionDelay = `${(idx % 8) * 0.05}s`;
+  card.innerHTML = `
+    <div class="card-image-wrap">
+      <img
+        src="${p.image}"
+        alt="${p.name}"
+        loading="lazy"
+        onerror="this.src='images/products/placeholder.jpg';this.onerror=null;"
+      />
+      <div class="card-overlay">
+        <span class="overlay-label">Ingredients</span>
+        <p class="overlay-ingredients">${p.ingredients}</p>
+        <span class="overlay-type-badge">${p.type === 'shot' ? 'Go Shot' : p.type === 'milk' ? 'Milk Blend' : 'Fresh Juice'}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-size">${p.size}</div>
+      <h3 class="card-name">${p.name}</h3>
+      ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
+      <p class="card-ingredients-mobile">${p.ingredients}</p>
+      <p class="card-price">£${p.price.toFixed(2)}</p>
+      <div class="card-actions">
+        <div class="qty-wrap">
+          <button class="qty-btn qty-minus" data-id="${p.id}" aria-label="Decrease quantity">−</button>
+          <span class="qty-num" data-id="${p.id}">1</span>
+          <button class="qty-btn qty-plus" data-id="${p.id}" aria-label="Increase quantity">+</button>
+        </div>
+        <button class="btn btn-cart" data-id="${p.id}">Add to Cart</button>
+      </div>
+    </div>
+  `;
+  return card;
+}
 
-  let filtered = categoryFilter === 'all'
+function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
+  const grid        = document.getElementById('products-grid');
+  const shotsSection = document.getElementById('shots-section');
+  const shotsGrid   = document.getElementById('shots-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  if (shotsGrid) shotsGrid.innerHTML = '';
+  if (shotsSection) shotsSection.style.display = 'none';
+
+  let pool = categoryFilter === 'all'
     ? [...PRODUCTS]
     : PRODUCTS.filter(p => p.type === categoryFilter);
 
-  // Weighted sort: shots always pinned to the bottom, then apply user's sort within each group
-  filtered.sort((a, b) => {
-    const aIsShot = a.type === 'shot';
-    const bIsShot = b.type === 'shot';
-    if (aIsShot && !bIsShot) return 1;
-    if (!aIsShot && bIsShot) return -1;
-    if (sortType === 'price-high') return b.price - a.price;
-    if (sortType === 'price-low')  return a.price - b.price;
-    return a.name.localeCompare(b.name); // default: alphabetical
-  });
-
   if (dietaryFilters.size > 0) {
-    filtered = filtered.filter(p =>
-      [...dietaryFilters].every(tag => p.tags.includes(tag))
-    );
+    pool = pool.filter(p => [...dietaryFilters].every(tag => p.tags.includes(tag)));
   }
 
-  if (filtered.length === 0) {
+  if (pool.length === 0) {
     grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
     return;
   }
 
-  filtered.forEach((p, idx) => {
-    const card = document.createElement('div');
-    card.className = 'product-card fade-up';
-    card.dataset.type = p.type;
-    card.style.transitionDelay = `${(idx % 8) * 0.05}s`;
+  const sortFn = (a, b) => {
+    if (sortType === 'price-high') return b.price - a.price;
+    if (sortType === 'price-low')  return a.price - b.price;
+    return a.name.localeCompare(b.name);
+  };
 
-    card.innerHTML = `
-      <div class="card-image-wrap">
-        <img
-          src="${p.image}"
-          alt="${p.name}"
-          loading="lazy"
-          onerror="this.src='images/products/placeholder.jpg';this.onerror=null;"
-        />
-        <div class="card-overlay">
-          <span class="overlay-label">Ingredients</span>
-          <p class="overlay-ingredients">${p.ingredients}</p>
-          <span class="overlay-type-badge">${p.type === 'shot' ? 'Go Shot' : p.type === 'milk' ? 'Milk Blend' : 'Fresh Juice'}</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-size">${p.size}</div>
-        <h3 class="card-name">${p.name}</h3>
-        ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
-        <p class="card-ingredients-mobile">${p.ingredients}</p>
-        <p class="card-price">£${p.price.toFixed(2)}</p>
-        <div class="card-actions">
-          <div class="qty-wrap">
-            <button class="qty-btn qty-minus" data-id="${p.id}" aria-label="Decrease quantity">−</button>
-            <span class="qty-num" data-id="${p.id}">1</span>
-            <button class="qty-btn qty-plus" data-id="${p.id}" aria-label="Increase quantity">+</button>
-          </div>
-          <button class="btn btn-cart" data-id="${p.id}">Add to Cart</button>
-        </div>
-      </div>
-    `;
+  const juices = pool.filter(p => p.type !== 'shot').sort(sortFn);
+  const shots  = pool.filter(p => p.type === 'shot').sort(sortFn);
 
-    grid.appendChild(card);
-  });
+  if (categoryFilter === 'shot') {
+    // Shots-only filter: render directly in main grid, no breaker needed
+    shots.forEach((p, idx) => grid.appendChild(buildCard(p, idx)));
+  } else {
+    // 'all', 'juice', 'milk': juices in main grid
+    if (juices.length === 0) {
+      grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
+    } else {
+      juices.forEach((p, idx) => grid.appendChild(buildCard(p, idx)));
+    }
+    // Shots section only visible in 'all' mode
+    if (categoryFilter === 'all' && shots.length > 0 && shotsSection && shotsGrid) {
+      shotsSection.style.display = '';
+      shots.forEach((p, idx) => shotsGrid.appendChild(buildCard(p, idx)));
+    }
+  }
 
   requestAnimationFrame(() => {
-    document.querySelectorAll('.product-card.fade-up').forEach(el => {
-      el.classList.add('visible');
-    });
+    document.querySelectorAll('.product-card.fade-up').forEach(el => el.classList.add('visible'));
   });
 
   attachCardListeners();

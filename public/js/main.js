@@ -7,25 +7,28 @@ let PRODUCTS = [];
 
 // Static metadata keyed by product id — never changes without a code deploy
 const PRODUCT_STATIC = {
-  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                        size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-milk-no-sugar.png' },
-  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-beetroot-milk-no-sugar.png' },
-  3:  { ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/mango-milk.png' },
-  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'],       image: 'images/products/carrot-beetroot-milk-lactose-free.png' },
-  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-beetroot-milk.png' },
-  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/mango-ginger.png' },
-  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/carrot-milk-lactose-free.png' },
-  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/sorrel.png' },
-  9:  { ingredients: 'Apple, Lemon, Ginger',                                        size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-apple-ginger.png' },
-  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lemon.png' },
-  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',             size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/breadfruit-milk.png' },
-  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                           size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-grapefruit.png' },
-  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                               size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-ginger.png' },
-  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/beetroot-apple.png' },
-  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',               size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/beetroot-milk.png' },
-  16: { ingredients: 'Lime, Sugar, Water',                                          size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lime.png' },
-  17: { ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-pineapple-ginger.png' },
-  18: { ingredients: 'Ginger, Turmeric, Lemon',                                    size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-turmeric.png' },
-  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-milk.png' },
+  1:  { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                        size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-milk-no-sugar.webp' },
+  2:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],                image: 'images/products/carrot-beetroot-milk-no-sugar.webp' },
+  3:  { ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/mango-milk.webp' },
+  4:  { ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'],       image: 'images/products/carrot-beetroot-milk-lactose-free.webp' },
+  5:  { ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-beetroot-milk.webp' },
+  6:  { ingredients: 'Mango, Ginger, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/mango-ginger.webp' },
+  7:  { ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'],            image: 'images/products/carrot-milk-lactose-free.webp' },
+  8:  { ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                    size: '330ml', type: 'juice', tags: [],                         image: 'images/products/sorrel.webp' },
+  9:  { ingredients: 'Apple, Lemon, Ginger',                                        size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-apple-ginger.webp' },
+  10: { ingredients: 'Carrot, Lemon, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lemon.webp' },
+  11: { ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',             size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/breadfruit-milk.webp' },
+  12: { ingredients: 'Carrot, Grapefruit, Sugar, Water',                           size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-grapefruit.webp' },
+  13: { ingredients: 'Carrot, Ginger, Sugar, Water',                               size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-ginger.webp' },
+  14: { ingredients: 'Beetroot, Apple, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],                         image: 'images/products/beetroot-apple.webp' },
+  15: { ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',               size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/beetroot-milk.webp' },
+  16: { ingredients: 'Lime, Sugar, Water',                                          size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-lime.webp' },
+  17: { ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-pineapple-ginger.webp' },
+  18: { ingredients: 'Ginger, Turmeric, Lemon',                                    size: '60ml',  type: 'shot',  tags: [],                         image: 'images/products/go-shot-turmeric.webp' },
+  19: { ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],                         image: 'images/products/carrot-milk.webp' },
+  20: { ingredients: 'Water, Carrot, Mango, Sugar',                               size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-mango.png' },
+  21: { ingredients: 'Carrot, Mango, Grapefruit, Pineapple, Watermelon',         size: '330ml', type: 'juice', tags: [],                         image: 'images/products/tropical-fruit-punch.png' },
+  22: { ingredients: 'Water, Carrot, Watermelon, Sugar',                          size: '330ml', type: 'juice', tags: [],                         image: 'images/products/carrot-watermelon.png' },
 };
 
 async function loadProducts() {
@@ -70,81 +73,95 @@ function cartItemCount() {
 }
 
 /* ─── RENDER PRODUCTS ────────────────────────────────────────────── */
-function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
-  const grid = document.getElementById('products-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
+function buildCard(p, idx) {
+  const card = document.createElement('div');
+  card.className = 'product-card fade-up';
+  card.dataset.type = p.type;
+  card.style.transitionDelay = `${(idx % 8) * 0.05}s`;
+  card.innerHTML = `
+    <div class="card-image-wrap">
+      <img
+        src="${p.image}"
+        alt="${p.name}"
+        loading="lazy"
+        onerror="this.src='images/products/placeholder.jpg';this.onerror=null;"
+      />
+      <div class="card-overlay">
+        <span class="overlay-label">Ingredients</span>
+        <p class="overlay-ingredients">${p.ingredients}</p>
+        <span class="overlay-type-badge">${p.type === 'shot' ? 'Go Shot' : p.type === 'milk' ? 'Milk Blend' : 'Fresh Juice'}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="card-size">${p.size}</div>
+      <h3 class="card-name">${p.name}</h3>
+      ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
+      <p class="card-ingredients-mobile">${p.ingredients}</p>
+      <p class="card-price">£${p.price.toFixed(2)}</p>
+      <div class="card-actions">
+        <div class="qty-wrap">
+          <button class="qty-btn qty-minus" data-id="${p.id}" aria-label="Decrease quantity">−</button>
+          <span class="qty-num" data-id="${p.id}">1</span>
+          <button class="qty-btn qty-plus" data-id="${p.id}" aria-label="Increase quantity">+</button>
+        </div>
+        <button class="btn btn-cart" data-id="${p.id}">Add to Cart</button>
+      </div>
+    </div>
+  `;
+  return card;
+}
 
-  let filtered = categoryFilter === 'all'
+function renderProducts(categoryFilter = 'all', dietaryFilters = new Set(), sortType = activeSortType) {
+  const grid        = document.getElementById('products-grid');
+  const shotsSection = document.getElementById('shots-section');
+  const shotsGrid   = document.getElementById('shots-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  if (shotsGrid) shotsGrid.innerHTML = '';
+  if (shotsSection) shotsSection.style.display = 'none';
+
+  let pool = categoryFilter === 'all'
     ? [...PRODUCTS]
     : PRODUCTS.filter(p => p.type === categoryFilter);
 
-  // Weighted sort: shots always pinned to the bottom, then apply user's sort within each group
-  filtered.sort((a, b) => {
-    const aIsShot = a.type === 'shot';
-    const bIsShot = b.type === 'shot';
-    if (aIsShot && !bIsShot) return 1;
-    if (!aIsShot && bIsShot) return -1;
-    if (sortType === 'price-high') return b.price - a.price;
-    if (sortType === 'price-low')  return a.price - b.price;
-    return a.name.localeCompare(b.name); // default: alphabetical
-  });
-
   if (dietaryFilters.size > 0) {
-    filtered = filtered.filter(p =>
-      [...dietaryFilters].every(tag => p.tags.includes(tag))
-    );
+    pool = pool.filter(p => [...dietaryFilters].every(tag => p.tags.includes(tag)));
   }
 
-  if (filtered.length === 0) {
+  if (pool.length === 0) {
     grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
     return;
   }
 
-  filtered.forEach((p, idx) => {
-    const card = document.createElement('div');
-    card.className = 'product-card fade-up';
-    card.dataset.type = p.type;
-    card.style.transitionDelay = `${(idx % 8) * 0.05}s`;
+  const sortFn = (a, b) => {
+    if (sortType === 'price-high') return b.price - a.price;
+    if (sortType === 'price-low')  return a.price - b.price;
+    return a.name.localeCompare(b.name);
+  };
 
-    card.innerHTML = `
-      <div class="card-image-wrap">
-        <img
-          src="${p.image}"
-          alt="${p.name}"
-          loading="lazy"
-          onerror="this.src='images/products/placeholder.jpg';this.onerror=null;"
-        />
-        <div class="card-overlay">
-          <span class="overlay-label">Ingredients</span>
-          <p class="overlay-ingredients">${p.ingredients}</p>
-          <span class="overlay-type-badge">${p.type === 'shot' ? 'Go Shot' : p.type === 'milk' ? 'Milk Blend' : 'Fresh Juice'}</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-size">${p.size}</div>
-        <h3 class="card-name">${p.name}</h3>
-        ${p.tags.length ? `<div class="card-badges">${p.tags.map(t => `<span class="card-badge card-badge--${t}">${t === 'noSugar' ? 'No Added Sugar' : 'Lactose Free'}</span>`).join('')}</div>` : ''}
-        <p class="card-ingredients-mobile">${p.ingredients}</p>
-        <p class="card-price">£${p.price.toFixed(2)}</p>
-        <div class="card-actions">
-          <div class="qty-wrap">
-            <button class="qty-btn qty-minus" data-id="${p.id}" aria-label="Decrease quantity">−</button>
-            <span class="qty-num" data-id="${p.id}">1</span>
-            <button class="qty-btn qty-plus" data-id="${p.id}" aria-label="Increase quantity">+</button>
-          </div>
-          <button class="btn btn-cart" data-id="${p.id}">Add to Cart</button>
-        </div>
-      </div>
-    `;
+  const juices = pool.filter(p => p.type !== 'shot').sort(sortFn);
+  const shots  = pool.filter(p => p.type === 'shot').sort(sortFn);
 
-    grid.appendChild(card);
-  });
+  if (categoryFilter === 'shot') {
+    // Shots-only filter: render directly in main grid, no breaker needed
+    shots.forEach((p, idx) => grid.appendChild(buildCard(p, idx)));
+  } else {
+    // 'all', 'juice', 'milk': juices in main grid
+    if (juices.length === 0) {
+      grid.innerHTML = `<p class="products-empty">No products match your current filters.</p>`;
+    } else {
+      juices.forEach((p, idx) => grid.appendChild(buildCard(p, idx)));
+    }
+    // Shots section only visible in 'all' mode
+    if (categoryFilter === 'all' && shots.length > 0 && shotsSection && shotsGrid) {
+      shotsSection.style.display = '';
+      shots.forEach((p, idx) => shotsGrid.appendChild(buildCard(p, idx)));
+    }
+  }
 
   requestAnimationFrame(() => {
-    document.querySelectorAll('.product-card.fade-up').forEach(el => {
-      el.classList.add('visible');
-    });
+    document.querySelectorAll('.product-card.fade-up').forEach(el => el.classList.add('visible'));
   });
 
   attachCardListeners();

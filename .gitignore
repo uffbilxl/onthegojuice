@@ -28,3 +28,6 @@ make_placeholders.py
 # Misc
 *.log
 npm-debug.log*
+
+# Claude Code
+.claude/
