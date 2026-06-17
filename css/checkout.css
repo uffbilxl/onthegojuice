@@ -381,7 +381,7 @@ img { max-width: 100%; display: block; }
 .co-promo-body { margin-top: 12px; }
 .co-promo-row { display: flex; gap: 8px; }
 .co-promo-row input {
-  flex: 1; padding: 10px 12px; border: 1.5px solid var(--grey-light);
+  flex: 1; min-width: 0; padding: 10px 12px; border: 1.5px solid var(--grey-light);
   border-radius: 8px; font-size: 0.88rem; font-family: var(--font-body);
   text-transform: uppercase; letter-spacing: 0.08em; outline: none;
   transition: border-color .2s;
