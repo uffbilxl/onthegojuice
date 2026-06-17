@@ -483,24 +483,39 @@ function initDeliveryToggle() {
   const postcodeWrap     = document.getElementById('postcode-wrap');
   const pickupAddr       = document.getElementById('pickup-address');
   const deliveryNextBtn  = document.getElementById('delivery-next-btn');
+  const addressSection   = document.getElementById('section-address');
+
+  function applyDeliveryMode(isDelivery) {
+    if (postcodeWrap)   postcodeWrap.style.display   = isDelivery ? 'block' : 'none';
+    if (pickupAddr)     pickupAddr.style.display     = isDelivery ? 'none'  : 'block';
+    // Hide the entire address step for pickup — it's not needed
+    if (addressSection) addressSection.style.display = isDelivery ? ''      : 'none';
+
+    if (deliveryNextBtn) {
+      deliveryNextBtn.dataset.next = isDelivery ? 'section-address' : 'section-payment';
+      deliveryNextBtn.textContent  = isDelivery ? 'Continue to Address' : 'Continue to Payment';
+    }
+
+    // Reset Stripe so it re-initialises with the correct delivery context
+    stripeInstance = null;
+    stripeElements = null;
+    const paymentEl = document.getElementById('payment-element');
+    if (paymentEl) paymentEl.innerHTML = '';
+    const payBtn = document.getElementById('pay-btn');
+    if (payBtn) { payBtn.disabled = true; const t = payBtn.querySelector('.pay-btn-text'); if (t) t.textContent = 'Pay Now'; }
+  }
 
   document.querySelectorAll('input[name="delivery"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      const isDelivery = radio.value === 'delivery';
-      if (postcodeWrap) postcodeWrap.style.display = isDelivery ? 'block' : 'none';
-      if (pickupAddr)   pickupAddr.style.display   = isDelivery ? 'none' : 'block';
-
-      if (deliveryNextBtn) {
-        deliveryNextBtn.dataset.next = isDelivery ? 'section-address' : 'section-payment';
-        deliveryNextBtn.textContent  = isDelivery ? 'Continue to Address' : 'Continue to Payment';
-      }
-
+      applyDeliveryMode(radio.value === 'delivery');
       updateDeliveryTotal();
     });
   });
 
-  if (postcodeWrap) postcodeWrap.style.display = 'none';
-  if (pickupAddr)   pickupAddr.style.display   = 'none';
+  // Initial state — hide address section until a method is chosen
+  if (postcodeWrap)   postcodeWrap.style.display   = 'none';
+  if (pickupAddr)     pickupAddr.style.display     = 'none';
+  if (addressSection) addressSection.style.display = 'none';
 }
 
 /* ─── PROMO CODE ────────────────────────────────────────────────── */
@@ -571,7 +586,11 @@ let stripeInstance = null;
 let stripeElements = null;
 
 async function initStripePayment() {
-  if (stripeInstance) return;
+  // Re-init if delivery method changed and cleared the element
+  const _el = document.getElementById('payment-element');
+  if (stripeInstance && _el && _el.children.length > 0) return;
+  stripeInstance = null;
+  stripeElements = null;
 
   const loadingEl = document.getElementById('payment-loading');
   const paymentEl = document.getElementById('payment-element');
