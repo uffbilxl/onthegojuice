@@ -178,8 +178,8 @@ export default async function handler(req, res) {
 
   const totalAmount = Math.max(0, runningTotal - loyaltyDiscountPence);
 
-  // When the discount brings the order to £0, skip Stripe entirely
-  if (totalAmount === 0) {
+  // Stripe minimum for GBP is 30p — anything below that we treat as free
+  if (totalAmount < 30) {
     return res.status(200).json({
       freeOrder:           true,
       totalPence:          0,
