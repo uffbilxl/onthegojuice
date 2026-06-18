@@ -59,9 +59,9 @@ export default async function handler(req, res) {
   const bundleResult = applyBundles(totalQty, activeBundles ?? [], avgSingle);
   const subtotal    = bundleResult.totalPence;
 
-  const isDelivery  = deliveryMethod === 'local_delivery';
-  const FREE_THRESHOLD = 1000;
-  const deliveryFee = isDelivery && subtotal < FREE_THRESHOLD ? 150 : 0;
+  const isDelivery = deliveryMethod === 'local_delivery';
+  const isBham     = /^B\d/i.test((address?.postcode || '').replace(/\s+/g, ''));
+  const deliveryFee = !isDelivery ? 0 : (isBham && subtotal >= 800 ? 0 : (subtotal < 1000 ? 150 : 0));
 
   // ── Validate discount code ─────────────────────────────────────────
   if (!discountCode) {

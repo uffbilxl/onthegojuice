@@ -11,7 +11,7 @@ function esc(s) {
 }
 
 /* ─── STRIPE CONFIG ─────────────────────────────────────────────── */
-const STRIPE_PK = 'pk_test_51TcXP15I1DB6R6KTaDOYuWcvM71JjTcDXzzXHntIAPjLd5h8xYOuGvuW9YafAaz8TekHxJOvKZNw9p0dd704unCP00g28CzoQe';
+const STRIPE_PK = 'pk_live_51TcXOn9NYsi6nCXJWA1QnH3Ly9Y1M2yXQNCricmIvnIF9TWkKbyGmwHzNl3jwQUbYLMVuCRNF0FxkupRx1OFibn100uHMPOtuP';
 
 const STRIPE_APPEARANCE = {
   theme: 'stripe',
@@ -150,11 +150,28 @@ function updateBundleSummary() {
   }
 }
 
+function isBirminghamPostcode(pc) {
+  return /^B\d/i.test((pc || '').replace(/\s+/g, ''));
+}
+
 function updateDeliveryTotal() {
-  const sub          = bundleAdjustedSubtotal();
-  const isDelivery   = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
-  const deliveryCost = isDelivery && sub < 10 ? 1.50 : 0;
-  const discountAmt  = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+  const sub         = bundleAdjustedSubtotal();
+  const isDelivery  = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
+  const discountAmt = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+
+  const postcode   = (document.getElementById('postcode-input')?.value?.trim()
+                   || document.getElementById('postcode-addr')?.value?.trim() || '');
+  const isBham     = isBirminghamPostcode(postcode);
+  const effectiveSub = Math.max(0, sub - discountAmt);
+
+  let deliveryCost;
+  if (!isDelivery) {
+    deliveryCost = 0;
+  } else if (isBham) {
+    deliveryCost = effectiveSub >= 8 ? 0 : 1.50;
+  } else {
+    deliveryCost = sub < 10 ? 1.50 : 0;
+  }
 
   let running = sub + deliveryCost - discountAmt;
 
@@ -397,7 +414,22 @@ function initAccordion() {
   document.querySelectorAll('.co-section-head').forEach(head => {
     head.addEventListener('click', () => {
       const section = head.closest('.co-section');
-      if (section.classList.contains('done')) openSection(section.id);
+      // Reopen already-completed sections
+      if (section.classList.contains('done')) {
+        openSection(section.id);
+        if (section.id === 'section-payment') initStripePayment();
+        return;
+      }
+      // Allow opening payment if steps 1 + 2 are done (handles pickup flow
+      // where there is no step 3 and payment never gets marked 'done')
+      if (section.id === 'section-payment') {
+        const contactDone  = document.getElementById('section-contact')?.classList.contains('done');
+        const deliveryDone = document.getElementById('section-delivery')?.classList.contains('done');
+        if (contactDone && deliveryDone) {
+          openSection('section-payment');
+          initStripePayment();
+        }
+      }
     });
   });
 }
@@ -451,10 +483,22 @@ function initPostcodeChecker() {
     try {
       const miles = await validatePostcode(postcode);
       if (miles <= MAX_MILES) {
-        resultEl.className   = 'postcode-result valid';
-        resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Solihull)`;
+        resultEl.className = 'postcode-result valid';
         const addrPostcode = document.getElementById('postcode-addr');
         if (addrPostcode && !addrPostcode.value) addrPostcode.value = postcode.trim().toUpperCase();
+        if (isBirminghamPostcode(postcode)) {
+          const discountAmt  = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+          const effectiveSub = Math.max(0, bundleAdjustedSubtotal() - discountAmt);
+          if (effectiveSub >= 8) {
+            resultEl.textContent = `Great news — we deliver to your area for FREE! (Birmingham postcode)`;
+          } else {
+            const remaining = (8 - effectiveSub).toFixed(2);
+            resultEl.textContent = `We deliver to your area! Add £${remaining} more to unlock free Birmingham delivery.`;
+          }
+        } else {
+          resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Solihull)`;
+        }
+        updateDeliveryTotal();
       } else {
         resultEl.className   = 'postcode-result invalid';
         resultEl.textContent = `Sorry, we only deliver within 10 miles of Solihull (your postcode is ${miles.toFixed(1)} miles away).`;
@@ -483,24 +527,43 @@ function initDeliveryToggle() {
   const postcodeWrap     = document.getElementById('postcode-wrap');
   const pickupAddr       = document.getElementById('pickup-address');
   const deliveryNextBtn  = document.getElementById('delivery-next-btn');
+  const addressSection   = document.getElementById('section-address');
+
+  const paymentNumEl = document.querySelector('#section-payment .co-section-num');
+
+  function applyDeliveryMode(isDelivery) {
+    if (postcodeWrap)   postcodeWrap.style.display   = isDelivery ? 'block' : 'none';
+    if (pickupAddr)     pickupAddr.style.display     = isDelivery ? 'none'  : 'block';
+    // Hide the entire address step for pickup — it's not needed
+    if (addressSection) addressSection.style.display = isDelivery ? ''      : 'none';
+    // Renumber payment step: 3 for pickup (no address step), 4 for delivery
+    if (paymentNumEl)   paymentNumEl.textContent     = isDelivery ? '4'     : '3';
+
+    if (deliveryNextBtn) {
+      deliveryNextBtn.dataset.next = isDelivery ? 'section-address' : 'section-payment';
+      deliveryNextBtn.textContent  = isDelivery ? 'Continue to Address' : 'Continue to Payment';
+    }
+
+    // Reset Stripe so it re-initialises with the correct delivery context
+    stripeInstance = null;
+    stripeElements = null;
+    const paymentEl = document.getElementById('payment-element');
+    if (paymentEl) paymentEl.innerHTML = '';
+    const payBtn = document.getElementById('pay-btn');
+    if (payBtn) { payBtn.disabled = true; const t = payBtn.querySelector('.pay-btn-text'); if (t) t.textContent = 'Pay Now'; }
+  }
 
   document.querySelectorAll('input[name="delivery"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      const isDelivery = radio.value === 'delivery';
-      if (postcodeWrap) postcodeWrap.style.display = isDelivery ? 'block' : 'none';
-      if (pickupAddr)   pickupAddr.style.display   = isDelivery ? 'none' : 'block';
-
-      if (deliveryNextBtn) {
-        deliveryNextBtn.dataset.next = isDelivery ? 'section-address' : 'section-payment';
-        deliveryNextBtn.textContent  = isDelivery ? 'Continue to Address' : 'Continue to Payment';
-      }
-
+      applyDeliveryMode(radio.value === 'delivery');
       updateDeliveryTotal();
     });
   });
 
-  if (postcodeWrap) postcodeWrap.style.display = 'none';
-  if (pickupAddr)   pickupAddr.style.display   = 'none';
+  // Initial state — hide address section until a method is chosen
+  if (postcodeWrap)   postcodeWrap.style.display   = 'none';
+  if (pickupAddr)     pickupAddr.style.display     = 'none';
+  if (addressSection) addressSection.style.display = 'none';
 }
 
 /* ─── PROMO CODE ────────────────────────────────────────────────── */
@@ -571,7 +634,11 @@ let stripeInstance = null;
 let stripeElements = null;
 
 async function initStripePayment() {
-  if (stripeInstance) return;
+  // Re-init if delivery method changed and cleared the element
+  const _el = document.getElementById('payment-element');
+  if (stripeInstance && _el && _el.children.length > 0) return;
+  stripeInstance = null;
+  stripeElements = null;
 
   const loadingEl = document.getElementById('payment-loading');
   const paymentEl = document.getElementById('payment-element');

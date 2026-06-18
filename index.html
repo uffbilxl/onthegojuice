@@ -16,6 +16,11 @@
 </head>
 <body>
 
+  <!-- ───────────────────────────── ANNOUNCEMENT BAR ──────────────────────── -->
+  <div class="announcement-bar">
+    Free Delivery across Birmingham on all orders over £8!
+  </div>
+
   <!-- ───────────────────────────── SPLASH SCREEN ──────────────────────────── -->
   <div id="splash" class="splash">
     <div class="splash-content">
@@ -78,6 +83,7 @@
             </div>
             <ul class="mini-cart-items" id="mini-cart-items"></ul>
             <div class="mini-cart-footer" id="mini-cart-footer" style="display:none">
+              <div id="mini-cart-delivery-nudge" class="mini-cart-delivery-nudge" style="display:none"></div>
               <div class="mini-cart-total-row">
                 <span>Subtotal</span>
                 <span id="mini-cart-total">£0.00</span>
@@ -486,6 +492,7 @@
       <ul class="cart-items" id="cart-items"></ul>
     </div>
     <div class="cart-footer" id="cart-footer" style="display:none">
+      <div id="cart-delivery-nudge" class="cart-delivery-nudge" style="display:none"></div>
       <div id="cart-bundle-nudge" class="cart-bundle-nudge" style="display:none"></div>
       <div id="cart-bundle-breakdown" class="cart-bundle-breakdown" style="display:none"></div>
       <div class="cart-total-row">

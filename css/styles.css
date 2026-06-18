@@ -34,6 +34,57 @@ a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
+/* ─── ANNOUNCEMENT BAR ───────────────────────────────────────────── */
+.announcement-bar {
+  background: var(--green);
+  color: var(--white);
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 8px 16px;
+  position: relative;
+  z-index: 200;
+}
+
+/* ─── CART DELIVERY NUDGE ────────────────────────────────────────── */
+.cart-delivery-nudge {
+  background: #e8f5e1;
+  border: 1px solid #b2d99a;
+  border-radius: 8px;
+  color: #1d6c00;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  text-align: center;
+  line-height: 1.4;
+}
+.cart-delivery-nudge--unlocked {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+/* ─── MINI-CART DELIVERY NUDGE ───────────────────────────────────── */
+.mini-cart-delivery-nudge {
+  background: #e8f5e1;
+  border: 1px solid #b2d99a;
+  border-radius: 6px;
+  color: #1d6c00;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  text-align: center;
+  line-height: 1.4;
+}
+.mini-cart-delivery-nudge--unlocked {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
 /* ─── SPLASH SCREEN ──────────────────────────────────────────────── */
 .splash {
   position: fixed;

@@ -275,6 +275,22 @@ function updateCartUI() {
   `).join('');
 
   document.getElementById('cart-total').textContent = `£${cartTotal().toFixed(2)}`;
+
+  const nudgeEl = document.getElementById('cart-delivery-nudge');
+  if (nudgeEl) {
+    const sub = cartTotal();
+    if (sub >= 8) {
+      nudgeEl.innerHTML = 'You\'ve unlocked Free Birmingham Delivery!';
+      nudgeEl.className = 'cart-delivery-nudge cart-delivery-nudge--unlocked';
+      nudgeEl.style.display = 'block';
+    } else {
+      const remaining = (8 - sub).toFixed(2);
+      nudgeEl.innerHTML = `Add just <strong>£${remaining}</strong> more to unlock Free Birmingham Delivery!`;
+      nudgeEl.className = 'cart-delivery-nudge';
+      nudgeEl.style.display = 'block';
+    }
+  }
+
   updateBundleUI();
 
   cartItemsEl.querySelectorAll('.cart-qty-btn').forEach(btn => {
@@ -324,6 +340,21 @@ function updateMiniCartUI() {
   `).join('');
 
   if (totalEl) totalEl.textContent = `£${cartTotal().toFixed(2)}`;
+
+  const miniNudgeEl = document.getElementById('mini-cart-delivery-nudge');
+  if (miniNudgeEl) {
+    const sub = cartTotal();
+    if (sub >= 8) {
+      miniNudgeEl.innerHTML = 'Free Birmingham Delivery unlocked!';
+      miniNudgeEl.className = 'mini-cart-delivery-nudge mini-cart-delivery-nudge--unlocked';
+      miniNudgeEl.style.display = 'block';
+    } else {
+      const remaining = (8 - sub).toFixed(2);
+      miniNudgeEl.innerHTML = `Add <strong>£${remaining}</strong> more for free Birmingham delivery!`;
+      miniNudgeEl.className = 'mini-cart-delivery-nudge';
+      miniNudgeEl.style.display = 'block';
+    }
+  }
 
   itemsEl.querySelectorAll('.mini-cart-remove').forEach(btn => {
     btn.addEventListener('click', () => removeFromCart(+btn.dataset.id));

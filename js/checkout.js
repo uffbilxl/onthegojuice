@@ -150,11 +150,28 @@ function updateBundleSummary() {
   }
 }
 
+function isBirminghamPostcode(pc) {
+  return /^B\d/i.test((pc || '').replace(/\s+/g, ''));
+}
+
 function updateDeliveryTotal() {
-  const sub          = bundleAdjustedSubtotal();
-  const isDelivery   = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
-  const deliveryCost = isDelivery && sub < 10 ? 1.50 : 0;
-  const discountAmt  = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+  const sub         = bundleAdjustedSubtotal();
+  const isDelivery  = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
+  const discountAmt = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+
+  const postcode   = (document.getElementById('postcode-input')?.value?.trim()
+                   || document.getElementById('postcode-addr')?.value?.trim() || '');
+  const isBham     = isBirminghamPostcode(postcode);
+  const effectiveSub = Math.max(0, sub - discountAmt);
+
+  let deliveryCost;
+  if (!isDelivery) {
+    deliveryCost = 0;
+  } else if (isBham) {
+    deliveryCost = effectiveSub >= 8 ? 0 : 1.50;
+  } else {
+    deliveryCost = sub < 10 ? 1.50 : 0;
+  }
 
   let running = sub + deliveryCost - discountAmt;
 
@@ -466,10 +483,22 @@ function initPostcodeChecker() {
     try {
       const miles = await validatePostcode(postcode);
       if (miles <= MAX_MILES) {
-        resultEl.className   = 'postcode-result valid';
-        resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Solihull)`;
+        resultEl.className = 'postcode-result valid';
         const addrPostcode = document.getElementById('postcode-addr');
         if (addrPostcode && !addrPostcode.value) addrPostcode.value = postcode.trim().toUpperCase();
+        if (isBirminghamPostcode(postcode)) {
+          const discountAmt  = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+          const effectiveSub = Math.max(0, bundleAdjustedSubtotal() - discountAmt);
+          if (effectiveSub >= 8) {
+            resultEl.textContent = `Great news — we deliver to your area for FREE! (Birmingham postcode)`;
+          } else {
+            const remaining = (8 - effectiveSub).toFixed(2);
+            resultEl.textContent = `We deliver to your area! Add £${remaining} more to unlock free Birmingham delivery.`;
+          }
+        } else {
+          resultEl.textContent = `Great news — we deliver to your area! (${miles.toFixed(1)} miles from Solihull)`;
+        }
+        updateDeliveryTotal();
       } else {
         resultEl.className   = 'postcode-result invalid';
         resultEl.textContent = `Sorry, we only deliver within 10 miles of Solihull (your postcode is ${miles.toFixed(1)} miles away).`;

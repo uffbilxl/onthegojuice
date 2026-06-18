@@ -5,8 +5,13 @@ import { applyBundles } from '@/lib/bundleCalculator';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const DELIVERY_FEE            = 150;   // £1.50 pence
-const FREE_DELIVERY_THRESHOLD = 1000;  // £10.00 pence
+const FREE_DELIVERY_THRESHOLD = 1000;  // £10.00 pence for non-Birmingham postcodes
+const FREE_BHAM_THRESHOLD     = 800;   // £8.00 pence for Birmingham postcodes
 const STUDENT_DISCOUNT_RATE   = 0.20;  // 20%
+
+function isBirminghamPostcode(pc) {
+  return /^B\d/i.test((pc || '').replace(/\s+/g, ''));
+}
 
 // In-process price cache — refreshed every 60 s to avoid a DB hit per request
 let priceCache     = null;
@@ -84,9 +89,8 @@ export default async function handler(req, res) {
   const savingsPence  = standardSubtotal - subtotal;
   const bundlesActive = bundleResult.hasBundles && (activeBundles?.length ?? 0) > 0;
 
-  // ── 4. Delivery fee ────────────────────────────────────────────────
-  const isDelivery  = deliveryMethod === 'local_delivery';
-  const deliveryFee = isDelivery && subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
+  // ── 4. Delivery method flag ────────────────────────────────────────
+  const isDelivery = deliveryMethod === 'local_delivery';
 
   // ── 5. Promo/discount code (only when bundles aren't active) ───────
   let discountPence = 0;
@@ -146,6 +150,18 @@ export default async function handler(req, res) {
         }
       }
     }
+  }
+
+  // ── 5b. Delivery fee (computed after discount for Birmingham MOV) ──
+  const isBham            = isBirminghamPostcode(address?.postcode || '');
+  const effectiveSubtotal = Math.max(0, subtotal - discountPence);
+  let deliveryFee;
+  if (!isDelivery) {
+    deliveryFee = 0;
+  } else if (isBham) {
+    deliveryFee = effectiveSubtotal >= FREE_BHAM_THRESHOLD ? 0 : DELIVERY_FEE;
+  } else {
+    deliveryFee = subtotal < FREE_DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
   }
 
   // Running total before student/loyalty adjustments
