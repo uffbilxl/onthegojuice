@@ -16,6 +16,7 @@
   --font-main: 'Poppins', sans-serif;
   --font-accent: 'Montserrat', sans-serif;
   --nav-h: 72px;
+  --bar-h: 34px;
   --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -42,9 +43,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  padding: 8px 16px;
-  position: relative;
-  z-index: 200;
+  height: var(--bar-h);
+  line-height: var(--bar-h);
+  padding: 0 16px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ─── CART DELIVERY NUDGE ────────────────────────────────────────── */
@@ -243,7 +250,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* ─── NAVIGATION ─────────────────────────────────────────────────── */
 .site-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: var(--bar-h); left: 0; right: 0;
   z-index: 900;
   height: var(--nav-h);
   transition: background var(--transition), box-shadow var(--transition);
@@ -1768,7 +1775,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* Rewards Modal */
 .rewards-modal {
   position: fixed;
-  top: calc(var(--nav-h) + 8px);
+  top: calc(var(--bar-h) + var(--nav-h) + 8px);
   right: 24px;
   z-index: 1100;
   pointer-events: none;
@@ -1977,7 +1984,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .cart-item-img { width: 60px; height: 68px; }
 
   /* Rewards modal: bottom of nav, full width */
-  .rewards-modal { right: 0; left: 0; padding: 0; top: var(--nav-h); }
+  .rewards-modal { right: 0; left: 0; padding: 0; top: calc(var(--bar-h) + var(--nav-h)); }
   .rewards-modal-inner { width: 100%; max-width: none; border-radius: 0 0 20px 20px; }
 
   /* Toast */
