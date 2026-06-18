@@ -504,68 +504,105 @@ img { max-width: 100%; display: block; }
   animation: spin 0.7s linear infinite;
 }
 
-/* RESPONSIVE */
+/* ─── RESPONSIVE ─────────────────────────────────────────────────── */
+
+/* Tablet — collapse to single column, form before summary */
 @media (max-width: 900px) {
   .co-page {
     grid-template-columns: 1fr;
     gap: 20px;
-    padding: 24px 5vw 80px;
+    padding: 24px 5vw 100px;
   }
-  .co-summary { position: static; order: 1; }
   .co-form-col { order: 0; }
+  .co-summary {
+    position: static;
+    order: 1;
+    max-height: none;
+    overflow-y: visible;
+  }
   .co-summary-items { max-height: none; }
-  .co-section.open .co-section-body { max-height: 1200px; }
+  .co-section.open .co-section-body { max-height: 1400px; }
   #section-payment.open .co-section-body { max-height: 2000px; }
 }
 
+/* Mobile */
 @media (max-width: 640px) {
-  .co-page { padding: 16px 4vw 80px; gap: 14px; }
-  .co-title { font-size: 1.45rem; margin-bottom: 18px; }
-  .field-grid { grid-template-columns: 1fr; }
+  .co-header { padding: 0 4vw; height: 58px; }
+  .co-logo img { height: 42px; }
+  .co-back { font-size: 0.8rem; }
 
-  /* Prevent iOS from zooming into inputs */
+  .co-page { padding: 14px 4vw 110px; gap: 12px; }
+  .co-title { font-size: 1.35rem; margin-bottom: 14px; }
+
+  .field-grid { grid-template-columns: 1fr; gap: 0; }
+  .field-wrap { margin-bottom: 14px; }
+
+  /* Prevent iOS auto-zoom — triggers on font-size < 16px */
   .field-wrap input,
   .field-wrap select,
   .postcode-row input,
   .co-promo-row input { font-size: 16px; }
 
-  /* Touch-friendly tap targets */
+  /* Comfortable touch targets */
   .field-wrap input,
-  .field-wrap select { padding: 22px 14px 8px; min-height: 52px; }
-  .co-next-btn {
-    width: 100%;
-    text-align: center;
-    padding: 14px 20px;
-    font-size: 0.9rem;
-    min-height: 50px;
-  }
-  .postcode-check-btn { padding: 0 18px; min-height: 50px; font-size: 0.85rem; }
-  .pay-submit-btn { min-height: 52px; font-size: 0.95rem; }
+  .field-wrap select { padding: 20px 14px 6px; min-height: 52px; }
 
-  .co-section-head { padding: 16px 16px; }
-  .co-section-content { padding: 0 16px 20px; }
+  .co-section { border-radius: 12px; margin-bottom: 10px; }
+  .co-section-head { padding: 14px 16px; }
+  .co-section-content { padding: 0 16px 18px; }
   .co-section-label { font-size: 0.88rem; gap: 10px; }
   .co-section-num { width: 24px; height: 24px; font-size: 0.75rem; }
 
+  .co-next-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    min-height: 50px;
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+
+  .delivery-option { padding: 12px 14px; gap: 10px; }
+  .delivery-option-label { font-size: 0.88rem; }
+  .delivery-option-sub  { font-size: 0.76rem; }
+
+  .postcode-check-btn { padding: 0 16px; min-height: 50px; font-size: 0.85rem; }
+  .postcode-result { font-size: 0.82rem; }
+
+  .pay-submit-btn { min-height: 54px; font-size: 0.95rem; padding: 16px; }
+  .co-note { font-size: 0.68rem; line-height: 1.5; }
+
   .co-summary-card { border-radius: 12px; }
-  .co-summary-head { padding: 14px 16px; font-size: 0.95rem; }
-  .co-summary-items { padding: 6px 0; }
+  .co-summary-head { padding: 14px 16px; font-size: 0.92rem; }
+  .co-summary-items { padding: 4px 0; }
   .co-summary-item { padding: 10px 14px; gap: 10px; }
-  .co-summary-item-img { width: 40px; height: 48px; }
+  .co-summary-item-img { width: 38px; height: 46px; }
+  .co-summary-item-name { font-size: 0.78rem; }
+  .co-summary-item-qty  { font-size: 0.7rem; }
+  .co-summary-item-price { font-size: 0.82rem; }
   .co-summary-totals { padding: 12px 14px; }
-  .co-summary-row { font-size: 0.83rem; }
-  .co-summary-row.total { font-size: 0.97rem; }
+  .co-summary-row { font-size: 0.82rem; margin-bottom: 7px; }
+  .co-summary-row.total { font-size: 0.95rem; }
 
   .co-promo { padding: 10px 14px; }
-  .delivery-option { padding: 12px 14px; gap: 10px; }
+  .co-promo-toggle { font-size: 0.8rem; }
 
   .co-place-btn { font-size: 0.95rem; border-radius: 10px; }
-  .co-note { font-size: 0.68rem; }
 }
 
+/* Small phones */
 @media (max-width: 400px) {
-  .co-page { padding: 12px 3.5vw 80px; }
-  .postcode-row { flex-direction: column; }
+  .co-header { height: 54px; }
+  .co-logo img { height: 38px; }
+  .co-page { padding: 12px 3.5vw 110px; }
+
+  .postcode-row { flex-direction: column; gap: 8px; }
   .postcode-row input,
   .postcode-check-btn { width: 100%; min-height: 50px; }
+
+  .co-promo-row { flex-direction: column; gap: 8px; }
+  .co-promo-row input,
+  .co-promo-row button { width: 100%; min-height: 46px; }
 }
