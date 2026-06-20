@@ -335,16 +335,26 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                       {title} <span style={{ color: '#9ca3af', fontWeight: 600 }}>({items.length})</span>
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
-                      {items.map(t => (
+                      {items.map(t => {
+                        const isImage = t.video_url?.includes('/image/upload/');
+                        return (
                         <div key={t.id} style={{ background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.07)', border: '1.5px solid #f3f4f6' }}>
-                          <video
-                            src={t.video_url}
-                            controls
-                            muted
-                            playsInline
-                            preload="metadata"
-                            style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', maxHeight: 320, background: '#111', display: 'block' }}
-                          />
+                          {isImage ? (
+                            <img
+                              src={t.video_url}
+                              alt={t.customer_name}
+                              style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', maxHeight: 320, display: 'block' }}
+                            />
+                          ) : (
+                            <video
+                              src={t.video_url}
+                              controls
+                              muted
+                              playsInline
+                              preload="metadata"
+                              style={{ width: '100%', aspectRatio: '9/16', objectFit: 'cover', maxHeight: 320, background: '#111', display: 'block' }}
+                            />
+                          )}
                           <div style={{ padding: '14px 16px' }}>
                             {t.status === 'pending' ? (
                               <>
@@ -401,7 +411,8 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                             >Delete Permanently</button>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 );

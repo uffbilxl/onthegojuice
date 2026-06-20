@@ -280,8 +280,10 @@ export default function RealReactions() {
 function VideoCard({ testimonial }) {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
+  const isImage = testimonial.video_url?.includes('/image/upload/');
 
   useEffect(() => {
+    if (isImage) return;
     const v = videoRef.current;
     if (!v) return;
     const onPlay  = () => setPlaying(true);
@@ -295,7 +297,7 @@ function VideoCard({ testimonial }) {
       v.removeEventListener('pause', onPause);
       v.removeEventListener('ended', onEnded);
     };
-  }, []);
+  }, [isImage]);
 
   function playVideo() {
     videoRef.current?.play().catch(() => {});
@@ -317,31 +319,43 @@ function VideoCard({ testimonial }) {
 
   return (
     <div className="rr-card">
-      <video
-        ref={videoRef}
-        src={testimonial.video_url}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="rr-video"
-        onClick={pauseVideo}
-      />
-      <div className="rr-vcard-dimmer" style={playing ? { opacity: 0 } : {}} aria-hidden="true" />
-      <button
-        className={`rr-play-btn${playing ? ' rr-hidden' : ''}`}
-        onClick={playVideo}
-        aria-label="Play"
-      >
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-          <polygon points="6,3 20,12 6,21" />
-        </svg>
-      </button>
-      <button className="rr-fs-btn" onClick={requestFs} aria-label="Fullscreen">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-        </svg>
-      </button>
+      {isImage ? (
+        <img
+          src={testimonial.video_url}
+          alt={testimonial.customer_name}
+          className="rr-video"
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          src={testimonial.video_url}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="rr-video"
+          onClick={pauseVideo}
+        />
+      )}
+      {!isImage && (
+        <>
+          <div className="rr-vcard-dimmer" style={playing ? { opacity: 0 } : {}} aria-hidden="true" />
+          <button
+            className={`rr-play-btn${playing ? ' rr-hidden' : ''}`}
+            onClick={playVideo}
+            aria-label="Play"
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+              <polygon points="6,3 20,12 6,21" />
+            </svg>
+          </button>
+          <button className="rr-fs-btn" onClick={requestFs} aria-label="Fullscreen">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+            </svg>
+          </button>
+        </>
+      )}
       <div className="rr-card-info">
         <p className="rr-card-name">{testimonial.customer_name}</p>
         {testimonial.caption && <p className="rr-card-caption">"{testimonial.caption}"</p>}

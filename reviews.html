@@ -1122,20 +1122,29 @@
         var card = document.createElement('div');
         card.className = 'rv-vcard';
 
-        var video = document.createElement('video');
-        video.src = v.video_url;
-        video.muted = true;
-        video.loop = true;
-        video.controls = true;
-        video.setAttribute('playsinline', '');
-        video.preload = 'metadata';
+        var isImage = v.video_url && v.video_url.includes('/image/upload/');
+        var media;
+        if (isImage) {
+          media = document.createElement('img');
+          media.src = v.video_url;
+          media.alt = escHtml(v.customer_name);
+          media.style.cssText = 'width:100%;aspect-ratio:9/16;object-fit:cover;display:block;';
+        } else {
+          media = document.createElement('video');
+          media.src = v.video_url;
+          media.muted = true;
+          media.loop = true;
+          media.controls = true;
+          media.setAttribute('playsinline', '');
+          media.preload = 'metadata';
+        }
 
         var info = document.createElement('div');
         info.className = 'rv-vcard-info';
         info.innerHTML = '<p class=”rv-vcard-name”>' + escHtml(v.customer_name) + '</p>' +
           (v.caption ? '<p class=”rv-vcard-caption”>”' + escHtml(v.caption) + '”</p>' : '');
 
-        card.appendChild(video);
+        card.appendChild(media);
         card.appendChild(info);
 
         return card;
