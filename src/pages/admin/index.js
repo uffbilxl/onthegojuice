@@ -129,6 +129,17 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (res.ok) setOrders(prev => prev.map(o => o.id === orderId ? { ...o, admin_note: note } : o));
   }
 
+  async function resetSection(table, label, setter) {
+    if (!confirm(`Delete ALL ${label}? This cannot be undone.`)) return;
+    if (!confirm(`Are you sure? All ${label} will be permanently deleted.`)) return;
+    const res = await fetch('/api/admin/reset', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ table }),
+    });
+    if (res.ok) setter([]);
+    else { const d = await res.json().catch(() => ({})); alert(d.error || 'Reset failed.'); }
+  }
+
   async function updatePartnerStatus(id, status) {
     await fetch('/api/admin/list-partners', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
@@ -201,6 +212,14 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
           {/* ── ORDERS TAB ─────────────────────────────────────────── */}
           {tab === 'orders' && (
             <>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+                <h2 style={{ fontFamily: 'var(--font-accent)', fontSize: '1.2rem', fontWeight: 900 }}>Orders</h2>
+                {orders.length > 0 && (
+                  <button className="adm-btn-sm adm-btn-danger" onClick={() => resetSection('orders', 'orders', setOrders)}>
+                    Clear All Orders
+                  </button>
+                )}
+              </div>
               <div className="adm-stats">
                 <div className="adm-stat"><span className="adm-stat-num">{orders.length}</span><span className="adm-stat-label">Total Orders</span></div>
                 <div className="adm-stat"><span className="adm-stat-num">£{totalRevenue.toFixed(2)}</span><span className="adm-stat-label">Revenue</span></div>
@@ -312,11 +331,18 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <div>
               <div className="adm-section-header">
                 <h2>Real Reactions — Video Testimonials</h2>
-                {Array.isArray(testimonials) && (
-                  <span className="adm-section-count">
-                    {testimonials.filter(t => t.status === 'pending').length} pending review
-                  </span>
-                )}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {Array.isArray(testimonials) && (
+                    <span className="adm-section-count">
+                      {testimonials.filter(t => t.status === 'pending').length} pending review
+                    </span>
+                  )}
+                  {Array.isArray(testimonials) && testimonials.length > 0 && (
+                    <button className="adm-btn-sm adm-btn-danger" onClick={() => resetSection('testimonials', 'testimonials', setTestimonials)}>
+                      Clear All
+                    </button>
+                  )}
+                </div>
               </div>
 
               {testimonials === null && <div className="adm-empty">Loading…</div>}
@@ -433,11 +459,18 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <div>
               <div className="adm-section-header">
                 <h2>Event RSVPs</h2>
-                {Array.isArray(rsvps) && (
-                  <span className="adm-section-count">
-                    {rsvps.reduce((s, r) => s + (parseInt(r.attendees) || 1), 0)} total attendees
-                  </span>
-                )}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {Array.isArray(rsvps) && (
+                    <span className="adm-section-count">
+                      {rsvps.reduce((s, r) => s + (parseInt(r.attendees) || 1), 0)} total attendees
+                    </span>
+                  )}
+                  {Array.isArray(rsvps) && rsvps.length > 0 && (
+                    <button className="adm-btn-sm adm-btn-danger" onClick={() => resetSection('rsvps', 'RSVPs', setRsvps)}>
+                      Clear All RSVPs
+                    </button>
+                  )}
+                </div>
               </div>
               {rsvps === null ? <div className="adm-empty">Loading…</div>
               : rsvps.length === 0 ? <div className="adm-empty">No RSVPs yet.</div>
@@ -482,7 +515,14 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <div>
               <div className="adm-section-header">
                 <h2>Partner Inquiries</h2>
-                {Array.isArray(partners) && <span className="adm-section-count">{partners.filter(p => p.status === 'new').length} new</span>}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {Array.isArray(partners) && <span className="adm-section-count">{partners.filter(p => p.status === 'new').length} new</span>}
+                  {Array.isArray(partners) && partners.length > 0 && (
+                    <button className="adm-btn-sm adm-btn-danger" onClick={() => resetSection('partners', 'partner inquiries', setPartners)}>
+                      Clear All Partners
+                    </button>
+                  )}
+                </div>
               </div>
               {partners === null ? <div className="adm-empty">Loading…</div>
               : partners.length === 0 ? <div className="adm-empty">No partner inquiries yet.</div>
