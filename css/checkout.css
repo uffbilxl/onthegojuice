@@ -51,7 +51,7 @@ img { max-width: 100%; display: block; }
 }
 .co-back {
   color: #fff;
-  background: #ff6b00;
+  background: #1d6c00;
   font-size: 0.82rem;
   font-family: var(--font-accent);
   font-weight: 700;
@@ -63,7 +63,7 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.01em;
   transition: background 0.2s, transform 0.15s;
 }
-.co-back:hover { background: #e55e00; color: #fff; transform: translateY(-1px); }
+.co-back:hover { background: #154f00; color: #fff; transform: translateY(-1px); }
 
 /* LAYOUT */
 .co-page {

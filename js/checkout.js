@@ -409,7 +409,6 @@ function initAccordion() {
         }
       }
 
-      showGoLoader(900);
       markDone(currentSection.id);
       openSection(nextId);
 
@@ -788,7 +787,6 @@ function initPayButton() {
     // Track checkout attempt for analytics
     if (typeof window.va === 'function') window.va('event', { name: 'Checkout_Started' });
 
-    showGoLoader(1200);
     payBtn.disabled = true;
     const textEl    = payBtn.querySelector('.pay-btn-text');
     const spinnerEl = payBtn.querySelector('.pay-btn-spinner');
@@ -819,14 +817,6 @@ function initPayButton() {
       payBtn.disabled = false;
     }
   });
-}
-
-/* ─── GO! SIGN LOADER ───────────────────────────────────────────── */
-function showGoLoader(durationMs = 1000) {
-  const el = document.getElementById('go-loader');
-  if (!el) return;
-  el.style.display = 'flex';
-  setTimeout(() => { el.style.display = 'none'; }, durationMs);
 }
 
 /* ─── EMPTY CART GATE ───────────────────────────────────────────── */

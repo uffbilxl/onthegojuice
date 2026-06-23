@@ -212,7 +212,6 @@ function addToCart(productId, qty = 1) {
     cart.push({ id: productId, name: product.name, price: product.price, image: product.image, qty: Math.min(MAX_ITEM_QTY, qty) });
   }
 
-  showGoLoader(900);
   saveCart();
   updateCartUI();
   openCart();
@@ -401,34 +400,6 @@ function closeCart() {
   document.getElementById('cart-drawer').classList.remove('open');
   document.getElementById('cart-overlay').classList.remove('visible');
   document.body.style.overflow = '';
-}
-
-/* ─── GO! SIGN LOADER ───────────────────────────────────────────── */
-function showGoLoader(durationMs = 900) {
-  let loader = document.getElementById('go-loader');
-  if (!loader) {
-    loader = document.createElement('div');
-    loader.id = 'go-loader';
-    loader.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center';
-    loader.innerHTML = `
-      <div style="animation:goPopIn 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards">
-        <svg viewBox="0 0 100 100" width="150" height="150" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="29,3 71,3 97,29 97,71 71,97 29,97 3,71 3,29" fill="#1d6c00"/>
-          <polygon points="29,3 71,3 97,29 97,71 71,97 29,97 3,71 3,29" fill="none" stroke="white" stroke-width="4.5"/>
-          <polygon points="34,10 66,10 90,34 90,66 66,90 34,90 10,66 10,34" fill="none" stroke="white" stroke-width="2.5"/>
-          <text x="50" y="63" text-anchor="middle" fill="white" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="27" letter-spacing="1">GO!</text>
-        </svg>
-      </div>`;
-    if (!document.getElementById('go-sign-style')) {
-      const s = document.createElement('style');
-      s.id = 'go-sign-style';
-      s.textContent = '@keyframes goPopIn { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }';
-      document.head.appendChild(s);
-    }
-    document.body.appendChild(loader);
-  }
-  loader.style.display = 'flex';
-  setTimeout(() => { loader.style.display = 'none'; }, durationMs);
 }
 
 /* ─── TOAST ──────────────────────────────────────────────────────── */
