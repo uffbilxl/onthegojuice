@@ -403,24 +403,26 @@ function closeCart() {
   document.body.style.overflow = '';
 }
 
-/* ─── GO! TRAFFIC LIGHT LOADER ─────────────────────────────────── */
+/* ─── GO! SIGN LOADER ───────────────────────────────────────────── */
 function showGoLoader(durationMs = 900) {
   let loader = document.getElementById('go-loader');
   if (!loader) {
     loader = document.createElement('div');
     loader.id = 'go-loader';
-    loader.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+    loader.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center';
     loader.innerHTML = `
-      <div style="background:#1a1a1a;border-radius:20px;padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5);min-width:110px">
-        <div style="width:38px;height:38px;border-radius:50%;background:#3a0000;box-shadow:inset 0 0 6px rgba(0,0,0,0.6)"></div>
-        <div style="width:38px;height:38px;border-radius:50%;background:#3a2a00;box-shadow:inset 0 0 6px rgba(0,0,0,0.6)"></div>
-        <div style="width:38px;height:38px;border-radius:50%;background:#1aff6a;box-shadow:0 0 20px 6px rgba(26,255,106,0.7);animation:goPulse 0.6s ease-in-out infinite alternate"></div>
-        <p style="color:#1aff6a;font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.3rem;letter-spacing:0.08em;margin-top:4px">GO!</p>
+      <div style="animation:goPopIn 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards">
+        <svg viewBox="0 0 100 100" width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="29,3 71,3 97,29 97,71 71,97 29,97 3,71 3,29" fill="#1d6c00"/>
+          <polygon points="29,3 71,3 97,29 97,71 71,97 29,97 3,71 3,29" fill="none" stroke="white" stroke-width="4.5"/>
+          <polygon points="34,10 66,10 90,34 90,66 66,90 34,90 10,66 10,34" fill="none" stroke="white" stroke-width="2.5"/>
+          <text x="50" y="63" text-anchor="middle" fill="white" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="27" letter-spacing="1">GO!</text>
+        </svg>
       </div>`;
-    if (!document.getElementById('go-pulse-style')) {
+    if (!document.getElementById('go-sign-style')) {
       const s = document.createElement('style');
-      s.id = 'go-pulse-style';
-      s.textContent = '@keyframes goPulse { from { box-shadow: 0 0 14px 4px rgba(26,255,106,0.6); } to { box-shadow: 0 0 28px 10px rgba(26,255,106,0.9); } }';
+      s.id = 'go-sign-style';
+      s.textContent = '@keyframes goPopIn { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }';
       document.head.appendChild(s);
     }
     document.body.appendChild(loader);

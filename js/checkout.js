@@ -821,7 +821,7 @@ function initPayButton() {
   });
 }
 
-/* ─── GO! TRAFFIC LIGHT LOADER ─────────────────────────────────── */
+/* ─── GO! SIGN LOADER ───────────────────────────────────────────── */
 function showGoLoader(durationMs = 1000) {
   const el = document.getElementById('go-loader');
   if (!el) return;
