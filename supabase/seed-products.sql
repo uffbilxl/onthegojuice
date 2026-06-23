@@ -9,39 +9,39 @@ INSERT INTO public.products
 OVERRIDING SYSTEM VALUE
 VALUES
   -- ── Milk Blends (£4.99) ────────────────────────────────────
-  (1,  'Carrot and Milk Juice Drink (No Added Sugar)',
+  (1,  'Carrot and Milk Drink (No Added Sugar)',
        'Carrot, Whole Milk, Nutmeg, Vanilla',
        499, 349, 'images/products/carrot-milk-no-sugar.png',        'milk', true),
 
-  (2,  'Carrot, Beetroot & Milk Juice Drink (No Added Sugar)',
+  (2,  'Carrot, Beetroot & Milk Drink (No Added Sugar)',
        'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',
        499, 349, 'images/products/carrot-beetroot-milk-no-sugar.png','milk', true),
 
-  (3,  'Mango & Milk Juice Drink',
+  (3,  'Mango & Milk Drink',
        'Mango, Whole Milk',
        499, 349, 'images/products/mango-milk.png',                  'milk', true),
 
-  (4,  'Carrot, Beetroot & Milk Juice Drink (Lactose Free)',
+  (4,  'Carrot, Beetroot & Milk Drink (Lactose Free)',
        'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/carrot-beetroot-milk-lactose-free.png','milk', true),
 
-  (5,  'Carrot, Beetroot & Milk Juice Drink',
+  (5,  'Carrot, Beetroot & Milk Drink',
        'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/carrot-beetroot-milk.png',        'milk', true),
 
-  (7,  'Carrot & Milk Juice Drink (Lactose Free)',
+  (7,  'Carrot & Milk Drink (Lactose Free)',
        'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/carrot-milk-lactose-free.png',    'milk', true),
 
-  (11, 'Breadfruit and Milk Juice Drink',
+  (11, 'Breadfruit and Milk Drink',
        'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/breadfruit-milk.png',             'milk', true),
 
-  (15, 'Beetroot & Milk Juice Drink',
+  (15, 'Beetroot & Milk Drink',
        'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/beetroot-milk.png',               'milk', true),
 
-  (19, 'Carrot and Milk Juice Drink',
+  (19, 'Carrot and Milk Drink',
        'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',
        499, 349, 'images/products/carrot-milk.png',                 'milk', true),
 
@@ -82,7 +82,7 @@ VALUES
        'Carrot, Mango, Grapefruit, Pineapple, Watermelon',
        399, 279, 'images/products/tropical-fruit-punch.png',        'juice', true),
 
-  (22, 'Carrot & Watermelon Juice Drink',
+  (22, 'Carrot and Watermelon Juice',
        'Water, Carrot, Watermelon, Sugar',
        399, 279, 'images/products/carrot-watermelon.png',           'juice', true),
 
@@ -91,11 +91,11 @@ VALUES
        'Apple, Lemon, Ginger',
        299, 209, 'images/products/go-shot-apple-ginger.png',        'shot', true),
 
-  (17, 'GO Shot Pineapple Ginger',
+  (17, 'Ginger and Pineapple Go Shot',
        'Pineapple, Lemon, Ginger',
        299, 209, 'images/products/go-shot-pineapple-ginger.png',    'shot', true),
 
-  (18, 'Ginger and Turmeric Go Shot',
+  (18, 'GO Shot Ginger and Turmeric',
        'Ginger, Turmeric, Lemon',
        299, 209, 'images/products/go-shot-turmeric.png',            'shot', true)
 

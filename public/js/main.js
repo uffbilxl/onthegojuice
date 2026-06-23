@@ -7,28 +7,28 @@ let PRODUCTS = [];
 
 // Static metadata keyed by product id — never changes without a code deploy
 const PRODUCT_STATIC = {
-  1:  { name: 'Carrot and Milk Juice Drink (No Added Sugar)',         ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                        size: '330ml', type: 'milk',  tags: ['noSugar'],     image: 'images/products/carrot-milk-no-sugar.webp' },
-  2:  { name: 'Carrot, Beetroot & Milk Juice Drink (No Added Sugar)', ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],     image: 'images/products/carrot-beetroot-milk-no-sugar.webp' },
-  3:  { name: 'Mango & Milk Juice Drink',                             ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],              image: 'images/products/mango-milk.webp' },
-  4:  { name: 'Carrot, Beetroot & Milk Juice Drink (Lactose Free)',   ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'], image: 'images/products/carrot-beetroot-milk-lactose-free.webp' },
-  5:  { name: 'Carrot, Beetroot & Milk Juice Drink',                  ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],              image: 'images/products/carrot-beetroot-milk.webp' },
+  1:  { name: 'Carrot and Milk Drink (No Added Sugar)',                ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla',                        size: '330ml', type: 'milk',  tags: ['noSugar'],     image: 'images/products/carrot-milk-no-sugar.webp' },
+  2:  { name: 'Carrot, Beetroot & Milk Drink (No Added Sugar)',       ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla',              size: '330ml', type: 'milk',  tags: ['noSugar'],     image: 'images/products/carrot-beetroot-milk-no-sugar.webp' },
+  3:  { name: 'Mango & Milk Drink',                                   ingredients: 'Mango, Whole Milk',                                           size: '330ml', type: 'milk',  tags: [],              image: 'images/products/mango-milk.webp' },
+  4:  { name: 'Carrot, Beetroot & Milk Drink (Lactose Free)',         ingredients: 'Carrot, Beetroot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar', size: '330ml', type: 'milk', tags: ['lactoseFree'], image: 'images/products/carrot-beetroot-milk-lactose-free.webp' },
+  5:  { name: 'Carrot, Beetroot & Milk Drink',                        ingredients: 'Carrot, Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',       size: '330ml', type: 'milk',  tags: [],              image: 'images/products/carrot-beetroot-milk.webp' },
   6:  { name: 'Mango & Ginger Juice Drink',                           ingredients: 'Mango, Ginger, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],              image: 'images/products/mango-ginger.webp' },
-  7:  { name: 'Carrot & Milk Juice Drink (Lactose Free)',              ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'], image: 'images/products/carrot-milk-lactose-free.webp' },
+  7:  { name: 'Carrot & Milk Drink (Lactose Free)',                   ingredients: 'Carrot, Lactose Free Whole Milk, Nutmeg, Vanilla, Sugar',    size: '330ml', type: 'milk',  tags: ['lactoseFree'], image: 'images/products/carrot-milk-lactose-free.webp' },
   8:  { name: 'Sorrel Juice Drink',                                   ingredients: 'Sorrel, Cinnamon, Pimento, Sugar, Water',                    size: '330ml', type: 'juice', tags: [],              image: 'images/products/sorrel.webp' },
   9:  { name: 'GO Shot Apple Ginger',                                  ingredients: 'Apple, Lemon, Ginger',                                        size: '60ml',  type: 'shot',  tags: [],              image: 'images/products/go-shot-apple-ginger.webp' },
   10: { name: 'Carrot and Lemon Juice Drink',                         ingredients: 'Carrot, Lemon, Sugar, Water',                                size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-lemon.webp' },
-  11: { name: 'Breadfruit and Milk Juice Drink',                      ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',             size: '330ml', type: 'milk',  tags: [],              image: 'images/products/breadfruit-milk.webp' },
+  11: { name: 'Breadfruit and Milk Drink',                            ingredients: 'Breadfruit, Whole Milk, Nutmeg, Vanilla, Sugar',             size: '330ml', type: 'milk',  tags: [],              image: 'images/products/breadfruit-milk.webp' },
   12: { name: 'Carrot & Grapefruit Juice Drink',                      ingredients: 'Carrot, Grapefruit, Sugar, Water',                           size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-grapefruit.webp' },
   13: { name: 'Carrot and Ginger Juice Drink',                        ingredients: 'Carrot, Ginger, Sugar, Water',                               size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-ginger.webp' },
   14: { name: 'Beetroot & Apple Juice Drink',                         ingredients: 'Beetroot, Apple, Sugar, Water',                              size: '330ml', type: 'juice', tags: [],              image: 'images/products/beetroot-apple.webp' },
-  15: { name: 'Beetroot & Milk Juice Drink',                          ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',               size: '330ml', type: 'milk',  tags: [],              image: 'images/products/beetroot-milk.webp' },
+  15: { name: 'Beetroot & Milk Drink',                                ingredients: 'Beetroot, Whole Milk, Nutmeg, Vanilla, Sugar',               size: '330ml', type: 'milk',  tags: [],              image: 'images/products/beetroot-milk.webp' },
   16: { name: 'Carrot and Lime Juice Drink',                          ingredients: 'Lime, Sugar, Water',                                          size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-lime.webp' },
-  17: { name: 'GO Shot Pineapple Ginger',                             ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],              image: 'images/products/go-shot-pineapple-ginger.webp' },
+  17: { name: 'Ginger and Pineapple Go Shot',                         ingredients: 'Pineapple, Lemon, Ginger',                                   size: '60ml',  type: 'shot',  tags: [],              image: 'images/products/go-shot-pineapple-ginger.webp' },
   18: { name: 'GO Shot Ginger and Turmeric',                          ingredients: 'Ginger, Turmeric, Lemon',                                    size: '60ml',  type: 'shot',  tags: [],              image: 'images/products/go-shot-turmeric.webp' },
-  19: { name: 'Carrot and Milk Juice Drink',                          ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],              image: 'images/products/carrot-milk.webp' },
+  19: { name: 'Carrot and Milk Drink',                                ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],              image: 'images/products/carrot-milk.webp' },
   20: { name: 'Carrot & Mango Juice Drink',                           ingredients: 'Water, Carrot, Mango, Sugar',                                size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-mango.png' },
   21: { name: 'Tropical Fruit Punch Juice Drink',                     ingredients: 'Carrot, Mango, Grapefruit, Pineapple, Watermelon',           size: '330ml', type: 'juice', tags: [],              image: 'images/products/tropical-fruit-punch.png' },
-  22: { name: 'Carrot and Watermelon Juice Drink',                    ingredients: 'Water, Carrot, Watermelon, Sugar',                           size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-watermelon.png' },
+  22: { name: 'Carrot and Watermelon Juice',                          ingredients: 'Water, Carrot, Watermelon, Sugar',                           size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-watermelon.png' },
 };
 
 async function loadProducts() {
@@ -212,6 +212,7 @@ function addToCart(productId, qty = 1) {
     cart.push({ id: productId, name: product.name, price: product.price, image: product.image, qty: Math.min(MAX_ITEM_QTY, qty) });
   }
 
+  showGoLoader(900);
   saveCart();
   updateCartUI();
   openCart();
@@ -400,6 +401,32 @@ function closeCart() {
   document.getElementById('cart-drawer').classList.remove('open');
   document.getElementById('cart-overlay').classList.remove('visible');
   document.body.style.overflow = '';
+}
+
+/* ─── GO! TRAFFIC LIGHT LOADER ─────────────────────────────────── */
+function showGoLoader(durationMs = 900) {
+  let loader = document.getElementById('go-loader');
+  if (!loader) {
+    loader = document.createElement('div');
+    loader.id = 'go-loader';
+    loader.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+    loader.innerHTML = `
+      <div style="background:#1a1a1a;border-radius:20px;padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 8px 40px rgba(0,0,0,0.5);min-width:110px">
+        <div style="width:38px;height:38px;border-radius:50%;background:#3a0000;box-shadow:inset 0 0 6px rgba(0,0,0,0.6)"></div>
+        <div style="width:38px;height:38px;border-radius:50%;background:#3a2a00;box-shadow:inset 0 0 6px rgba(0,0,0,0.6)"></div>
+        <div style="width:38px;height:38px;border-radius:50%;background:#1aff6a;box-shadow:0 0 20px 6px rgba(26,255,106,0.7);animation:goPulse 0.6s ease-in-out infinite alternate"></div>
+        <p style="color:#1aff6a;font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.3rem;letter-spacing:0.08em;margin-top:4px">GO!</p>
+      </div>`;
+    if (!document.getElementById('go-pulse-style')) {
+      const s = document.createElement('style');
+      s.id = 'go-pulse-style';
+      s.textContent = '@keyframes goPulse { from { box-shadow: 0 0 14px 4px rgba(26,255,106,0.6); } to { box-shadow: 0 0 28px 10px rgba(26,255,106,0.9); } }';
+      document.head.appendChild(s);
+    }
+    document.body.appendChild(loader);
+  }
+  loader.style.display = 'flex';
+  setTimeout(() => { loader.style.display = 'none'; }, durationMs);
 }
 
 /* ─── TOAST ──────────────────────────────────────────────────────── */

@@ -155,17 +155,27 @@ function isBirminghamPostcode(pc) {
 }
 
 function updateDeliveryTotal() {
-  const sub         = bundleAdjustedSubtotal();
-  const isDelivery  = document.querySelector('input[name="delivery"]:checked')?.value === 'delivery';
-  const discountAmt = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
+  const sub            = bundleAdjustedSubtotal();
+  const selectedMethod = document.querySelector('input[name="delivery"]:checked')?.value;
+  const isDelivery     = selectedMethod === 'delivery';
+  const isPickup       = selectedMethod === 'pickup';
+  const discountAmt    = appliedDiscount ? appliedDiscount.discountPence / 100 : 0;
 
   const postcode   = (document.getElementById('postcode-input')?.value?.trim()
                    || document.getElementById('postcode-addr')?.value?.trim() || '');
   const isBham     = isBirminghamPostcode(postcode);
   const effectiveSub = Math.max(0, sub - discountAmt);
 
+  // If no delivery method selected yet, show a dash and skip further calculation
+  if (!selectedMethod) {
+    const deliveryCostEl = document.getElementById('co-delivery-cost');
+    if (deliveryCostEl) deliveryCostEl.textContent = '—';
+    updateBundleSummary();
+    return;
+  }
+
   let deliveryCost;
-  if (!isDelivery) {
+  if (isPickup) {
     deliveryCost = 0;
   } else if (isBham) {
     deliveryCost = effectiveSub >= 8 ? 0 : 1.50;
@@ -399,6 +409,7 @@ function initAccordion() {
         }
       }
 
+      showGoLoader(900);
       markDone(currentSection.id);
       openSection(nextId);
 
@@ -777,6 +788,7 @@ function initPayButton() {
     // Track checkout attempt for analytics
     if (typeof window.va === 'function') window.va('event', { name: 'Checkout_Started' });
 
+    showGoLoader(1200);
     payBtn.disabled = true;
     const textEl    = payBtn.querySelector('.pay-btn-text');
     const spinnerEl = payBtn.querySelector('.pay-btn-spinner');
@@ -809,23 +821,52 @@ function initPayButton() {
   });
 }
 
+/* ─── GO! TRAFFIC LIGHT LOADER ─────────────────────────────────── */
+function showGoLoader(durationMs = 1000) {
+  const el = document.getElementById('go-loader');
+  if (!el) return;
+  el.style.display = 'flex';
+  setTimeout(() => { el.style.display = 'none'; }, durationMs);
+}
+
+/* ─── EMPTY CART GATE ───────────────────────────────────────────── */
+function handleEmptyCartState() {
+  if (cart.length > 0) return;
+
+  // Hide all checkout sections — nothing to fill in with no items
+  ['section-contact', 'section-delivery', 'section-address', 'section-payment'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  const titleEl = document.querySelector('.co-title');
+  if (titleEl) titleEl.style.display = 'none';
+
+  // Show prominent empty cart message
+  const emptyEl = document.getElementById('co-empty-state');
+  if (emptyEl) emptyEl.style.display = 'block';
+}
+
 /* ─── INIT ──────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', async () => {
   await loadPromos();
 
+  handleEmptyCartState();
   renderSummary();
-  initAccordion();
-  initPostcodeChecker();
-  initDeliveryToggle();
-  initPromoCode();
-  initPayButton();
-  initStudentDiscount();
-  initLoyaltyPoints();
 
-  document.querySelectorAll('input[name="delivery"]').forEach(r => {
-    r.addEventListener('change', updateDeliveryTotal);
-  });
+  if (cart.length > 0) {
+    initAccordion();
+    initPostcodeChecker();
+    initDeliveryToggle();
+    initPromoCode();
+    initPayButton();
+    initStudentDiscount();
+    initLoyaltyPoints();
 
-  // Initialise displayed totals now that cart + promos are loaded
-  updateDeliveryTotal();
+    document.querySelectorAll('input[name="delivery"]').forEach(r => {
+      r.addEventListener('change', updateDeliveryTotal);
+    });
+
+    updateDeliveryTotal();
+  }
 });
