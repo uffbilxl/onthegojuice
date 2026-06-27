@@ -36,6 +36,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
   const [discountCodes, setDiscountCodes] = useState(null);
   const [testimonials,  setTestimonials]  = useState(null);
   const [testimonialsEdits, setTestimonialsEdits] = useState({});
+  const [reviews,       setReviews]       = useState(null);
 
   const [loginPwd, setLoginPwd]       = useState('');
   const [loginError, setLoginError]   = useState('');
@@ -49,6 +50,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
     if (tab === 'users'         && users          === null) fetch('/api/admin/users').then(r=>r.json()).then(setUsers).catch(()=>setUsers([]));
     if (tab === 'discounts'     && discountCodes  === null) fetch('/api/admin/discount-codes').then(r=>r.json()).then(setDiscountCodes).catch(()=>setDiscountCodes([]));
     if (tab === 'testimonials'  && testimonials   === null) fetch('/api/admin/testimonials').then(r=>r.json()).then(setTestimonials).catch(()=>setTestimonials([]));
+    if (tab === 'reviews'       && reviews        === null) fetch('/api/admin/reviews').then(r=>r.json()).then(setReviews).catch(()=>setReviews([]));
   }, [tab]);
 
   function getEdit(id, field, fallback) {
@@ -70,6 +72,16 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
       setTestimonials(prev => prev.map(t => t.id === id ? updated : t));
       setTestimonialsEdits(prev => { const n = { ...prev }; delete n[id]; return n; });
     }
+  }
+
+  async function deleteReview(id, name) {
+    if (!window.confirm(`Permanently delete the review from ${name}? This cannot be undone.`)) return;
+    const res = await fetch('/api/admin/reviews', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) setReviews(prev => prev.filter(r => r.id !== id));
+    else alert('Failed to delete review. Please try again.');
   }
 
   async function deleteTestimonial(id, name) {
@@ -193,7 +205,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
             <a href="/" className="adm-back-btn">← Back to Site</a>
           </div>
           <nav className="adm-tabs">
-            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['discounts','Discounts'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes'], ['testimonials','Reactions']].map(([id, label]) => (
+            {[['orders','Orders'], ['events','Events'], ['rsvps','RSVPs'], ['partners','Partners'], ['promotions','Promotions'], ['discounts','Discounts'], ['products','Products'], ['users','Users'], ['qrcodes','QR Codes'], ['reviews','Reviews'], ['testimonials','Reactions']].map(([id, label]) => (
               <button key={id} className={`adm-tab${tab === id ? ' adm-tab-active' : ''}`} onClick={() => setTab(id)}>
                 {label}
                 {id === 'orders'        && <span className="adm-tab-badge">{orders.length}</span>}
@@ -202,6 +214,7 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                 {id === 'promotions'    && Array.isArray(promotions)    && promotions.some(p => p.is_active) && <span className="adm-tab-badge" style={{background:'#22c55e'}}>ON</span>}
                 {id === 'users'         && Array.isArray(users)         && <span className="adm-tab-badge">{users.length}</span>}
                 {id === 'discounts'     && Array.isArray(discountCodes) && discountCodes.length > 0 && <span className="adm-tab-badge">{discountCodes.length}</span>}
+                {id === 'reviews'       && Array.isArray(reviews)       && <span className="adm-tab-badge">{reviews.length}</span>}
                 {id === 'testimonials'  && Array.isArray(testimonials)  && testimonials.filter(t => t.status === 'pending').length > 0 && <span className="adm-tab-badge" style={{background:'#ff6b00'}}>{testimonials.filter(t => t.status === 'pending').length}</span>}
               </button>
             ))}
@@ -451,6 +464,61 @@ export default function AdminPage({ orders: initialOrders, events: initialEvents
                   </>
                 );
               })()}
+            </div>
+          )}
+
+          {/* ── REVIEWS TAB ────────────────────────────────────────── */}
+          {tab === 'reviews' && (
+            <div>
+              <div className="adm-section-header">
+                <h2>Written Reviews</h2>
+                {Array.isArray(reviews) && (
+                  <span className="adm-section-count">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</span>
+                )}
+              </div>
+
+              {reviews === null && <div className="adm-empty">Loading…</div>}
+              {Array.isArray(reviews) && reviews.length === 0 && (
+                <div className="adm-empty">No reviews yet.</div>
+              )}
+
+              {Array.isArray(reviews) && reviews.length > 0 && (
+                <div className="adm-table-wrap">
+                  <table className="adm-table">
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Flavour</th>
+                        <th>Date</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reviews.map(r => (
+                        <tr key={r.id}>
+                          <td data-label="Customer" style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>{r.customer_name}</td>
+                          <td data-label="Rating" style={{ whiteSpace: 'nowrap', color: '#f59e0b', letterSpacing: 1 }}>{'★'.repeat(r.rating)}</td>
+                          <td data-label="Review" style={{ maxWidth: 340, lineHeight: 1.5, color: '#374151' }}>{r.review_text}</td>
+                          <td data-label="Flavour" style={{ fontSize: '0.78rem', color: '#6b7280', whiteSpace: 'nowrap' }}>{r.flavor || '—'}</td>
+                          <td data-label="Date" style={{ fontSize: '0.78rem', color: '#9ca3af', whiteSpace: 'nowrap' }}>
+                            {new Date(r.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </td>
+                          <td data-label="Action">
+                            <button
+                              onClick={() => deleteReview(r.id, r.customer_name)}
+                              style={{ padding: '6px 12px', background: 'none', color: '#b91c1c', border: '1.5px solid #fecaca', borderRadius: 8, fontFamily: 'var(--font-accent)', fontWeight: 700, fontSize: '0.72rem', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'background 0.15s' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#fee2e2'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            >Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
