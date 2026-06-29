@@ -739,7 +739,7 @@ async function initStripePayment() {
           });
           const d = await r.json();
           if (!r.ok) throw new Error(d.error || 'Failed to place order');
-          window.location.href = `${window.location.origin}/order-confirmed?session_id=${d.orderId}`;
+          window.location.href = `${window.location.origin}/payment-processing?session_id=${d.orderId}`;
         } catch (err) {
           errEl.textContent = err.message;
           errEl.style.display = 'block';
@@ -801,7 +801,7 @@ function initPayButton() {
     const { error } = await stripeInstance.confirmPayment({
       elements: stripeElements,
       confirmParams: {
-        return_url:    `${window.location.origin}/order-confirmed`,
+        return_url:    `${window.location.origin}/payment-processing`,
         receipt_email: email,
       },
     });
