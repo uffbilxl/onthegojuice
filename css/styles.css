@@ -759,6 +759,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transform: scale(1.08);
 }
 
+/* Carrot & Watermelon has tightly-cropped source — scale down to match other cards */
+.card-image-wrap img[src$="carrot-watermelon.png"] {
+  transform: scale(0.72);
+}
 
 .product-card:hover .card-image-wrap img {
   opacity: 0;
