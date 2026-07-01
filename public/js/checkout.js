@@ -409,7 +409,6 @@ function initAccordion() {
         }
       }
 
-      showGoLoader(900);
       markDone(currentSection.id);
       openSection(nextId);
 
@@ -740,7 +739,7 @@ async function initStripePayment() {
           });
           const d = await r.json();
           if (!r.ok) throw new Error(d.error || 'Failed to place order');
-          window.location.href = `${window.location.origin}/order-confirmed?session_id=${d.orderId}`;
+          window.location.href = `${window.location.origin}/payment-processing?session_id=${d.orderId}`;
         } catch (err) {
           errEl.textContent = err.message;
           errEl.style.display = 'block';
@@ -788,7 +787,6 @@ function initPayButton() {
     // Track checkout attempt for analytics
     if (typeof window.va === 'function') window.va('event', { name: 'Checkout_Started' });
 
-    showGoLoader(1200);
     payBtn.disabled = true;
     const textEl    = payBtn.querySelector('.pay-btn-text');
     const spinnerEl = payBtn.querySelector('.pay-btn-spinner');
@@ -803,7 +801,7 @@ function initPayButton() {
     const { error } = await stripeInstance.confirmPayment({
       elements: stripeElements,
       confirmParams: {
-        return_url:    `${window.location.origin}/order-confirmed`,
+        return_url:    `${window.location.origin}/payment-processing`,
         receipt_email: email,
       },
     });
@@ -819,14 +817,6 @@ function initPayButton() {
       payBtn.disabled = false;
     }
   });
-}
-
-/* ─── GO! TRAFFIC LIGHT LOADER ─────────────────────────────────── */
-function showGoLoader(durationMs = 1000) {
-  const el = document.getElementById('go-loader');
-  if (!el) return;
-  el.style.display = 'flex';
-  setTimeout(() => { el.style.display = 'none'; }, durationMs);
 }
 
 /* ─── EMPTY CART GATE ───────────────────────────────────────────── */
