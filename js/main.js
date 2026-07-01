@@ -28,7 +28,7 @@ const PRODUCT_STATIC = {
   19: { name: 'Carrot and Milk Drink',                                ingredients: 'Carrot, Whole Milk, Nutmeg, Vanilla, Sugar',                 size: '330ml', type: 'milk',  tags: [],              image: 'images/products/carrot-milk.webp' },
   20: { name: 'Carrot & Mango Juice Drink',                           ingredients: 'Water, Carrot, Mango, Sugar',                                size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-mango.png' },
   21: { name: 'Tropical Fruit Punch Juice Drink',                     ingredients: 'Carrot, Mango, Grapefruit, Pineapple, Watermelon',           size: '330ml', type: 'juice', tags: [],              image: 'images/products/tropical-fruit-punch.png' },
-  22: { name: 'Carrot and Watermelon Juice',                          ingredients: 'Water, Carrot, Watermelon, Sugar',                           size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-watermelon.png' },
+  22: { name: 'Carrot & Watermelon Juice Drink',                      ingredients: 'Water, Carrot, Watermelon, Sugar',                           size: '330ml', type: 'juice', tags: [],              image: 'images/products/carrot-watermelon.png' },
 };
 
 async function loadProducts() {

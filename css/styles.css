@@ -928,16 +928,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* Shot product cards — visually smaller bottle to reflect 60ml real-world size */
 .product-card[data-type="shot"] .card-image-wrap {
   aspect-ratio: 3/4;
-  padding: 20px 28%;
+  padding: 0 28%;
   background: linear-gradient(180deg, #f8f8f8 0%, #f0f0f0 100%);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .product-card[data-type="shot"] .card-image-wrap img {
   padding: 0;
+  max-height: 100%;
+  width: auto;
   object-fit: contain;
-  height: 100%;
-  width: 100%;
 }
 
 /* Go Shots section breaker */
