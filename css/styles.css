@@ -754,9 +754,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   mix-blend-mode: multiply;
 }
 
-/* PNG product images have more whitespace than WebP — scale up to match visual size */
-.card-image-wrap img[src$=".png"] {
-  transform: scale(1.08);
+/* Wide-canvas source images (1844×2304) appear short in portrait cards — scale to fill */
+.card-image-wrap img[src$="sorrel.webp"],
+.card-image-wrap img[src$="carrot-mango.png"] {
+  transform: scale(1.07);
 }
 
 
@@ -942,6 +943,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   max-height: 100%;
   width: auto;
   object-fit: contain;
+}
+
+/* Normalise visual bottle size across shots — Apple Ginger has most whitespace, Turmeric least */
+.product-card[data-type="shot"] .card-image-wrap img[src$="go-shot-apple-ginger.webp"] {
+  transform: scale(1.35);
+}
+.product-card[data-type="shot"] .card-image-wrap img[src$="go-shot-turmeric.webp"] {
+  transform: scale(0.82);
 }
 
 /* Go Shots section breaker */
